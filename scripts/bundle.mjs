@@ -60,6 +60,16 @@ execFileSync(
 	{ cwd: stage, stdio: 'inherit' },
 );
 
+// The Midnight Commander skins ship as their own zip, unpacked straight into mc's skins directory
+const skins = readdirSync(join(root, 'mc', 'skins')).filter((f) => f.endsWith('.ini'));
+if (!skins.length) throw new Error('No Midnight Commander skins found. Run `bun run build` first.');
+execFileSync('zip', [
+	'-q',
+	'-j',
+	join(out, `afterglow-mc-skins-v${version}.zip`),
+	...skins.map((f) => join(root, 'mc', 'skins', f)),
+]);
+
 const sums = readdirSync(out)
 	.sort()
 	.map(
