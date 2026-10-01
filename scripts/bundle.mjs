@@ -68,6 +68,8 @@ execFileSync('zip', [
 	'-j',
 	join(out, `afterglow-mc-skins-v${version}.zip`),
 	...skins.map((f) => join(root, 'mc', 'skins', f)),
+	join(root, 'LICENSE-APACHE'),
+	join(root, 'LICENSE-MIT'),
 ]);
 
 const sums = readdirSync(out)

@@ -60,8 +60,9 @@ const distance = (a, b) => {
 
 // The nearest 256-colour index to a hex colour. When `against` and `min` are given, only colours
 // that keep `min`:1 contrast with `against` are considered, so rounding never costs legibility.
-export const nearest256 = (hex, against, min = 0) => {
+export const nearest256 = (hex, against, min = 0, exclude = new Set()) => {
 	const candidates = palette256
+		.filter(([index]) => !exclude.has(index))
 		.filter(([, candidate]) => !against || min === 0 || contrast(candidate, against) >= min)
 		.sort((a, b) => distance(hex, a[1]) - distance(hex, b[1]));
 	const [best] = candidates.length
@@ -283,11 +284,11 @@ const fixed = {
 // Resolve a model entry to concrete colours for a flavour. In the 256-colour flavour every colour is
 // rounded to the palette, and a foreground may shift to the nearest colour that still meets its
 // contrast so the fallback stays as legible as the truecolour skin.
-export const resolveEntry = (model, item, flavour) => {
+export const resolveEntry = (model, item, flavour, exclude) => {
 	const surface = item.bg === DEFAULT ? model.baseSurface : item.bg;
 	if (flavour === 'truecolor') return { fg: item.fg, bg: item.bg };
 	const bgIndex = nearest256(surface);
-	const fgIndex = nearest256(item.fg, xtermHex(bgIndex), item.min);
+	const fgIndex = nearest256(item.fg, xtermHex(bgIndex), item.min, exclude);
 	return { fg: `color${fgIndex}`, bg: item.bg === DEFAULT ? DEFAULT : `color${bgIndex}` };
 };
 
@@ -300,7 +301,7 @@ export const buildSkin = (id, flavour) => {
 	];
 	if (flavour === 'truecolor') {
 		lines.push(
-			'# Needs mc 4.8.19 or newer built against S-Lang, and a terminal with COLORTERM=truecolor (or 24bit).',
+			'# Needs mc 4.8.19 or newer built against S-Lang 2.3.1 or newer on a 64-bit system, and a terminal with COLORTERM=truecolor (or 24bit).',
 			`# Without that, use ${id}-256 instead.`,
 		);
 	} else {
@@ -323,16 +324,22 @@ export const buildSkin = (id, flavour) => {
 		for (const [key, value] of Object.entries(body)) lines.push(`    ${key} = ${value}`);
 	};
 
-	const rendered = (items) =>
-		Object.fromEntries(
+	// File types must stay distinguishable, so in the 256 flavour no two share a foreground
+	const rendered = (items, distinct = false) => {
+		const used = new Set();
+		return Object.fromEntries(
 			Object.entries(items).map(([key, item]) => {
-				const { fg, bg } = resolveEntry(model, item, flavour);
+				const { fg, bg } = resolveEntry(model, item, flavour, distinct ? used : undefined);
+				if (distinct) used.add(Number(fg.replace('color', '')));
 				return [key, [fg, bg, item.attrs].filter((part, i) => i < 2 || part).join(';')];
 			}),
 		);
+	};
 
 	section('Lines', fixed.Lines);
-	for (const [name, items] of Object.entries(model.sections)) section(name, rendered(items));
+	for (const [name, items] of Object.entries(model.sections)) {
+		section(name, rendered(items, flavour === '256' && name === 'filehighlight'));
+	}
 	for (const name of ['widget-panel', 'widget-scrollbar', 'widget-editor', 'widget-common']) {
 		section(name, fixed[name]);
 	}

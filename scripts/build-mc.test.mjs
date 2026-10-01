@@ -17,7 +17,7 @@ import {
 	xtermHex,
 } from './build-mc.mjs';
 import { contrast } from './colour.mjs';
-import { colourToHex, parseIni } from './validate-mc.mjs';
+import { colourToHex, parseIni, validateSkin } from './validate-mc.mjs';
 
 const keys = JSON.parse(readFileSync(new URL('./mc-skin-keys.json', import.meta.url), 'utf8'));
 
@@ -99,4 +99,57 @@ test('colourToHex accepts only colours valid for the flavour', () => {
 	assert.equal(colourToHex('color5', '256'), undefined);
 	assert.equal(colourToHex('#a78bfa', '256'), undefined);
 	assert.equal(colourToHex('default', '256', '#050507'), '#050507');
+});
+
+test('the 256-colour file types each keep a distinct foreground', () => {
+	for (const id of Object.keys(mcVariants)) {
+		const { filehighlight } = parseIni(buildSkin(id, '256'));
+		const foregrounds = Object.values(filehighlight).map((value) => value.split(';')[0]);
+		assert.equal(new Set(foregrounds).size, foregrounds.length, id);
+	}
+});
+
+test('validateSkin accepts the generated skins', () => {
+	for (const id of Object.keys(mcVariants)) {
+		for (const flavour of Object.keys(flavours)) {
+			assert.deepEqual(validateSkin(id, flavour, buildSkin(id, flavour)).errors, []);
+		}
+	}
+});
+
+const errorsFor = (id, flavour, edit) =>
+	validateSkin(id, flavour, edit(buildSkin(id, flavour))).errors.join('\n');
+
+test('validateSkin reports a missing key', () => {
+	assert.match(
+		errorsFor('afterglow-dark', 'truecolor', (text) => text.replace(/^\s+selected = .*\n/m, '')),
+		/\[core\] selected is missing/,
+	);
+});
+
+test('validateSkin reports a low-contrast pair', () => {
+	assert.match(
+		errorsFor('afterglow-dark', 'truecolor', (text) =>
+			text.replace(/^(\s+_default_ = )[^;]+/m, '$1#101018'),
+		),
+		/_default_ is [\d.]+:1/,
+	);
+});
+
+test('validateSkin rejects the default background outside the signature skin', () => {
+	assert.match(
+		errorsFor('afterglow-dark', 'truecolor', (text) =>
+			text.replace(/^(\s+_default_ = [^;]+);[^;\n]+/m, '$1;default'),
+		),
+		/only the afterglow skin may use the default background/,
+	);
+});
+
+test('validateSkin rejects a low palette index in the 256 flavour', () => {
+	assert.match(
+		errorsFor('afterglow-dark', '256', (text) =>
+			text.replace(/^(\s+_default_ = )color\d+/m, '$1color3'),
+		),
+		/not a valid 256 colour/,
+	);
 });

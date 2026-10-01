@@ -39,11 +39,11 @@ The syntax colouring keeps every TextMate scope rule and semantic token override
 
 ## The Midnight Commander skins
 
-| Skin              | Mode  | What it is                                                                                                                                      |
-| ----------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `afterglow`       | Dark  | The `#050507` void with orange accents. The panels, viewer and editor use the terminal's own background, so transparency and blur show through. |
-| `afterglow-dark`  | Dark  | Solid deep indigo-black with purple accents.                                                                                                    |
-| `afterglow-light` | Light | Warm paper with deeper accents that hold 4.5:1 contrast.                                                                                        |
+| Skin              | Mode  | What it is                                                                                                                                                                                                   |
+| ----------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `afterglow`       | Dark  | The `#050507` void with orange accents. The panels, viewer and editor use the terminal's own background, so transparency and blur show through (contrast is guaranteed on a near-black terminal background). |
+| `afterglow-dark`  | Dark  | Solid deep indigo-black with purple accents.                                                                                                                                                                 |
+| `afterglow-light` | Light | Warm paper with deeper accents that hold 4.5:1 contrast.                                                                                                                                                     |
 
 Every section of the skin is coloured deliberately: the file list and file types, the cursor and marked files, menus, dialogs, errors, the button bar, the help, viewer, editor and diff viewer. Each skin also has a `-256` fallback (for example `afterglow-dark-256`) for terminals that report 256 colours but not truecolour. See [docs/mc-skin.md](docs/mc-skin.md).
 
@@ -87,7 +87,7 @@ mkdir -p ~/.local/share/mc/skins
 unzip afterglow-mc-skins-v*.zip -d ~/.local/share/mc/skins
 ```
 
-Then start mc with `mc -S afterglow`, or pick a skin under **Options > Appearance** and save the setup. The skins need mc 4.8.19 or newer built against S-Lang, and truecolour needs `COLORTERM=truecolor` (or `24bit`) in a terminal that supports it, with `TERM=xterm-256color`. If your terminal or session cannot offer that (over SSH, for example), use the `-256` skin: `mc -S afterglow-256`. Without `COLORTERM`, mc rounds the truecolour skins down to 16 colours, which looks wrong. The mc editor's syntax colours come from your terminal's own palette rather than the skin.
+Then start mc with `mc -S afterglow`, or pick a skin under **Options > Appearance** and save the setup. The skins need mc 4.8.19 or newer built against S-Lang 2.3.1 or newer on a 64-bit system, and truecolour needs `COLORTERM=truecolor` (or `24bit`) in a terminal that supports it, with `TERM=xterm-256color`. If your terminal or session cannot offer that (over SSH, for example), use the `-256` skin: `mc -S afterglow-256`. Without `COLORTERM`, mc rounds the truecolour skins down to 16 colours, which looks wrong. The mc editor's syntax colours come from your terminal's own palette rather than the skin.
 
 ### From source
 

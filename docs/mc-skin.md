@@ -12,7 +12,7 @@ Afterglow ships three [Midnight Commander](https://midnight-commander.org) skins
 
 mc skins can name colours three ways: the 16 named colours (`red`, `brightgreen`), 256-colour palette entries (`color0` to `color255`, `rgb000` to `rgb555`, `gray0` to `gray23`) and, since mc 4.8.19, `#rrggbb` or `#rgb` truecolour. The special background `default` means the terminal's own background. Which of those works depends on the build and the terminal, not on the skin:
 
-- **Truecolour** needs an mc built against S-Lang (the common build, including Debian, Ubuntu, Arch and Homebrew), and `COLORTERM=truecolor` or `COLORTERM=24bit` in the environment, with a terminal that really supports it. A skin declares `truecolors = true` in `[skin]`.
+- **Truecolour** needs an mc built against S-Lang 2.3.1 or newer on a 64-bit system (the same requirement as mc's own `seasons-*16M` skins), and `COLORTERM=truecolor` or `COLORTERM=24bit` in the environment, with a terminal that really supports it. A skin declares `truecolors = true` in `[skin]`.
 - **256 colours** needs `TERM=xterm-256color` (or similar, such as `screen-256color`). A skin declares `256colors = true`.
 - Without `COLORTERM`, mc does not use truecolour even on a `-256color` terminal. A `#rrggbb` skin is then rounded to the 16 base colours, which loses most of the design.
 
@@ -57,7 +57,7 @@ The step meanings are the same as everywhere else: neutral 900 is the background
 | `[diffviewer]`                      | Added is a green tint, removed is a rose tint and changed lines are blue and yellow tints, all with neutral 100 text.                                                                                                                             |
 | `[Lines]`, `[widget-*]`             | Box-drawing and glyphs, shared by every skin.                                                                                                                                                                                                     |
 
-Every section and key the reference skins in mc 4.8.30 define is set, so nothing falls through to mc's defaults. The complete list is in `scripts/mc-skin-keys.json`.
+Every section and key the reference skins in mc 4.8.30 define is set, so nothing falls through to mc's defaults. The optional `[aliases]` section is deliberately not used. `core.shadow` is the one pair not held to a contrast ratio, since it is a drop shadow. The complete list is in `scripts/mc-skin-keys.json`.
 
 ## Validation
 
@@ -70,9 +70,11 @@ Every section and key the reference skins in mc 4.8.30 define is set, so nothing
 - About 80 foreground and background pairs meet 4.5:1, and the deliberately dim ones (disabled text, the command-line history marker, whitespace marks and temporary files) are held to a 3:1 floor. mc has no alpha, so no compositing is needed. A `default` background is measured against neutral 900. The 256-colour skins are measured with their rounded colours, not the originals.
 - Only `afterglow` uses `default`, and it uses it for `[core] _default_`.
 
-The validator checks structure and contrast, not appearance.
+Contrast for `afterglow` is measured against the `#050507` void, so it only holds as long as your terminal background is dark and near-black. On a bright or heavily blurred background the `default` surfaces can fall below the stated ratios. The validator checks structure and contrast, not appearance.
 
 ## Testing with a real mc
+
+The skins were loaded in real mc 4.8.30 under `tmux`, and the file panels, menu bar, dialogs, error dialog, help, viewer, editor and diff viewer of all three variants were captured and checked by eye. Transparency over a real terminal background, `COLORTERM=24bit` and 16-colour terminals have not been tested.
 
 To try a skin without touching your own configuration, install into a scratch data directory and run mc inside a pseudo-terminal:
 

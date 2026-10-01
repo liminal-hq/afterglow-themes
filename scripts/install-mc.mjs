@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const source = join(dirname(fileURLToPath(import.meta.url)), '..', 'mc', 'skins');
-const data = process.env.XDG_DATA_HOME ?? join(homedir(), '.local', 'share');
+const data = process.env.XDG_DATA_HOME || join(homedir(), '.local', 'share');
 const target = join(data, 'mc', 'skins');
 
 mkdirSync(target, { recursive: true });
