@@ -1,0 +1,45 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="icon-title">
+  <title id="icon-title">Afterglow</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#050507"/>
+      <stop offset="100%" stop-color="#1a1828"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffaa40"/>
+      <stop offset="50%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffaa40"/>
+      <stop offset="55%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <filter id="glow" filterUnits="userSpaceOnUse" x="-40" y="-40" width="340" height="340">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+    <clipPath id="above">
+      <rect x="0" y="0" width="256" height="156"/>
+    </clipPath>
+    <clipPath id="frame">
+      <rect width="256" height="256" rx="48"/>
+    </clipPath>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <g clip-path="url(#frame)">
+    <ellipse cx="128" cy="164" rx="130" ry="40" fill="#f43f5e" opacity="0.45" filter="url(#glow)"/>
+    <g clip-path="url(#above)">
+      <circle cx="128" cy="156" r="62" fill="url(#sun)"/>
+    </g>
+    <rect x="28" y="155" width="200" height="3" rx="1.5" fill="url(#brand)"/>
+    <rect x="52" y="172" width="152" height="3" rx="1.5" fill="url(#brand)" opacity="0.5"/>
+    <rect x="76" y="189" width="104" height="3" rx="1.5" fill="url(#brand)" opacity="0.25"/>
+    <g fill="#e0e0e0">
+      <circle cx="52" cy="52" r="2" opacity="0.7"/>
+      <circle cx="198" cy="40" r="2.4" opacity="0.8"/>
+      <circle cx="224" cy="86" r="1.6" opacity="0.55"/>
+      <circle cx="30" cy="96" r="1.6" opacity="0.5"/>
+      <circle cx="104" cy="30" r="1.6" opacity="0.6"/>
+    </g>
+  </g>
+</svg>
