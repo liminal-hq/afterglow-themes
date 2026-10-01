@@ -1,6 +1,6 @@
 <svg width="1200" height="320" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="hero-title hero-desc">
   <title id="hero-title">Afterglow</title>
-  <desc id="hero-desc">Liminal HQ colour themes for OpenCode and VS Code. A dark banner with a slowly breathing orange, rose and purple horizon glow, twinkling stars, a terminal snippet selecting the afterglow theme, and swatches for the see-through, dark and light variants.</desc>
+  <desc id="hero-desc">Liminal HQ colour themes for OpenCode, VS Code and Midnight Commander. A dark banner with a slowly breathing orange, rose and purple horizon glow, twinkling stars, a terminal snippet selecting the afterglow theme, and swatches for the see-through, dark and light variants.</desc>
 
   <defs>
     <!-- Background: the liminalhq.ca void fading into indigo -->
@@ -131,6 +131,8 @@
     <tspan fill="#9aa4b2">OpenCode</tspan>
     <tspan fill="#2e3540"> | </tspan>
     <tspan fill="#9aa4b2">VS Code</tspan>
+    <tspan fill="#2e3540"> | </tspan>
+    <tspan fill="#9aa4b2">Midnight Commander</tspan>
     <tspan fill="#2e3540"> | </tspan>
     <tspan fill="#9aa4b2">dark + light + see-through</tspan>
     <tspan fill="#2e3540">  &#x2022;  </tspan>
