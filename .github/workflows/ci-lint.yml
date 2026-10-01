@@ -24,7 +24,7 @@ jobs:
           persist-credentials: false
 
       - name: Run actionlint
-        uses: reviewdog/action-actionlint@v1.72.0
+        uses: reviewdog/action-actionlint@v1.77.0
         with:
           github_token: ${{ github.token }}
           # github-pr-check ties annotations to this check run and replaces them on every re-run,
