@@ -182,6 +182,32 @@ for (const file of readdirSync(dir).filter((f) => f.endsWith('.json'))) {
 			if (ratio < min)
 				fail(label, `${path} ${colour} on ${bg} is ${ratio.toFixed(2)}:1 (needs ${min}:1)`);
 		}
+
+		// Raised surfaces must be opaque: the prompt chip labels take their colour, and OpenCode does not
+		// appear to blend a translucent box with the terminal.
+		const raised = ['base', 'high', 'max'].map((k) => get(tree, `background.raised.${k}`));
+		for (const [k, value] of ['base', 'high', 'max'].map((k, i) => [k, raised[i]])) {
+			if (!/^\$|^#[\da-f]{6}$/i.test(value))
+				fail(label, `background.raised.${k} must be an opaque colour (${value})`);
+		}
+		const surfaces = raised.map((value) => resolve(value));
+		for (const path of ['text.base', 'text.muted']) {
+			surfaces.forEach((surface, i) => {
+				const ratio = contrast(resolve(get(tree, path)), surface);
+				// The higher surfaces only appear behind hover and selection, so muted text may dip to 3:1
+				const min = path === 'text.muted' && i > 0 ? 3 : 4.5;
+				if (ratio < min) fail(label, `${path} on raised surface ${i} is ${ratio.toFixed(2)}:1`);
+			});
+		}
+		const warning = resolve(get(tree, 'text.feedback.warning.base'));
+		const warnRatio = contrast(warning, surfaces[0]);
+		if (warnRatio < 4.5) fail(label, `warning text on raised.base is ${warnRatio.toFixed(2)}:1`);
+
+		// The paste and file chips draw the focused action text on the warning colour
+		const chipText = resolve(get(tree, 'text.action.primary.$focused'));
+		const chip = contrast(chipText, warning);
+		if (chip < 4.5) fail(label, `chip label ${chipText} on ${warning} is ${chip.toFixed(2)}:1`);
+
 		console.log(`✓ ${label}`);
 	}
 }

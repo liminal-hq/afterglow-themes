@@ -114,24 +114,33 @@ const tokens = ({ muted }) => {
 	};
 };
 
+// The prompt chips take their background from text.feedback.warning.base and their label from the
+// focused primary action text, so on the dark themes the gold is muted and the label is dark. The
+// focused action fill is lifted to suit dark text.
 const warningChip = {
-	// Warning.base also paints the paste and file chips in the prompt, so keep it a muted gold
-	text: { feedback: { warning: { base: '$hue.yellow.400' } } },
+	text: {
+		feedback: { warning: { base: '$hue.yellow.400' } },
+		action: { primary: { $focused: '$hue.neutral.900' } },
+	},
+	background: { action: { primary: { $focused: '$hue.interactive.200' } } },
 };
 
 const themes = {
-	// The signature theme: the liminalhq.ca void with brand orange and purple, and see-through surfaces
+	// The signature theme: the liminalhq.ca void with brand orange and purple, and a see-through page
 	afterglow: {
 		...variants.afterglow,
 		muted: 300,
 		categorical: ['accent', 'purple', 'cyan', 'green', 'red', 'blue', 'yellow'],
 		modeTokens: {
 			...warningChip,
+			// OpenCode does not appear to blend a translucent box with the terminal, so the boxes are a
+			// solid tone. Keep raised.base opaque, as chips are drawn with it.
 			background: {
+				...warningChip.background,
 				base: 'transparent',
-				raised: { base: '#12121a99', high: '#1f2230b3', max: '#333847cc' },
+				raised: { base: '#14161d', high: '#1b1e28', max: '#262a37' },
 			},
-			'@dialog': { background: { base: '#12121af2' } },
+			'@dialog': { background: { base: '#12121a' } },
 		},
 	},
 	'afterglow-dark': {
@@ -146,7 +155,10 @@ const themes = {
 		categorical: ['accent', 'orange', 'cyan', 'green', 'red', 'blue', 'yellow'],
 		modeTokens: {
 			// Warning text must stay deep enough to read on paper, so the chip pairs it with light text instead
-			text: { action: { primary: { $focused: '$hue.neutral.900' } } },
+			text: {
+				action: { primary: { $focused: '$hue.neutral.900' } },
+				feedback: { warning: { base: '$hue.yellow.100' } },
+			},
 			background: { action: { primary: { $focused: '$hue.interactive.300' } } },
 		},
 	},

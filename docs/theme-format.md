@@ -34,7 +34,7 @@ Individual UI components such as the transcript, prompt box, sidebar and status 
 
 ## Design decisions
 
-- **Transparency.** The `afterglow` theme sets `background.base` to `transparent` and gives the raised surfaces 60% to 80% alpha. Dialogs get a near-opaque surface through `@dialog` so they stay readable over any terminal background.
+- **Transparency.** The `afterglow` theme sets `background.base` to `transparent` and gives the raised surfaces a solid tone, because OpenCode does not appear to blend a translucent box with the terminal: a 60% fill looked like a darker solid. `raised.base` must stay opaque, since making it `transparent` removed the fill and made the prompt chip labels unreadable. Dialogs use a solid surface as well. Dialogs get a near-opaque surface through `@dialog` so they stay readable over any terminal background.
 - **The warning chip.** The prompt chips share `text.feedback.warning.base` with warning text, so the colour has to work as both a background and a foreground. On the dark themes it is a muted gold (`yellow.400`) that keeps 5.2:1 contrast as text. On the light theme, warning text must stay a deep gold to read on paper, so the focused primary action pairs light text with a mid-blue fill instead.
 - **Accents.** `afterglow` uses orange as its accent and purple as its interactive colour. `afterglow-dark` and `afterglow-light` swap to a purple accent with blue interactive colour.
 - **Contrast.** `scripts/validate-themes.mjs` requires 4.5:1 for body and muted text, action text, feedback text, and the main syntax and Markdown colours. The transparent theme is checked against the brand void.

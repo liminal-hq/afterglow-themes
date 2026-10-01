@@ -289,6 +289,18 @@
 				"warning": {
 					"base": "$hue.yellow.400"
 				}
+			},
+			"action": {
+				"primary": {
+					"$focused": "$hue.neutral.900"
+				}
+			}
+		},
+		"background": {
+			"action": {
+				"primary": {
+					"$focused": "$hue.interactive.200"
+				}
 			}
 		}
 	}
