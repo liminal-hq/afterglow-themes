@@ -1,0 +1,139 @@
+<svg width="1200" height="320" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="hero-title hero-desc">
+  <title id="hero-title">Afterglow</title>
+  <desc id="hero-desc">Liminal HQ colour themes for the OpenCode terminal UI. A dark banner with a slowly breathing orange, rose and purple horizon glow, twinkling stars, a terminal snippet selecting the afterglow theme, and swatches for the see-through, dark and light variants.</desc>
+
+  <defs>
+    <!-- Background: the liminalhq.ca void fading into indigo -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0%" stop-color="#050507"/>
+      <stop offset="100%" stop-color="#1a1828"/>
+    </linearGradient>
+
+    <!-- Brand gradient: orange to rose to purple -->
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffaa40"/>
+      <stop offset="50%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+
+    <!-- Horizon line fades out at both ends -->
+    <linearGradient id="horizon" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffaa40" stop-opacity="0"/>
+      <stop offset="25%" stop-color="#ffaa40" stop-opacity="0.8"/>
+      <stop offset="55%" stop-color="#f43f5e" stop-opacity="0.8"/>
+      <stop offset="80%" stop-color="#a78bfa" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Glow beneath the horizon fades downward -->
+    <linearGradient id="reflection" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#f43f5e" stop-opacity="0"/>
+    </linearGradient>
+
+    <filter id="blur-lg" filterUnits="userSpaceOnUse" x="-200" y="0" width="1600" height="400">
+      <feGaussianBlur stdDeviation="46"/>
+    </filter>
+
+    <filter id="text-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <clipPath id="frame">
+      <rect width="1200" height="320" rx="18"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="320" rx="18" fill="url(#bg)"/>
+
+  <g clip-path="url(#frame)">
+    <!-- The afterglow: three slow, breathing glows along the horizon -->
+    <g filter="url(#blur-lg)">
+      <ellipse cx="260" cy="262" rx="260" ry="46" fill="#ffaa40" opacity="0.42">
+        <animate attributeName="opacity" values="0.28;0.5;0.28" dur="9s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0 0;40 0;0 0" dur="16s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="620" cy="266" rx="280" ry="42" fill="#f43f5e" opacity="0.4">
+        <animate attributeName="opacity" values="0.5;0.26;0.5" dur="11s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0 0;-36 0;0 0" dur="18s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="980" cy="262" rx="260" ry="46" fill="#a78bfa" opacity="0.42">
+        <animate attributeName="opacity" values="0.26;0.48;0.26" dur="13s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" type="translate" values="0 0;-30 0;0 0" dur="20s" repeatCount="indefinite"/>
+      </ellipse>
+    </g>
+
+    <!-- Horizon line and its reflection -->
+    <rect x="0" y="254" width="1200" height="66" fill="url(#reflection)"/>
+    <rect x="0" y="253" width="1200" height="2" fill="url(#horizon)">
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="7s" repeatCount="indefinite"/>
+    </rect>
+
+    <!-- Stars -->
+    <g fill="#e0e0e0">
+      <circle cx="96" cy="34" r="1.2" opacity="0.5"><animate attributeName="opacity" values="0.15;0.8;0.15" dur="4s" repeatCount="indefinite"/></circle>
+      <circle cx="212" cy="58" r="1" opacity="0.4"><animate attributeName="opacity" values="0.7;0.1;0.7" dur="5.5s" repeatCount="indefinite"/></circle>
+      <circle cx="340" cy="26" r="1.4" opacity="0.6"><animate attributeName="opacity" values="0.2;0.9;0.2" dur="6s" repeatCount="indefinite"/></circle>
+      <circle cx="455" cy="70" r="1" opacity="0.4"><animate attributeName="opacity" values="0.6;0.1;0.6" dur="3.8s" repeatCount="indefinite"/></circle>
+      <circle cx="560" cy="30" r="1.2" opacity="0.5"><animate attributeName="opacity" values="0.1;0.8;0.1" dur="7s" repeatCount="indefinite"/></circle>
+      <circle cx="640" cy="62" r="1" opacity="0.3"><animate attributeName="opacity" values="0.5;0.1;0.5" dur="4.6s" repeatCount="indefinite"/></circle>
+      <circle cx="722" cy="22" r="1.3" opacity="0.5"><animate attributeName="opacity" values="0.2;0.85;0.2" dur="5s" repeatCount="indefinite"/></circle>
+      <circle cx="1160" cy="44" r="1.2" opacity="0.5"><animate attributeName="opacity" values="0.7;0.15;0.7" dur="6.4s" repeatCount="indefinite"/></circle>
+      <circle cx="1170" cy="150" r="1" opacity="0.4"><animate attributeName="opacity" values="0.1;0.7;0.1" dur="4.2s" repeatCount="indefinite"/></circle>
+      <circle cx="40" cy="120" r="1" opacity="0.4"><animate attributeName="opacity" values="0.6;0.1;0.6" dur="5.2s" repeatCount="indefinite"/></circle>
+    </g>
+  </g>
+
+  <!-- Title -->
+  <text x="80" y="118" font-size="64" font-family="'Space Grotesk', 'Inter', system-ui, sans-serif" font-weight="700" letter-spacing="-0.02em" fill="url(#brand)" filter="url(#text-glow)">Afterglow</text>
+
+  <!-- Subtitle and tagline -->
+  <text x="82" y="154" fill="#e0e0e0" font-size="20" font-family="'Inter', system-ui, sans-serif">Liminal HQ themes for OpenCode</text>
+  <text x="82" y="182" fill="#b4bfce" font-size="15" font-family="'Inter', system-ui, sans-serif">Calm, glowing colour for your terminal. Dark, light, or see-through.</text>
+
+  <!-- Terminal snippet: picking the theme -->
+  <g transform="translate(760, 34)">
+    <rect width="360" height="176" rx="12" fill="#0b0b12" fill-opacity="0.72" stroke="#333847" stroke-width="1"/>
+    <circle cx="20" cy="18" r="4.5" fill="#f43f5e" opacity="0.8"/>
+    <circle cx="38" cy="18" r="4.5" fill="#ffaa40" opacity="0.8"/>
+    <circle cx="56" cy="18" r="4.5" fill="#2ec66a" opacity="0.8"/>
+    <text x="180" y="22" fill="#5a6273" font-size="11" font-family="monospace" text-anchor="middle">~/.config/opencode/cli.json</text>
+    <line x1="0" y1="34" x2="360" y2="34" stroke="#333847" stroke-width="1"/>
+
+    <text x="20" y="58" font-size="14" font-family="monospace" xml:space="preserve"><tspan fill="#8d97a8">{</tspan></text>
+    <text x="20" y="78" font-size="14" font-family="monospace" xml:space="preserve"><tspan fill="#22d3ee">  "theme"</tspan><tspan fill="#8d97a8">: {</tspan></text>
+    <text x="20" y="98" font-size="14" font-family="monospace" xml:space="preserve"><tspan fill="#22d3ee">    "name"</tspan><tspan fill="#8d97a8">: </tspan><tspan fill="#2ec66a">"afterglow"</tspan><tspan fill="#8d97a8">,</tspan></text>
+    <text x="20" y="118" font-size="14" font-family="monospace" xml:space="preserve"><tspan fill="#22d3ee">    "mode"</tspan><tspan fill="#8d97a8">: </tspan><tspan fill="#2ec66a">"dark"</tspan></text>
+    <text x="20" y="138" font-size="14" font-family="monospace" xml:space="preserve"><tspan fill="#8d97a8">  }</tspan></text>
+    <text x="20" y="158" font-size="14" font-family="monospace" xml:space="preserve"><tspan fill="#8d97a8">}</tspan></text>
+    <rect x="31" y="146" width="8" height="15" fill="#a78bfa" opacity="0">
+      <animate attributeName="opacity" values="0.9;0.9;0;0" keyTimes="0;0.5;0.5;1" dur="1.2s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <!-- Variant swatches -->
+  <g font-size="13" font-family="monospace">
+    <rect x="80" y="214" width="16" height="16" rx="5" fill="#050507" stroke="url(#brand)" stroke-width="1.5"/>
+    <text x="106" y="227" fill="#b4bfce">afterglow</text>
+    <rect x="200" y="214" width="16" height="16" rx="5" fill="#0f0e1a" stroke="#5f5d78" stroke-width="1.5"/>
+    <text x="226" y="227" fill="#b4bfce">dark</text>
+    <rect x="290" y="214" width="16" height="16" rx="5" fill="#fbfaf6" stroke="#c9c5d0" stroke-width="1.5"/>
+    <text x="316" y="227" fill="#b4bfce">light</text>
+  </g>
+
+  <!-- Bottom info line -->
+  <text x="80" y="296" fill="#7c8796" font-size="13" font-family="monospace">
+    <tspan fill="#9aa4b2">transparent</tspan>
+    <tspan fill="#2e3540"> | </tspan>
+    <tspan fill="#9aa4b2">dark</tspan>
+    <tspan fill="#2e3540"> | </tspan>
+    <tspan fill="#9aa4b2">light</tspan>
+    <tspan fill="#2e3540">  &#x2022;  </tspan>
+    <tspan fill="#7c8796">Liminal HQ</tspan>
+  </text>
+</svg>
