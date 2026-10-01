@@ -18,11 +18,11 @@ Pick one with **Preferences: Color Theme** (`Ctrl+K Ctrl+T`).
 
 The syntax colouring keeps every TextMate scope rule and semantic token override from VS Code's built-in Dark+ and Light+ themes, so languages colour the way you expect. Each colour is then replaced with the Afterglow palette: purple keywords, rose control flow and tags, orange functions, green strings, yellow numbers, cyan types and blue constants. The editor, side bar, tabs, status bar, panels, terminal and every other surface are coloured deliberately rather than inherited from the defaults.
 
-Text, syntax and UI colours are checked in CI for at least 4.5:1 contrast against the surface they sit on.
+Text, syntax and the main UI colours are checked in CI for at least 4.5:1 contrast against the surface they sit on. Deliberately dim elements, such as disabled and ghost text, inactive tabs and ignored files, are held to 3:1.
 
-## Where the colours come from
+## The palette
 
-The palette was gathered by scanning the Liminal HQ repositories for the colours that recur: a calm near-black background, a warm orange-to-rose-to-purple family of accents, and cool cyan and blue for information.
+A calm near-black background, a warm orange-to-rose-to-purple family of accents, and cool cyan and blue for information: the colours that recur across the Liminal HQ projects.
 
 ## Feedback
 

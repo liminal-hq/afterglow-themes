@@ -22,6 +22,7 @@ A few decisions worth knowing about:
 - Dark+ and Light+ disagree about some scopes (tag names are blue in Dark+ and maroon in Light+). Afterglow pins these by scope in `scopeRoles` so every variant treats them the same way.
 - The status bar uses a dark tint of the theme's accent (`accent.800`) rather than a saturated block, so it matches the rest of the chrome.
 - VS Code themes cannot make the window transparent, so there is no see-through variant. `Afterglow` is the closest, with the void as a solid background.
+- Elements that are meant to recede (disabled, ghost and ignored text, inactive tabs) stay dim but never drop below 3:1. Anything meant to be read, such as inlay hints, peek descriptions and preformatted text, holds 4.5:1.
 - Light terminal colours are chosen for 4.5:1 contrast on paper, so ANSI "white" is a readable grey rather than a near-white.
 
 ## Validation
@@ -32,7 +33,7 @@ A few decisions worth knowing about:
 - Every colour key is a real VS Code colour key, checked against `scripts/vscode-colour-keys.json`, which was extracted from the [theme colour reference](https://code.visualstudio.com/api/references/theme-color). Refresh it from the `microsoft/vscode-docs` repository when VS Code adds keys.
 - Every value is a 6 or 8 digit hex colour.
 - The `tokenColors` rules have the same scopes, in the same order, as Dark+ and Light+.
-- Syntax colours, text, and about 60 foreground and background pairs (tabs, side bar, status bar, buttons, inputs, lists, menus, terminal colours and more) meet their contrast ratios.
+- Syntax colours, text and about 55 foreground and background pairs (tabs, side bar, status bar, buttons, inputs, lists, menus, terminal colours, and text over translucent selection and find highlights) meet 4.5:1. Translucent colours are composited over their surface before the ratio is measured. About 6 deliberately dim pairs (disabled, ghost and ignored text, and inactive tabs and title bar) are held to a 3:1 floor.
 - `vscode/package.json` lists every theme and has the same version as the root `package.json`.
 
 The validator checks structure and contrast, not appearance. To look at the syntax colours without opening VS Code, render samples through the theme files with [Shiki](https://shiki.style), which uses the same TextMate engine, and screenshot the result. Check the editor chrome in VS Code itself.

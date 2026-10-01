@@ -94,7 +94,7 @@
 
   <!-- Subtitle and tagline -->
   <text x="82" y="154" fill="#e0e0e0" font-size="20" font-family="'Inter', system-ui, sans-serif">Liminal HQ themes for OpenCode and VS Code</text>
-  <text x="82" y="182" fill="#b4bfce" font-size="15" font-family="'Inter', system-ui, sans-serif">Calm, glowing colour for your terminal. Dark, light, or see-through.</text>
+  <text x="82" y="182" fill="#b4bfce" font-size="15" font-family="'Inter', system-ui, sans-serif">Calm, glowing colour for your terminal and your editor. Dark, light, or see-through.</text>
 
   <!-- Terminal snippet: picking the theme -->
   <g transform="translate(760, 34)">

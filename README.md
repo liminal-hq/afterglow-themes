@@ -1,7 +1,7 @@
 # Afterglow
 
 <p align="center">
-  <img src="assets/hero.svg" alt="Afterglow — Liminal HQ themes for OpenCode" width="100%">
+  <img src="assets/hero.svg" alt="Afterglow — Liminal HQ themes for OpenCode and VS Code" width="100%">
 </p>
 
 <p align="center">
@@ -110,7 +110,7 @@ bun run bundle           # build the release assets (including the .vsix) into d
 - `scripts/palette.mjs` holds the brand colours, the deeper light-mode variants and the neutral ramps.
 - `scripts/build.mjs` turns them into OpenCode V2 themes. Each hue is a nine-step ramp with the brand colour on step `200`, matching how OpenCode's built-in themes are laid out.
 - `scripts/build-vscode.mjs` builds the VS Code themes from the same palette, using the Dark+ and Light+ scope rules in `vscode/upstream/` as the structural base.
-- `scripts/validate-themes.mjs` mirrors the V2 theme schema bundled in OpenCode (the published JSON schema for V2 themes is not available yet), resolves every reference, and checks the contrast of text, syntax and Markdown colours. `scripts/validate-vscode.mjs` does the same for the VS Code themes and also checks every colour key against VS Code's published list.
+- `scripts/validate-themes.mjs` mirrors the V2 theme schema bundled in OpenCode (the published JSON schema for V2 themes is not available yet), resolves every reference, and checks the contrast of text, syntax and Markdown colours. `scripts/validate-vscode.mjs` does the same for the VS Code themes (about 90 foreground and background pairs, with alpha composited first) and also checks every colour key against VS Code's published list.
 
 CI runs the format check, the licence-header check, the theme build and validation (including a check that the committed JSON matches what the palette generates), Markdown and workflow linting, and a zizmor security audit of the workflows.
 
