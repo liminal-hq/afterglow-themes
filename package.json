@@ -1,7 +1,7 @@
 {
 	"name": "afterglow-themes",
 	"version": "0.1.0",
-	"description": "Liminal HQ Afterglow: colour themes for the OpenCode terminal UI, VS Code and Midnight Commander",
+	"description": "Liminal HQ Afterglow: colour themes for the OpenCode terminal UI, VS Code, Midnight Commander, Claude Code and Codex, bat and delta",
 	"private": true,
 	"type": "module",
 	"license": "Apache-2.0 OR MIT",
@@ -14,9 +14,9 @@
 		"node": ">=22"
 	},
 	"scripts": {
-		"build": "node scripts/build.mjs && node scripts/build-vscode.mjs && node scripts/build-mc.mjs",
-		"validate:themes": "node scripts/validate-themes.mjs && node scripts/validate-vscode.mjs && node scripts/validate-mc.mjs",
-		"check:themes": "bun run build && git diff --exit-code -- themes vscode/themes mc/skins",
+		"build": "node scripts/build.mjs && node scripts/build-vscode.mjs && node scripts/build-mc.mjs && node scripts/build-claude.mjs && node scripts/build-tmtheme.mjs",
+		"validate:themes": "node scripts/validate-themes.mjs && node scripts/validate-vscode.mjs && node scripts/validate-mc.mjs && node scripts/validate-claude.mjs && node scripts/validate-tmtheme.mjs",
+		"check:themes": "bun run build && git diff --exit-code -- themes vscode/themes mc/skins claude/themes tmtheme",
 		"check:headers": "bash scripts/check-headers.sh",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
@@ -25,6 +25,8 @@
 		"bundle": "bun run build && node scripts/bundle.mjs",
 		"install:themes": "bun run build && node scripts/install.mjs",
 		"install:mc": "bun run build && node scripts/install-mc.mjs",
+		"install:claude": "bun run build && node scripts/install-claude.mjs",
+		"install:tmtheme": "bun run build && node scripts/install-tmtheme.mjs",
 		"test": "node --test scripts/*.test.mjs"
 	},
 	"devDependencies": {
