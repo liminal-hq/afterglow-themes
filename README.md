@@ -1,7 +1,7 @@
 # Afterglow
 
 <p align="center">
-  <img src="assets/hero.svg" alt="Afterglow — Liminal HQ themes for OpenCode and VS Code" width="100%">
+  <img src="assets/hero.svg" alt="Afterglow — Liminal HQ colour themes for the tools you live in" width="100%">
 </p>
 
 <p align="center">
