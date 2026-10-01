@@ -93,15 +93,15 @@
   <text x="80" y="118" font-size="64" font-family="'Space Grotesk', 'Inter', system-ui, sans-serif" font-weight="700" letter-spacing="-0.02em" fill="url(#brand)" filter="url(#text-glow)">Afterglow</text>
 
   <!-- Subtitle and tagline -->
-  <text x="82" y="154" fill="#e0e0e0" font-size="20" font-family="'Inter', system-ui, sans-serif">Liminal HQ themes for OpenCode and VS Code</text>
-  <text x="82" y="182" fill="#b4bfce" font-size="15" font-family="'Inter', system-ui, sans-serif">Calm, glowing colour for your terminal and your editor. Dark, light, or see-through.</text>
+  <text x="82" y="154" fill="#e0e0e0" font-size="20" font-family="'Inter', system-ui, sans-serif">Liminal HQ colour themes for the tools you live in</text>
+  <text x="82" y="182" fill="#b4bfce" font-size="15" font-family="'Inter', system-ui, sans-serif">Calm, glowing colour for terminal, editor and files. Dark, light, or see-through.</text>
 
   <!-- Terminal snippet: picking the theme -->
   <g transform="translate(760, 34)">
     <rect width="360" height="176" rx="12" fill="#0b0b12" fill-opacity="0.72" stroke="#333847" stroke-width="1"/>
     <!-- GNOME-style header bar: centred title, round window controls on the right -->
     <path d="M0 34 V12 A12 12 0 0 1 12 0 H348 A12 12 0 0 1 360 12 V34 Z" fill="#1d1d2b" fill-opacity="0.9"/>
-    <text x="180" y="21" fill="#e0e0e0" font-size="12" font-weight="700" font-family="'Cantarell', 'Inter', system-ui, sans-serif" text-anchor="middle">Terminal</text>
+    <text x="180" y="21" fill="#e0e0e0" font-size="11" font-weight="700" font-family="'Cantarell', 'Inter', system-ui, sans-serif" text-anchor="middle">~/.config/opencode/cli.json</text>
     <g fill="#ffffff" fill-opacity="0.1">
       <circle cx="290" cy="17" r="9"/>
       <circle cx="316" cy="17" r="9"/>
