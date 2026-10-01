@@ -118,14 +118,29 @@ const scopeRoles = [
 	[['keyword.operator.quantifier.regexp'], 'cssClass'],
 ];
 
-const roleForRule = (rule, literals) => {
-	const first = [].concat(rule.scope ?? [])[0];
-	const override = scopeRoles.find(([scopes]) => scopes.includes(first));
-	if (override) return override[1];
+// Scopes that scopeRoles pins. A rule is pinned by its first scope, and the whole rule takes that
+// role, so a pinned scope must lead its rule and a rule must never mix scopes pinned to different
+// roles. Either would otherwise recolour or skip scopes silently when the upstream files change.
+export const roleForRule = (rule, literals) => {
 	const foreground = rule.settings?.foreground;
 	if (foreground === undefined) return undefined;
+
+	const scopes = [].concat(rule.scope ?? []);
+	const pinned = scopes.map((scope) => scopeRoles.find(([names]) => names.includes(scope))?.[1]);
+	const roles = new Set(pinned.filter(Boolean));
+	if (roles.size > 1) {
+		throw new Error(`Rule mixes scopes pinned to different roles: ${scopes.join(', ')}`);
+	}
+	if (roles.size === 1) {
+		if (!pinned[0]) {
+			throw new Error(`A pinned scope is not the first scope of its rule: ${scopes.join(', ')}`);
+		}
+		return pinned[0];
+	}
+
 	const role = literals[foreground.toLowerCase()];
-	if (!role) throw new Error(`No Afterglow role for ${foreground} (scope: ${first ?? rule.name})`);
+	if (!role)
+		throw new Error(`No Afterglow role for ${foreground} (scope: ${scopes[0] ?? rule.name})`);
 	return role;
 };
 
@@ -146,6 +161,7 @@ const semanticTokens = (tokens, literals, roles) =>
 	);
 
 const alpha = (hex, value) => `${hex}${value}`;
+const CLEAR = '#00000000';
 
 // The workbench colours: every surface, border and state in the editor chrome. Step meanings match
 // the OpenCode themes: neutral 900 is the background, 800 to 600 are raised surfaces and borders,
@@ -201,7 +217,7 @@ const workbench = (variant) => {
 		'toolbar.activeBackground': N[600],
 		'textLink.foreground': H.blue[200],
 		'textLink.activeForeground': H.blue[100],
-		'textPreformat.foreground': H.green[200],
+		'textPreformat.foreground': H.green[100],
 		'textBlockQuote.background': N[800],
 		'textBlockQuote.border': alpha(A[200], '80'),
 		'textCodeBlock.background': N[800],
@@ -243,7 +259,7 @@ const workbench = (variant) => {
 		'keybindingLabel.bottomBorder': N[500],
 
 		// Scrollbars and minimap
-		'scrollbar.shadow': '#00000000',
+		'scrollbar.shadow': CLEAR,
 		'scrollbarSlider.background': alpha(N[500], '66'),
 		'scrollbarSlider.hoverBackground': alpha(N[400], '80'),
 		'scrollbarSlider.activeBackground': alpha(N[300], '99'),
@@ -274,7 +290,7 @@ const workbench = (variant) => {
 		'editor.findRangeHighlightBackground': alpha(N[500], '26'),
 		'editor.hoverHighlightBackground': alpha(I[200], '26'),
 		'editor.lineHighlightBackground': N[800],
-		'editor.lineHighlightBorder': '#00000000',
+		'editor.lineHighlightBorder': CLEAR,
 		'editor.rangeHighlightBackground': alpha(I[200], '1a'),
 		'editor.foldBackground': alpha(I[200], '1a'),
 		'editorBracketMatch.background': alpha(A[200], '33'),
@@ -294,7 +310,7 @@ const workbench = (variant) => {
 		'editorLink.activeForeground': H.blue[200],
 		'editorGhostText.foreground': N[500],
 		'editorInlayHint.background': alpha(N[700], '99'),
-		'editorInlayHint.foreground': N[400],
+		'editorInlayHint.foreground': N[300],
 		'editorUnnecessaryCode.opacity': '#00000080',
 		'editorError.foreground': H.red[200],
 		'editorWarning.foreground': H.yellow[200],
@@ -304,7 +320,7 @@ const workbench = (variant) => {
 		'editorGutter.addedBackground': H.green[200],
 		'editorGutter.modifiedBackground': H.blue[200],
 		'editorGutter.deletedBackground': H.red[200],
-		'editorOverviewRuler.border': '#00000000',
+		'editorOverviewRuler.border': CLEAR,
 		'editorOverviewRuler.errorForeground': H.red[200],
 		'editorOverviewRuler.warningForeground': H.yellow[200],
 		'editorOverviewRuler.infoForeground': H.cyan[200],
@@ -349,7 +365,7 @@ const workbench = (variant) => {
 		'peekViewResult.selectionForeground': N[100],
 		'peekViewTitle.background': N[700],
 		'peekViewTitleLabel.foreground': N[100],
-		'peekViewTitleDescription.foreground': N[400],
+		'peekViewTitleDescription.foreground': N[300],
 
 		// Editor groups and tabs
 		'editorGroup.border': N[700],
@@ -363,7 +379,7 @@ const workbench = (variant) => {
 		'tab.inactiveBackground': N[800],
 		'tab.inactiveForeground': N[400],
 		'tab.unfocusedActiveForeground': N[300],
-		'tab.unfocusedInactiveForeground': N[500],
+		'tab.unfocusedInactiveForeground': N[400],
 		'tab.border': N[700],
 		'tab.hoverBackground': N[700],
 		'tab.hoverForeground': N[100],
@@ -463,7 +479,7 @@ const workbench = (variant) => {
 		'list.dropBackground': alpha(I[200], '26'),
 		'list.errorForeground': H.red[200],
 		'list.warningForeground': H.yellow[200],
-		'list.invalidItemForeground': H.red[300],
+		'list.invalidItemForeground': H.red[200],
 		'tree.indentGuidesStroke': N[600],
 		'menu.background': N[800],
 		'menu.foreground': N[200],
@@ -498,8 +514,8 @@ const workbench = (variant) => {
 		'gitDecoration.modifiedResourceForeground': H.blue[200],
 		'gitDecoration.deletedResourceForeground': H.red[200],
 		'gitDecoration.renamedResourceForeground': H.cyan[200],
-		'gitDecoration.untrackedResourceForeground': H.green[300],
-		'gitDecoration.ignoredResourceForeground': N[500],
+		'gitDecoration.untrackedResourceForeground': H.green[100],
+		'gitDecoration.ignoredResourceForeground': N[400],
 		'gitDecoration.conflictingResourceForeground': H.orange[200],
 		'gitDecoration.stageModifiedResourceForeground': H.blue[100],
 		'gitDecoration.stageDeletedResourceForeground': H.red[100],
@@ -535,7 +551,7 @@ const workbench = (variant) => {
 		'charts.lines': N[500],
 	};
 
-	return { colors, roles: syntaxRoles(H, N) };
+	return colors;
 };
 
 export const buildVscodeTheme = (id) => {
@@ -547,7 +563,8 @@ export const buildVscodeTheme = (id) => {
 		: ['light_vs.json', 'light_plus.json'];
 	const [base, overlay] = [upstream(vs), upstream(plus)];
 	const literals = dark ? darkRoles : lightRoles;
-	const { colors, roles } = workbench(variant);
+	const colors = workbench(variant);
+	const roles = syntaxRoles(resolvedHues(variant), variant.neutral);
 
 	return {
 		$schema: 'vscode://schemas/color-theme',

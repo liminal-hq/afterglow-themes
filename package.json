@@ -21,9 +21,10 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"lint:md": "markdownlint-cli2 '**/*.md' '#node_modules'",
-		"validate": "bun run format:check && bun run check:headers && bun run lint:md && bun run build && bun run validate:themes",
+		"validate": "bun run format:check && bun run check:headers && bun run lint:md && bun run test && bun run build && bun run validate:themes",
 		"bundle": "bun run build && node scripts/bundle.mjs",
-		"install:themes": "bun run build && node scripts/install.mjs"
+		"install:themes": "bun run build && node scripts/install.mjs",
+		"test": "node --test scripts/*.test.mjs"
 	},
 	"devDependencies": {
 		"@vscode/vsce": "^4.0.0",

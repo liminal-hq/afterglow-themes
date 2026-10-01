@@ -5,7 +5,6 @@
 	"version": "0.1.0",
 	"publisher": "liminal-hq",
 	"license": "(Apache-2.0 OR MIT)",
-	"private": false,
 	"engines": {
 		"vscode": "^1.90.0"
 	},

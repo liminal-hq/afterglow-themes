@@ -32,3 +32,10 @@ export const contrast = (a, b) => {
 	const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
 	return (hi + 0.05) / (lo + 0.05);
 };
+
+// Composite a colour that may carry an alpha channel (`#rrggbbaa`) over an opaque base colour
+export const over = (top, base) => {
+	if (top.length !== 9) return top;
+	const alpha = parseInt(top.slice(7), 16) / 255;
+	return mix(base.slice(0, 7), top.slice(0, 7), alpha);
+};

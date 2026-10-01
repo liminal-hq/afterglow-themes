@@ -8,6 +8,7 @@ import { createHash } from 'node:crypto';
 import {
 	copyFileSync,
 	cpSync,
+	existsSync,
 	mkdirSync,
 	readFileSync,
 	readdirSync,
@@ -33,6 +34,9 @@ const bundle = `afterglow-themes-v${version}.zip`;
 execFileSync('zip', ['-q', '-j', join(out, bundle), ...themes.map((f) => join(out, f))]);
 
 // Stage the VS Code extension with only what ships, then package it as a .vsix
+if (!existsSync(join(root, 'vscode', 'themes'))) {
+	throw new Error('No VS Code themes found. Run `bun run build` first.');
+}
 const stage = join(root, 'dist', 'vscode-extension');
 rmSync(stage, { recursive: true, force: true });
 mkdirSync(join(stage, 'upstream'), { recursive: true });
@@ -44,8 +48,9 @@ for (const licence of ['LICENSE-APACHE', 'LICENSE-MIT']) {
 	copyFileSync(join(root, licence), join(stage, licence));
 }
 execFileSync(
-	join(root, 'node_modules', '.bin', 'vsce'),
+	process.execPath,
 	[
+		join(root, 'node_modules', '@vscode', 'vsce', 'vsce'),
 		'package',
 		'--no-dependencies',
 		'--skip-license',

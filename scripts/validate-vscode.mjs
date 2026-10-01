@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildVscodeTheme, vscodeVariants } from './build-vscode.mjs';
-import { contrast } from './colour.mjs';
+import { contrast, over } from './colour.mjs';
 import { variants } from './hues.mjs';
 import { parseJsonc } from './jsonc.mjs';
 
@@ -62,6 +62,32 @@ const pairs = [
 	['panelTitle.activeForeground', 'panel.background', 4.5],
 	['panelTitle.inactiveForeground', 'panel.background', 4.5],
 	['terminal.foreground', 'terminal.background', 4.5],
+	['statusBar.debuggingForeground', 'statusBar.debuggingBackground', 4.5],
+	['statusBar.noFolderForeground', 'statusBar.noFolderBackground', 4.5],
+	['statusBarItem.prominentForeground', 'statusBarItem.prominentBackground', 4.5],
+	['statusBarItem.errorForeground', 'statusBarItem.errorBackground', 4.5],
+	['statusBarItem.warningForeground', 'statusBarItem.warningBackground', 4.5],
+	['tab.hoverForeground', 'tab.hoverBackground', 4.5],
+	['list.hoverForeground', 'list.hoverBackground', 4.5],
+	['list.highlightForeground', 'list.activeSelectionBackground', 4.5],
+	['list.invalidItemForeground', 'editor.background', 4.5],
+	['textPreformat.foreground', 'textCodeBlock.background', 4.5],
+	['editorInlayHint.foreground', 'editorInlayHint.background', 4.5],
+	['peekViewTitleDescription.foreground', 'peekViewTitle.background', 4.5],
+	['gitDecoration.untrackedResourceForeground', 'sideBar.background', 4.5],
+	// Text drawn over translucent highlights is checked against the highlight over the editor
+	['editor.foreground', 'editor.selectionBackground', 4.5],
+	['editor.foreground', 'editor.findMatchBackground', 4.5],
+	['editor.foreground', 'editor.lineHighlightBackground', 4.5],
+	['editor.foreground', 'editor.wordHighlightStrongBackground', 4.5],
+	['terminal.foreground', 'terminal.selectionBackground', 4.5],
+	// Deliberately dim elements (disabled, ghost, ignored and inactive) are held to a 3:1 floor
+	['disabledForeground', 'editor.background', 3],
+	['editorGhostText.foreground', 'editor.background', 3],
+	['editorCodeLens.foreground', 'editor.background', 3],
+	['titleBar.inactiveForeground', 'titleBar.inactiveBackground', 3],
+	['tab.unfocusedInactiveForeground', 'tab.inactiveBackground', 3],
+	['gitDecoration.ignoredResourceForeground', 'sideBar.background', 3],
 	...[
 		'Red',
 		'Green',
@@ -81,7 +107,6 @@ const pairs = [
 	['terminal.ansiBrightBlack', 'terminal.background', 3],
 ];
 
-const opaque = (hex) => hex.slice(0, 7);
 const upstreamRules = (id) => {
 	const dark = variants[id].mode === 'dark';
 	return ['vs', 'plus'].flatMap(
@@ -124,7 +149,7 @@ for (const [id, meta] of Object.entries(vscodeVariants)) {
 		const fg = rule.settings.foreground;
 		if (fg === undefined || seen.has(fg)) continue;
 		seen.add(fg);
-		const ratio = contrast(opaque(fg), opaque(bg));
+		const ratio = contrast(fg, bg);
 		if (ratio < 4.5) fail(id, `syntax ${fg} on ${bg} is ${ratio.toFixed(2)}:1 (needs 4.5:1)`);
 	}
 
@@ -134,20 +159,22 @@ for (const [id, meta] of Object.entries(vscodeVariants)) {
 			fail(id, `missing ${fg === undefined ? foreground : background} for a contrast check`);
 			continue;
 		}
-		const ratio = contrast(opaque(fg), opaque(bgc));
-		if (ratio < min)
-			fail(
-				id,
-				`${foreground} ${fg} on ${background} ${bgc} is ${ratio.toFixed(2)}:1 (needs ${min}:1)`,
-			);
+		const surface = over(bgc, bg);
+		const ratio = contrast(over(fg, surface), surface);
+		if (ratio < min) {
+			fail(id, `${foreground} on ${background} is ${ratio.toFixed(2)}:1 (needs ${min}:1)`);
+		}
 	}
 
-	console.log(
-		`✓ ${meta.label} (${Object.keys(theme.colors).length} colours, ${seen.size} syntax colours)`,
-	);
+	if (failures === failuresBefore) {
+		console.log(
+			`✓ ${meta.label} (${Object.keys(theme.colors).length} colours, ${seen.size} syntax colours)`,
+		);
+	}
 }
 
 // The extension manifest must list every theme and agree with the root package version
+const manifestFailuresBefore = failures;
 const manifest = JSON.parse(read('vscode/package.json'));
 const rootVersion = JSON.parse(read('package.json')).version;
 if (manifest.version !== rootVersion) {
@@ -164,6 +191,7 @@ for (const file of [manifest.icon, 'README.md']) {
 	if (file && !existsSync(join(root, 'vscode', file)))
 		fail('manifest', `vscode/${file} is missing`);
 }
-if (!failed) console.log(`✓ vscode/package.json (v${manifest.version})`);
+if (failures === manifestFailuresBefore)
+	console.log(`✓ vscode/package.json (v${manifest.version})`);
 
 process.exit(failed ? 1 : 0);
