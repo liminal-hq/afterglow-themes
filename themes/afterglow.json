@@ -289,14 +289,24 @@
 				"warning": {
 					"base": "$hue.yellow.400"
 				}
+			},
+			"action": {
+				"primary": {
+					"$focused": "$hue.neutral.900"
+				}
 			}
 		},
 		"background": {
+			"action": {
+				"primary": {
+					"$focused": "$hue.interactive.200"
+				}
+			},
 			"base": "transparent",
 			"raised": {
-				"base": "#12121a99",
-				"high": "#1f2230b3",
-				"max": "#333847cc"
+				"base": "#181a22",
+				"high": "#1f2230",
+				"max": "#333847"
 			}
 		},
 		"@dialog": {

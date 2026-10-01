@@ -114,9 +114,15 @@ const tokens = ({ muted }) => {
 	};
 };
 
+// The prompt chips take their background from text.feedback.warning.base and their label from the
+// focused primary action text, so on the dark themes the gold is muted and the label is dark. The
+// focused action fill is lifted to suit dark text.
 const warningChip = {
-	// Warning.base also paints the paste and file chips in the prompt, so keep it a muted gold
-	text: { feedback: { warning: { base: '$hue.yellow.400' } } },
+	text: {
+		feedback: { warning: { base: '$hue.yellow.400' } },
+		action: { primary: { $focused: '$hue.neutral.900' } },
+	},
+	background: { action: { primary: { $focused: '$hue.interactive.200' } } },
 };
 
 const themes = {
@@ -127,9 +133,12 @@ const themes = {
 		categorical: ['accent', 'purple', 'cyan', 'green', 'red', 'blue', 'yellow'],
 		modeTokens: {
 			...warningChip,
+			// OpenCode flattens alpha over black rather than blending with the terminal, so the boxes are
+			// a solid tone. raised.base must never be transparent: chip labels take this colour.
 			background: {
+				...warningChip.background,
 				base: 'transparent',
-				raised: { base: '#12121a99', high: '#1f2230b3', max: '#333847cc' },
+				raised: { base: '#181a22', high: '#1f2230', max: '#333847' },
 			},
 			'@dialog': { background: { base: '#12121af2' } },
 		},
