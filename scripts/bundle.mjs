@@ -5,7 +5,15 @@
 
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { copyFileSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import {
+	copyFileSync,
+	cpSync,
+	mkdirSync,
+	readFileSync,
+	readdirSync,
+	rmSync,
+	writeFileSync,
+} from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -23,6 +31,29 @@ for (const file of themes) copyFileSync(join(root, 'themes', file), join(out, fi
 
 const bundle = `afterglow-themes-v${version}.zip`;
 execFileSync('zip', ['-q', '-j', join(out, bundle), ...themes.map((f) => join(out, f))]);
+
+// Stage the VS Code extension with only what ships, then package it as a .vsix
+const stage = join(root, 'dist', 'vscode-extension');
+rmSync(stage, { recursive: true, force: true });
+mkdirSync(join(stage, 'upstream'), { recursive: true });
+for (const entry of ['package.json', 'README.md', '.vscodeignore', 'images', 'themes']) {
+	cpSync(join(root, 'vscode', entry), join(stage, entry), { recursive: true });
+}
+copyFileSync(join(root, 'vscode', 'upstream', 'NOTICE.md'), join(stage, 'upstream', 'NOTICE.md'));
+for (const licence of ['LICENSE-APACHE', 'LICENSE-MIT']) {
+	copyFileSync(join(root, licence), join(stage, licence));
+}
+execFileSync(
+	join(root, 'node_modules', '.bin', 'vsce'),
+	[
+		'package',
+		'--no-dependencies',
+		'--skip-license',
+		'--out',
+		join(out, `afterglow-vscode-v${version}.vsix`),
+	],
+	{ cwd: stage, stdio: 'inherit' },
+);
 
 const sums = readdirSync(out)
 	.sort()

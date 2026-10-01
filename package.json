@@ -1,7 +1,7 @@
 {
 	"name": "afterglow-themes",
 	"version": "0.1.0",
-	"description": "Liminal HQ Afterglow: colour themes for the OpenCode terminal UI",
+	"description": "Liminal HQ Afterglow: colour themes for the OpenCode terminal UI and VS Code",
 	"private": true,
 	"type": "module",
 	"license": "Apache-2.0 OR MIT",
@@ -14,9 +14,9 @@
 		"node": ">=22"
 	},
 	"scripts": {
-		"build": "node scripts/build.mjs",
-		"validate:themes": "node scripts/validate-themes.mjs",
-		"check:themes": "bun run build && git diff --exit-code -- themes",
+		"build": "node scripts/build.mjs && node scripts/build-vscode.mjs",
+		"validate:themes": "node scripts/validate-themes.mjs && node scripts/validate-vscode.mjs",
+		"check:themes": "bun run build && git diff --exit-code -- themes vscode/themes",
 		"check:headers": "bash scripts/check-headers.sh",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
@@ -26,6 +26,7 @@
 		"install:themes": "bun run build && node scripts/install.mjs"
 	},
 	"devDependencies": {
+		"@vscode/vsce": "^4.0.0",
 		"markdownlint-cli2": "^0.23.3",
 		"prettier": "^3.9.9"
 	}

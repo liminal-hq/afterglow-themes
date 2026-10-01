@@ -2,3 +2,6 @@ node_modules
 dist
 bun.lock
 themes
+vscode/themes
+vscode/upstream
+vscode/images

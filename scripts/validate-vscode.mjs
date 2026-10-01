@@ -1,0 +1,169 @@
+// Validate the generated Afterglow VS Code themes: colour keys, scope coverage, contrast and manifest
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { buildVscodeTheme, vscodeVariants } from './build-vscode.mjs';
+import { contrast } from './colour.mjs';
+import { variants } from './hues.mjs';
+import { parseJsonc } from './jsonc.mjs';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const read = (path) => readFileSync(join(root, path), 'utf8');
+const validKeys = new Set(JSON.parse(read('scripts/vscode-colour-keys.json')));
+const HEX = /^#(?:[\da-f]{6}|[\da-f]{8})$/i;
+
+let failed = false;
+let failures = 0;
+const fail = (name, message) => {
+	failed = true;
+	failures++;
+	console.error(`✗ ${name}: ${message}`);
+};
+
+// Foreground and background pairs the UI draws together, with the contrast each needs
+const pairs = [
+	['foreground', 'editor.background', 4.5],
+	['editor.foreground', 'editor.background', 4.5],
+	['editorLineNumber.foreground', 'editor.background', 3],
+	['editorLineNumber.activeForeground', 'editor.background', 4.5],
+	['descriptionForeground', 'editor.background', 4.5],
+	['textLink.foreground', 'editor.background', 4.5],
+	['editorError.foreground', 'editor.background', 4.5],
+	['editorWarning.foreground', 'editor.background', 4.5],
+	['editorInfo.foreground', 'editor.background', 4.5],
+	['tab.activeForeground', 'tab.activeBackground', 4.5],
+	['tab.inactiveForeground', 'tab.inactiveBackground', 4.5],
+	['sideBar.foreground', 'sideBar.background', 4.5],
+	['sideBarSectionHeader.foreground', 'sideBarSectionHeader.background', 4.5],
+	['activityBar.foreground', 'activityBar.background', 4.5],
+	['activityBar.inactiveForeground', 'activityBar.background', 3],
+	['titleBar.activeForeground', 'titleBar.activeBackground', 4.5],
+	['statusBar.foreground', 'statusBar.background', 4.5],
+	['statusBarItem.remoteForeground', 'statusBarItem.remoteBackground', 4.5],
+	['badge.foreground', 'badge.background', 4.5],
+	['activityBarBadge.foreground', 'activityBarBadge.background', 4.5],
+	['button.foreground', 'button.background', 4.5],
+	['button.secondaryForeground', 'button.secondaryBackground', 4.5],
+	['input.foreground', 'input.background', 4.5],
+	['input.placeholderForeground', 'input.background', 4.5],
+	['dropdown.foreground', 'dropdown.background', 4.5],
+	['list.activeSelectionForeground', 'list.activeSelectionBackground', 4.5],
+	['list.inactiveSelectionForeground', 'list.inactiveSelectionBackground', 4.5],
+	['menu.foreground', 'menu.background', 4.5],
+	['menu.selectionForeground', 'menu.selectionBackground', 4.5],
+	['quickInput.foreground', 'quickInput.background', 4.5],
+	['editorSuggestWidget.foreground', 'editorSuggestWidget.background', 4.5],
+	['editorHoverWidget.statusBarBackground', 'editorHoverWidget.background', 1],
+	['notifications.foreground', 'notifications.background', 4.5],
+	['panelTitle.activeForeground', 'panel.background', 4.5],
+	['panelTitle.inactiveForeground', 'panel.background', 4.5],
+	['terminal.foreground', 'terminal.background', 4.5],
+	...[
+		'Red',
+		'Green',
+		'Yellow',
+		'Blue',
+		'Magenta',
+		'Cyan',
+		'White',
+		'BrightRed',
+		'BrightGreen',
+		'BrightYellow',
+		'BrightBlue',
+		'BrightMagenta',
+		'BrightCyan',
+		'BrightWhite',
+	].map((name) => [`terminal.ansi${name}`, 'terminal.background', 4.5]),
+	['terminal.ansiBrightBlack', 'terminal.background', 3],
+];
+
+const opaque = (hex) => hex.slice(0, 7);
+const upstreamRules = (id) => {
+	const dark = variants[id].mode === 'dark';
+	return ['vs', 'plus'].flatMap(
+		(part) =>
+			parseJsonc(read(`vscode/upstream/${dark ? 'dark' : 'light'}_${part}.json`)).tokenColors,
+	);
+};
+
+for (const [id, meta] of Object.entries(vscodeVariants)) {
+	const failuresBefore = failures;
+	const theme = JSON.parse(read(`vscode/themes/${meta.file}`));
+	const expected = buildVscodeTheme(id);
+
+	if (JSON.stringify(theme) !== JSON.stringify(expected)) {
+		fail(id, `vscode/themes/${meta.file} is out of date. Run \`bun run build\`.`);
+	}
+
+	for (const [key, value] of Object.entries(theme.colors)) {
+		if (!validKeys.has(key)) fail(id, `colors.${key} is not a VS Code colour key`);
+		if (!HEX.test(value)) fail(id, `colors.${key} is not a 6 or 8 digit hex colour (${value})`);
+	}
+
+	const upstream = upstreamRules(id);
+	if (theme.tokenColors.length !== upstream.length) {
+		fail(id, `tokenColors has ${theme.tokenColors.length} rules, expected ${upstream.length}`);
+	}
+	theme.tokenColors.forEach((rule, i) => {
+		const scopes = JSON.stringify(rule.scope ?? null);
+		if (scopes !== JSON.stringify(upstream[i]?.scope ?? null)) {
+			fail(id, `tokenColors[${i}] scopes differ from Dark+/Light+`);
+		}
+		const fg = rule.settings.foreground;
+		if (fg !== undefined && !HEX.test(fg))
+			fail(id, `tokenColors[${i}] foreground ${fg} is not hex`);
+	});
+
+	const bg = theme.colors['editor.background'];
+	const seen = new Set();
+	for (const rule of theme.tokenColors) {
+		const fg = rule.settings.foreground;
+		if (fg === undefined || seen.has(fg)) continue;
+		seen.add(fg);
+		const ratio = contrast(opaque(fg), opaque(bg));
+		if (ratio < 4.5) fail(id, `syntax ${fg} on ${bg} is ${ratio.toFixed(2)}:1 (needs 4.5:1)`);
+	}
+
+	for (const [foreground, background, min] of pairs) {
+		const [fg, bgc] = [theme.colors[foreground], theme.colors[background]];
+		if (fg === undefined || bgc === undefined) {
+			fail(id, `missing ${fg === undefined ? foreground : background} for a contrast check`);
+			continue;
+		}
+		const ratio = contrast(opaque(fg), opaque(bgc));
+		if (ratio < min)
+			fail(
+				id,
+				`${foreground} ${fg} on ${background} ${bgc} is ${ratio.toFixed(2)}:1 (needs ${min}:1)`,
+			);
+	}
+
+	console.log(
+		`✓ ${meta.label} (${Object.keys(theme.colors).length} colours, ${seen.size} syntax colours)`,
+	);
+}
+
+// The extension manifest must list every theme and agree with the root package version
+const manifest = JSON.parse(read('vscode/package.json'));
+const rootVersion = JSON.parse(read('package.json')).version;
+if (manifest.version !== rootVersion) {
+	fail('manifest', `version ${manifest.version} does not match package.json ${rootVersion}`);
+}
+for (const [id, meta] of Object.entries(vscodeVariants)) {
+	const entry = manifest.contributes?.themes?.find((t) => t.path === `./themes/${meta.file}`);
+	if (!entry) fail('manifest', `contributes.themes is missing ${id}`);
+	else if (entry.label !== meta.label || entry.uiTheme !== meta.uiTheme) {
+		fail('manifest', `contributes.themes entry for ${id} has the wrong label or uiTheme`);
+	}
+}
+for (const file of [manifest.icon, 'README.md']) {
+	if (file && !existsSync(join(root, 'vscode', file)))
+		fail('manifest', `vscode/${file} is missing`);
+}
+if (!failed) console.log(`✓ vscode/package.json (v${manifest.version})`);
+
+process.exit(failed ? 1 : 0);
