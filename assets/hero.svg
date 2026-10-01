@@ -1,6 +1,6 @@
 <svg width="1200" height="320" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="hero-title hero-desc">
   <title id="hero-title">Afterglow</title>
-  <desc id="hero-desc">Liminal HQ colour themes for the OpenCode terminal UI. A dark banner with a slowly breathing orange, rose and purple horizon glow, twinkling stars, a terminal snippet selecting the afterglow theme, and swatches for the see-through, dark and light variants.</desc>
+  <desc id="hero-desc">Liminal HQ colour themes for OpenCode and VS Code. A dark banner with a slowly breathing orange, rose and purple horizon glow, twinkling stars, a terminal snippet selecting the afterglow theme, and swatches for the see-through, dark and light variants.</desc>
 
   <defs>
     <!-- Background: the liminalhq.ca void fading into indigo -->
@@ -93,7 +93,7 @@
   <text x="80" y="118" font-size="64" font-family="'Space Grotesk', 'Inter', system-ui, sans-serif" font-weight="700" letter-spacing="-0.02em" fill="url(#brand)" filter="url(#text-glow)">Afterglow</text>
 
   <!-- Subtitle and tagline -->
-  <text x="82" y="154" fill="#e0e0e0" font-size="20" font-family="'Inter', system-ui, sans-serif">Liminal HQ themes for OpenCode</text>
+  <text x="82" y="154" fill="#e0e0e0" font-size="20" font-family="'Inter', system-ui, sans-serif">Liminal HQ themes for OpenCode and VS Code</text>
   <text x="82" y="182" fill="#b4bfce" font-size="15" font-family="'Inter', system-ui, sans-serif">Calm, glowing colour for your terminal. Dark, light, or see-through.</text>
 
   <!-- Terminal snippet: picking the theme -->
@@ -128,11 +128,11 @@
 
   <!-- Bottom info line -->
   <text x="80" y="296" fill="#7c8796" font-size="13" font-family="monospace">
-    <tspan fill="#9aa4b2">transparent</tspan>
+    <tspan fill="#9aa4b2">OpenCode</tspan>
     <tspan fill="#2e3540"> | </tspan>
-    <tspan fill="#9aa4b2">dark</tspan>
+    <tspan fill="#9aa4b2">VS Code</tspan>
     <tspan fill="#2e3540"> | </tspan>
-    <tspan fill="#9aa4b2">light</tspan>
+    <tspan fill="#9aa4b2">dark + light + see-through</tspan>
     <tspan fill="#2e3540">  &#x2022;  </tspan>
     <tspan fill="#7c8796">Liminal HQ</tspan>
   </text>
