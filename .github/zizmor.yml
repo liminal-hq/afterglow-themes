@@ -1,0 +1,8 @@
+rules:
+  # We pin actions to full patch-version tags (e.g. `@v6.0.3`) rather than
+  # commit SHAs: it fixes the exact version (no silent drift) and stays
+  # readable in diffs/PRs, at the cost of trusting the upstream tag not to
+  # be retargeted after the fact - a deliberate tradeoff against zizmor's
+  # stricter hash-only policy, not an oversight.
+  unpinned-uses:
+    disable: true

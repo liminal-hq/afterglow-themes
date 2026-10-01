@@ -1,0 +1,119 @@
+# Quality gate for every PR and push to main: formatting, licence headers, and the generated themes.
+#
+# (c) Copyright 2026 Liminal HQ, Scott Morris
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  format:
+    name: Format
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+
+      - name: Check formatting
+        id: format
+        run: bun run format:check
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "## Format"
+            echo "- Result: \`${{ steps.format.outcome }}\`"
+            echo "- Command: \`bun run format:check\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+  licence-headers:
+    name: Licence headers
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Check licence headers
+        id: headers
+        run: bash scripts/check-headers.sh
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "## Licence headers"
+            echo "- Result: \`${{ steps.headers.outcome }}\`"
+            echo "- Command: \`bash scripts/check-headers.sh\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+  themes:
+    name: Themes
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+
+      # Regenerates the themes from the palette and fails if the committed files differ.
+      - name: Check generated themes are up to date
+        id: drift
+        run: bun run check:themes
+
+      - name: Validate themes (schema and contrast)
+        id: validate
+        run: bun run validate:themes
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "## Themes"
+            echo "- Generated files in sync: \`${{ steps.drift.outcome }}\` (\`bun run check:themes\`)"
+            echo "- Schema and contrast: \`${{ steps.validate.outcome }}\` (\`bun run validate:themes\`)"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+  bundle:
+    name: Release bundle
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+
+      - name: Build release assets
+        id: bundle
+        run: bun run bundle
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "## Release bundle"
+            echo "- Result: \`${{ steps.bundle.outcome }}\`"
+            echo "- Command: \`bun run bundle\`"
+          } >> "${GITHUB_STEP_SUMMARY}"

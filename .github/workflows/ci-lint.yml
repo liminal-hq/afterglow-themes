@@ -1,0 +1,50 @@
+# Lints workflow YAML and Markdown docs on every PR.
+#
+# (c) Copyright 2026 Liminal HQ, Scott Morris
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+name: CI Quality Checks
+
+on:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  actionlint:
+    name: Lint workflow YAML (actionlint + shellcheck)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Run actionlint
+        uses: reviewdog/action-actionlint@v1.72.0
+        with:
+          github_token: ${{ github.token }}
+          # github-pr-check ties annotations to this check run and replaces them on every re-run,
+          # where github-pr-review would pile up separate review comments across pushes.
+          reporter: github-pr-check
+          fail_level: error
+
+  markdownlint:
+    name: Lint Markdown docs (markdownlint-cli2)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Run markdownlint-cli2
+        uses: DavidAnson/markdownlint-cli2-action@v24.0.0
+        with:
+          globs: '**/*.md'
+          config: .markdownlint.jsonc
