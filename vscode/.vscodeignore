@@ -1,0 +1,4 @@
+# bundle.mjs stages only the files that ship; this is a second guard so the vendored upstream
+# theme copies and the SVG icon source never end up in the package
+upstream/*.json
+images/icon.svg

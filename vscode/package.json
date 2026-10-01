@@ -1,0 +1,56 @@
+{
+	"name": "afterglow",
+	"displayName": "Afterglow by Liminal HQ",
+	"description": "Calm, glowing colour themes from Liminal HQ: a deep void, a solid indigo dark, and a warm paper light. Built on Dark+ and Light+ scope coverage.",
+	"version": "0.1.0",
+	"publisher": "liminal-hq",
+	"license": "(Apache-2.0 OR MIT)",
+	"engines": {
+		"vscode": "^1.90.0"
+	},
+	"categories": [
+		"Themes"
+	],
+	"keywords": [
+		"theme",
+		"color-theme",
+		"dark",
+		"light",
+		"afterglow",
+		"liminal hq",
+		"dark+",
+		"light+"
+	],
+	"icon": "images/icon.png",
+	"galleryBanner": {
+		"color": "#050507",
+		"theme": "dark"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/liminal-hq/afterglow-themes.git"
+	},
+	"bugs": {
+		"url": "https://github.com/liminal-hq/afterglow-themes/issues"
+	},
+	"homepage": "https://github.com/liminal-hq/afterglow-themes#readme",
+	"contributes": {
+		"themes": [
+			{
+				"label": "Afterglow",
+				"uiTheme": "vs-dark",
+				"path": "./themes/afterglow-color-theme.json"
+			},
+			{
+				"label": "Afterglow Dark",
+				"uiTheme": "vs-dark",
+				"path": "./themes/afterglow-dark-color-theme.json"
+			},
+			{
+				"label": "Afterglow Light",
+				"uiTheme": "vs",
+				"path": "./themes/afterglow-light-color-theme.json"
+			}
+		]
+	}
+}

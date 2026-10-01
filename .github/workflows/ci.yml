@@ -77,6 +77,10 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
 
+      - name: Run unit tests
+        id: tests
+        run: bun run test
+
       # Regenerates the themes from the palette and fails if the committed files differ.
       - name: Check generated themes are up to date
         id: drift
@@ -91,6 +95,7 @@ jobs:
         run: |
           {
             echo "## Themes"
+            echo "- Unit tests: \`${{ steps.tests.outcome }}\` (\`bun run test\`)"
             echo "- Generated files in sync: \`${{ steps.drift.outcome }}\` (\`bun run check:themes\`)"
             echo "- Schema and contrast: \`${{ steps.validate.outcome }}\` (\`bun run validate:themes\`)"
           } >> "${GITHUB_STEP_SUMMARY}"
