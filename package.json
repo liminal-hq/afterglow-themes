@@ -1,0 +1,32 @@
+{
+	"name": "afterglow-themes",
+	"version": "0.1.0",
+	"description": "Liminal HQ Afterglow: colour themes for the OpenCode terminal UI",
+	"private": true,
+	"type": "module",
+	"license": "Apache-2.0 OR MIT",
+	"author": "Liminal HQ, Scott Morris",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/liminal-hq/afterglow-themes.git"
+	},
+	"engines": {
+		"node": ">=22"
+	},
+	"scripts": {
+		"build": "node scripts/build.mjs",
+		"validate:themes": "node scripts/validate-themes.mjs",
+		"check:themes": "bun run build && git diff --exit-code -- themes",
+		"check:headers": "bash scripts/check-headers.sh",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"lint:md": "markdownlint-cli2 '**/*.md' '#node_modules'",
+		"validate": "bun run format:check && bun run check:headers && bun run lint:md && bun run build && bun run validate:themes",
+		"bundle": "bun run build && node scripts/bundle.mjs",
+		"install:themes": "bun run build && node scripts/install.mjs"
+	},
+	"devDependencies": {
+		"markdownlint-cli2": "^0.23.3",
+		"prettier": "^3.9.9"
+	}
+}
