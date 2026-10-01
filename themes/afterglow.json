@@ -304,14 +304,14 @@
 			},
 			"base": "transparent",
 			"raised": {
-				"base": "#181a22",
-				"high": "#1f2230",
-				"max": "#333847"
+				"base": "#14161d",
+				"high": "#1b1e28",
+				"max": "#262a37"
 			}
 		},
 		"@dialog": {
 			"background": {
-				"base": "#12121af2"
+				"base": "#12121a"
 			}
 		}
 	}

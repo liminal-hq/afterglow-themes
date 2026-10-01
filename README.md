@@ -82,7 +82,7 @@ This builds the themes and copies them into `~/.config/opencode/themes/` (or `$X
 
 ## Transparency
 
-The `afterglow` theme sets the main background to `transparent` and keeps raised surfaces such as the prompt and tool blocks a solid dark tone (OpenCode cannot blend a box with your terminal background), so the effect depends on your terminal supporting background opacity (Kitty, Alacritty, WezTerm, Ghostty and Windows Terminal all do). If you would rather have a solid background, use `afterglow-dark`.
+The `afterglow` theme sets the main background to `transparent` and keeps raised surfaces such as the prompt and tool blocks a solid dark tone (OpenCode does not appear to blend a box with your terminal background), so the effect depends on your terminal supporting background opacity (Kitty, Alacritty, WezTerm, Ghostty and Windows Terminal all do). If you would rather have a solid background, use `afterglow-dark`.
 
 ## Where the colours come from
 
