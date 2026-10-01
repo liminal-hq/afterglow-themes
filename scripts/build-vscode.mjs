@@ -28,7 +28,7 @@ export const vscodeVariants = {
 
 // Syntax roles. Each role is the same hue in every variant, so code reads the same across themes,
 // and matches the syntax colours in the OpenCode themes.
-const syntaxRoles = (H, N) => ({
+export const syntaxRoles = (H, N) => ({
 	text: N[200],
 	comment: N[400],
 	punctuation: N[400],

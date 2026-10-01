@@ -19,7 +19,7 @@
 
 ## Project Status
 
-Afterglow is the Liminal HQ colour theme family for the OpenCode terminal UI. It ships three themes (`afterglow`, `afterglow-dark` and `afterglow-light`) for OpenCode, in the V2 theme format, the same three as a VS Code extension, and the same three as Midnight Commander skins, all generated from one palette. The repository is in **early development**.
+Afterglow is the Liminal HQ colour theme family for the OpenCode terminal UI. It ships three themes (`afterglow`, `afterglow-dark` and `afterglow-light`) for OpenCode, in the V2 theme format, the same three as a VS Code extension, as Midnight Commander skins, as Claude Code custom themes and as TextMate `.tmTheme` files for the Codex CLI, bat and delta, all generated from one palette. The repository is in **early development**.
 
 ## Localization and Spelling
 
@@ -85,7 +85,7 @@ Under `## Summary`, use flat bullets with **bold** lead-ins. Under `## Test plan
 
 - Add at least one primary category label: `enhancement`, `bug`, `documentation`, `testing`, `ci`, `build` or `chore`.
 - Add shared operational labels where they help: `infrastructure`, `internal`, `release`, `blocked` or `skip-changelog`.
-- Add scope labels where helpful: `afterglow`, `dark` or `light` for a specific theme, `vscode` for the VS Code extension, `midnight-commander` for the mc skins, `palette`, `accessibility`, `transparency`, `opencode`, `tooling`, `developer-experience` or `security`.
+- Add scope labels where helpful: `afterglow`, `dark` or `light` for a specific theme, `vscode` for the VS Code extension, `midnight-commander` for the mc skins, `claude-code` for the Claude Code themes, `codex` for the TextMate themes used by Codex, bat and delta, `palette`, `accessibility`, `transparency`, `opencode`, `tooling`, `developer-experience` or `security`.
 - Prefer the broader Liminal HQ label style over Conventional Commit terms. Use `enhancement` and `bug`, not `feat` or `fix`.
 - Use `skip-changelog` only when a change should be excluded from generated release notes (the categories are defined in `.github/release.yml`).
 
@@ -100,9 +100,9 @@ Under `## Summary`, use flat bullets with **bold** lead-ins. Under `## Test plan
 ## Local Tooling
 
 - **JS runtime and package manager:** **Bun** (not pnpm or npm), with the Node version pinned in `.node-version`. Installs use `--frozen-lockfile` in CI.
-- **Formatting:** Prettier (`.prettierrc`: tabs, single quotes, 100 columns). `.editorconfig` is authoritative (tabs, LF, UTF-8). The generated `themes/` and `mc/skins/` directories are excluded from Prettier.
+- **Formatting:** Prettier (`.prettierrc`: tabs, single quotes, 100 columns). `.editorconfig` is authoritative (tabs, LF, UTF-8). The generated `themes/`, `mc/skins/`, `claude/themes/` and `tmtheme/` directories are excluded from Prettier.
 - **Validation gate:** `bun run validate` is the single local gate that mirrors CI and must pass before opening or updating a PR. It runs the format check, the licence-header check, Markdown lint, the theme build and the theme validator.
-- **Release assets:** `bun run bundle` builds `dist/release` with the OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip (`afterglow-mc-skins-vX.Y.Z.zip`) and `SHA256SUMS`. `zip` must be installed.
+- **Release assets:** `bun run bundle` builds `dist/release` with the OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip (`afterglow-mc-skins-vX.Y.Z.zip`), the Claude Code themes zip (`afterglow-claude-code-themes-vX.Y.Z.zip`), the TextMate themes zip (`afterglow-tmthemes-vX.Y.Z.zip`) and `SHA256SUMS`. `zip` must be installed.
 
 ## Themes
 
@@ -113,6 +113,8 @@ Under `## Summary`, use flat bullets with **bold** lead-ins. Under `## Test plan
 - **Target the V2 theme format only.** Do not add V1-format themes (`defs` and `theme` keys).
 - **VS Code themes keep Dark+ and Light+ scope coverage.** `vscode/upstream/` holds unmodified copies of the upstream themes (with their MIT notice) and the generator recolours them by role. Do not edit those files. If a new literal has no role, map it in `scripts/build-vscode.mjs` rather than letting it through. `scripts/validate-vscode.mjs` checks every colour key against `scripts/vscode-colour-keys.json`, so refresh that list when VS Code adds keys. See `docs/vscode-theme.md`.
 - **Midnight Commander skins are generated too.** `mc/skins/*.ini` come from `scripts/build-mc.mjs`, each variant as a truecolour skin and a `-256` fallback. `scripts/validate-mc.mjs` checks every section and key against `scripts/mc-skin-keys.json` (extracted from the skins shipped with mc), the colour syntax and contrast. Only `afterglow` may use the terminal `default` background. Refresh the key list when mc adds keys, and check changes in a real mc inside `tmux` with a scratch `XDG_DATA_HOME`, never your own mc config. See `docs/mc-skin.md`.
+- **Claude Code themes are generated too.** `claude/themes/*.json` come from `scripts/build-claude.mjs` and set every token in `scripts/claude-theme-tokens.json`, which was extracted from the Claude Code binary. `scripts/validate-claude.mjs` checks the file schema (`name`, `base`, `overrides`), that no token is missing or unknown, the colour syntax and the contrast against the variant's neutral 900 surface (3:1 only for deliberately dim elements). Claude Code has no page background to make transparent, and the format is not versioned, so refresh the token list when it changes and check the themes load with a scratch `CLAUDE_CONFIG_DIR`, never your own `~/.claude`. See `docs/claude-code-theme.md`.
+- **The TextMate themes derive from the VS Code themes.** `tmtheme/*.tmTheme` come from `scripts/build-tmtheme.mjs`, which converts the recoloured VS Code `tokenColors`, so change a syntax colour in `scripts/build-vscode.mjs` and never in the plist. Keep them standard TextMate (no Codex-only keys), and check changes with a scratch `CODEX_HOME` or bat config directory. `scripts/validate-tmtheme.mjs` parses the plist and checks the scopes and contrast. See `docs/tmtheme.md`.
 - **Keep the version in two places in sync.** `package.json` and `vscode/package.json` must share a version. The validator fails otherwise.
 
 ## CI and Release
@@ -122,18 +124,20 @@ CI and release follow the Liminal HQ house pipeline.
 - **Workflows** live in `.github/workflows/`: `ci.yml` (format, licence headers and theme checks on every PR and push to `main`), `ci-lint.yml` (actionlint and markdownlint on PRs), `security-audit.yml` (zizmor, non-blocking) and `release.yml` (tag-driven releases).
 - **Generated-file drift is a CI failure.** CI rebuilds the themes and diffs them against the committed copy.
 - **Licence headers** are enforced by `scripts/check-headers.sh`.
-- **Releases** are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. To release: bump `version` on a `chore/release-v<version>` branch, merge to `main`, then push the matching tag (or run the Release workflow with `workflow_dispatch`, optionally as a draft). The workflow validates, bundles and attaches the OpenCode themes, a zip, the VS Code `.vsix`, the Midnight Commander skins zip and `SHA256SUMS` to a GitHub release with generated notes. Publishing to the VS Code Marketplace or Open VSX is a separate manual step.
+- **Releases** are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. To release: bump `version` on a `chore/release-v<version>` branch, merge to `main`, then push the matching tag (or run the Release workflow with `workflow_dispatch`, optionally as a draft). The workflow validates, bundles and attaches the OpenCode themes, a zip, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the TextMate themes zip and `SHA256SUMS` to a GitHub release with generated notes. Publishing to the VS Code Marketplace or Open VSX is a separate manual step.
 - **Dependabot** labels npm updates `build` and Actions updates `ci`.
 - Never push tags, trigger releases or dispatch workflows unless explicitly asked.
 
 ## Repository Layout
 
-- `scripts/`: the palette (`palette.mjs`), colour helpers (`colour.mjs`), the theme generator (`build.mjs`), the shared hue ramps (`hues.mjs`), the VS Code generator and validator (`build-vscode.mjs`, `validate-vscode.mjs`), the Midnight Commander generator, validator, key list and installer (`build-mc.mjs`, `validate-mc.mjs`, `mc-skin-keys.json`, `install-mc.mjs`), the OpenCode validator (`validate-themes.mjs`), a JSONC parser (`jsonc.mjs`), the release bundler (`bundle.mjs`), the local installer (`install.mjs`) and the licence-header check (`check-headers.sh`)
+- `scripts/`: the palette (`palette.mjs`), colour helpers (`colour.mjs`), the theme generator (`build.mjs`), the shared hue ramps (`hues.mjs`), the VS Code generator and validator (`build-vscode.mjs`, `validate-vscode.mjs`), the Midnight Commander generator, validator, key list and installer (`build-mc.mjs`, `validate-mc.mjs`, `mc-skin-keys.json`, `install-mc.mjs`), the Claude Code generator, validator, token list and installer (`build-claude.mjs`, `validate-claude.mjs`, `claude-theme-tokens.json`, `install-claude.mjs`), the TextMate generator, validator and installer (`build-tmtheme.mjs`, `validate-tmtheme.mjs`, `install-tmtheme.mjs`), the OpenCode validator (`validate-themes.mjs`), a JSONC parser (`jsonc.mjs`), the release bundler (`bundle.mjs`), the local installer (`install.mjs`) and the licence-header check (`check-headers.sh`)
 - `themes/`: the generated OpenCode theme files, committed so releases and manual installs work without a build
 - `vscode/`: the VS Code extension: its manifest, README, `images/`, the generated `themes/`, and `upstream/` (the unmodified Dark+ and Light+ files with their `NOTICE.md`)
 - `mc/`: the generated Midnight Commander skins in `skins/`, committed so releases and manual installs work without a build
+- `claude/`: the generated Claude Code themes in `themes/`, committed so releases and manual installs work without a build
+- `tmtheme/`: the generated TextMate themes, committed so releases and manual installs work without a build
 - `assets/`: authored visual assets (`hero.svg`)
-- `docs/`: `theme-format.md` (the OpenCode V2 format, token conventions and design decisions), `vscode-theme.md` (how the VS Code themes are built, validated and packaged) and `mc-skin.md` (how the Midnight Commander skins are built, validated and tested)
+- `docs/`: `theme-format.md` (the OpenCode V2 format, token conventions and design decisions), `vscode-theme.md` (how the VS Code themes are built, validated and packaged) `mc-skin.md` (how the Midnight Commander skins are built, validated and tested), `claude-code-theme.md` (the Claude Code theme format, token roles and what was verified) and `tmtheme.md` (the TextMate themes for Codex, bat and delta)
 - `.github/`: workflows, `dependabot.yml`, `release.yml` (changelog categories) and `zizmor.yml`
 
 ## Licence and Copyright

@@ -1,4 +1,4 @@
-// Package the themes into release assets: the JSON files, a zip bundle, and SHA256SUMS
+// Package the themes into release assets: the JSON files, zip bundles, the .vsix, and SHA256SUMS
 //
 // (c) Copyright 2026 Liminal HQ, Scott Morris
 // SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -68,6 +68,31 @@ execFileSync('zip', [
 	'-j',
 	join(out, `afterglow-mc-skins-v${version}.zip`),
 	...skins.map((f) => join(root, 'mc', 'skins', f)),
+	join(root, 'LICENSE-APACHE'),
+	join(root, 'LICENSE-MIT'),
+]);
+
+// The Claude Code themes ship as a zip to unpack into the Claude Code config directory's themes folder
+const claudeThemes = readdirSync(join(root, 'claude', 'themes')).filter((f) => f.endsWith('.json'));
+if (!claudeThemes.length)
+	throw new Error('No Claude Code themes found. Run `bun run build` first.');
+execFileSync('zip', [
+	'-q',
+	'-j',
+	join(out, `afterglow-claude-code-themes-v${version}.zip`),
+	...claudeThemes.map((f) => join(root, 'claude', 'themes', f)),
+	join(root, 'LICENSE-APACHE'),
+	join(root, 'LICENSE-MIT'),
+]);
+
+// The TextMate themes ship as a zip for Codex (its themes directory), bat and delta
+const tmThemes = readdirSync(join(root, 'tmtheme')).filter((f) => f.endsWith('.tmTheme'));
+if (!tmThemes.length) throw new Error('No TextMate themes found. Run `bun run build` first.');
+execFileSync('zip', [
+	'-q',
+	'-j',
+	join(out, `afterglow-tmthemes-v${version}.zip`),
+	...tmThemes.map((f) => join(root, 'tmtheme', f)),
 	join(root, 'LICENSE-APACHE'),
 	join(root, 'LICENSE-MIT'),
 ]);
