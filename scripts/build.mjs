@@ -6,35 +6,15 @@
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { mix } from './colour.mjs';
-import { STEPS, brand, deep, neutrals } from './palette.mjs';
+import { baseHues, variants } from './hues.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const HUES = ['gray', 'red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple'];
-
-// Dark ramps run light (100) to dark (900) and light ramps run dark (100) to light (900).
-// The brand colour sits on step 200 in both so token references behave the same in either mode.
-const ramp = (anchor, mode, surface) => {
-	const lift = mode === 'dark' ? '#ffffff' : '#000000';
-	const t =
-		mode === 'dark'
-			? [0.45, 0, 0.18, 0.36, 0.52, 0.67, 0.8, 0.9, 0.96]
-			: [0.35, 0, 0.22, 0.42, 0.58, 0.72, 0.84, 0.92, 0.97];
-	return Object.fromEntries(
-		STEPS.map((step, i) => [
-			step,
-			i === 0 ? mix(anchor, lift, t[0]) : i === 1 ? anchor : mix(anchor, surface, t[i]),
-		]),
-	);
-};
-
-const hue = (mode, neutral, accent, interactive) => {
-	const anchors = mode === 'dark' ? brand : deep;
-	const out = Object.fromEntries(
-		HUES.map((name) => [name, ramp(anchors[name], mode, neutral[900])]),
-	);
-	return { ...out, accent: `$hue.${accent}`, interactive: `$hue.${interactive}`, neutral };
-};
+const hue = (variant) => ({
+	...baseHues(variant.mode, variant.neutral),
+	accent: `$hue.${variant.accent}`,
+	interactive: `$hue.${variant.interactive}`,
+	neutral: variant.neutral,
+});
 
 const h = (name, step) => `$hue.${name}.${step}`;
 const states = (base, hovered, focused, pressed, selected, disabled) => ({
@@ -142,10 +122,7 @@ const warningChip = {
 const themes = {
 	// The signature theme: the liminalhq.ca void with brand orange and purple, and see-through surfaces
 	afterglow: {
-		mode: 'dark',
-		neutral: neutrals.void,
-		accent: 'orange',
-		interactive: 'purple',
+		...variants.afterglow,
 		muted: 300,
 		categorical: ['accent', 'purple', 'cyan', 'green', 'red', 'blue', 'yellow'],
 		modeTokens: {
@@ -158,19 +135,13 @@ const themes = {
 		},
 	},
 	'afterglow-dark': {
-		mode: 'dark',
-		neutral: neutrals.indigo,
-		accent: 'purple',
-		interactive: 'blue',
+		...variants['afterglow-dark'],
 		muted: 400,
 		categorical: ['accent', 'orange', 'cyan', 'green', 'red', 'blue', 'yellow'],
 		modeTokens: warningChip,
 	},
 	'afterglow-light': {
-		mode: 'light',
-		neutral: neutrals.paper,
-		accent: 'purple',
-		interactive: 'blue',
+		...variants['afterglow-light'],
 		muted: 400,
 		categorical: ['accent', 'orange', 'cyan', 'green', 'red', 'blue', 'yellow'],
 		modeTokens: {
@@ -190,7 +161,7 @@ for (const [name, theme] of Object.entries(themes)) {
 		$schema: 'https://opencode.ai/theme.json',
 		base: { categorical: theme.categorical, ...tokens(theme) },
 		[theme.mode]: {
-			hue: hue(theme.mode, theme.neutral, theme.accent, theme.interactive),
+			hue: hue(theme),
 			...theme.modeTokens,
 		},
 	};
