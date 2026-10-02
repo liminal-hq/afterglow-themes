@@ -15,7 +15,7 @@
 	},
 	"scripts": {
 		"build": "node scripts/build.mjs && node scripts/build-vscode.mjs && node scripts/build-mc.mjs && node scripts/build-claude.mjs && node scripts/build-tmtheme.mjs && node scripts/build-firefox.mjs && node scripts/build-chromium.mjs",
-		"validate:themes": "node scripts/validate-themes.mjs && node scripts/validate-vscode.mjs && node scripts/validate-mc.mjs && node scripts/validate-claude.mjs && node scripts/validate-tmtheme.mjs",
+		"validate:themes": "node scripts/validate-themes.mjs && node scripts/validate-vscode.mjs && node scripts/validate-mc.mjs && node scripts/validate-claude.mjs && node scripts/validate-tmtheme.mjs && node scripts/validate-firefox.mjs && node scripts/validate-chromium.mjs",
 		"check:themes": "bun run build && git diff --exit-code -- themes vscode/themes mc/skins claude/themes tmtheme firefox/themes chromium/themes",
 		"check:headers": "bash scripts/check-headers.sh",
 		"format": "prettier --write .",
