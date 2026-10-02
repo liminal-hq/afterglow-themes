@@ -97,8 +97,8 @@ execFileSync('zip', [
 	join(root, 'LICENSE-MIT'),
 ]);
 
-// Firefox installs a theme from a signed .xpi (a zip with the manifest and images at its root), one
-// per theme
+// A Firefox theme is an .xpi (a zip with the manifest and images at its root), one per theme. These
+// are unsigned, so release Firefox only loads them as temporary add-ons until they are signed.
 const firefoxThemes = readdirSync(join(root, 'firefox', 'themes'));
 if (!firefoxThemes.length) throw new Error('No Firefox themes found. Run `bun run build` first.');
 for (const id of firefoxThemes) {
