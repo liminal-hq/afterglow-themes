@@ -20,13 +20,13 @@ export const buildFirefoxColours = (id) => {
 		frame: r.frame,
 		frame_inactive: r.frameInactive,
 		tab_background_text: r.mutedText,
-		tab_selected: r.toolbar,
+		tab_selected: r.toolbarFill,
 		tab_text: r.text,
 		tab_line: r.accent,
 		tab_loading: r.accent,
 
 		// Toolbar and the address bar
-		toolbar: r.toolbar,
+		toolbar: r.toolbarFill,
 		toolbar_text: r.text,
 		toolbar_top_separator: r.border,
 		toolbar_bottom_separator: r.border,
