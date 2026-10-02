@@ -1,6 +1,6 @@
 <svg width="1200" height="320" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="hero-title hero-desc">
   <title id="hero-title">Afterglow</title>
-  <desc id="hero-desc">Liminal HQ colour themes for OpenCode, VS Code, Midnight Commander, Claude Code and Codex. A dark banner with a slowly breathing orange, rose and purple horizon glow, twinkling stars, a GNOME-style terminal window selecting the afterglow theme, and swatches for the see-through, dark and light variants.</desc>
+  <desc id="hero-desc">Liminal HQ colour themes for OpenCode, VS Code, Midnight Commander, Claude Code, Codex, Firefox, Chrome and Edge. A dark banner with a slowly breathing orange, rose and purple horizon glow, twinkling stars, a GNOME-style terminal window selecting the afterglow theme, and swatches for the see-through, dark and light variants.</desc>
 
   <defs>
     <!-- Background: the liminalhq.ca void fading into indigo -->
@@ -94,7 +94,7 @@
 
   <!-- Subtitle and tagline -->
   <text x="82" y="154" fill="#e0e0e0" font-size="20" font-family="'Inter', system-ui, sans-serif">Liminal HQ colour themes for the tools you live in</text>
-  <text x="82" y="182" fill="#b4bfce" font-size="15" font-family="'Inter', system-ui, sans-serif">Calm, glowing colour for terminal, editor and files. Dark, light, or see-through.</text>
+  <text x="82" y="182" fill="#b4bfce" font-size="15" font-family="'Inter', system-ui, sans-serif">Calm, glowing colour for terminal, editor, files and browser. Dark, light, or see-through.</text>
 
   <!-- Terminal snippet: picking the theme -->
   <g transform="translate(760, 34)">
@@ -147,6 +147,12 @@
     <tspan fill="#9aa4b2">Claude Code</tspan>
     <tspan fill="#2e3540"> | </tspan>
     <tspan fill="#9aa4b2">Codex</tspan>
+    <tspan fill="#2e3540"> | </tspan>
+    <tspan fill="#9aa4b2">Firefox</tspan>
+    <tspan fill="#2e3540"> | </tspan>
+    <tspan fill="#9aa4b2">Chrome</tspan>
+    <tspan fill="#2e3540"> | </tspan>
+    <tspan fill="#9aa4b2">Edge</tspan>
     <tspan fill="#2e3540"> | </tspan>
     <tspan fill="#9aa4b2">dark + light + see-through</tspan>
     <tspan fill="#2e3540">  &#x2022;  </tspan>
