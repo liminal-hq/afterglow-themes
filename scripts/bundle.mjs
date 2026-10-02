@@ -97,11 +97,12 @@ execFileSync('zip', [
 	join(root, 'LICENSE-MIT'),
 ]);
 
-// Firefox installs a theme from a signed .xpi (a zip with the manifest at its root), one per theme
+// Firefox installs a theme from a signed .xpi (a zip with the manifest and images at its root), one
+// per theme
 const firefoxThemes = readdirSync(join(root, 'firefox', 'themes'));
 if (!firefoxThemes.length) throw new Error('No Firefox themes found. Run `bun run build` first.');
 for (const id of firefoxThemes) {
-	execFileSync('zip', ['-q', '-j', join(out, `${id}-firefox-v${version}.xpi`), 'manifest.json'], {
+	execFileSync('zip', ['-q', '-r', join(out, `${id}-firefox-v${version}.xpi`), '.'], {
 		cwd: join(root, 'firefox', 'themes', id),
 	});
 }
