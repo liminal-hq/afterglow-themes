@@ -53,7 +53,21 @@
 			"ntp_card_background": "#12121a"
 		},
 		"properties": {
-			"color_scheme": "dark"
+			"color_scheme": "dark",
+			"additional_backgrounds_alignment": [
+				"right top",
+				"left top"
+			],
+			"additional_backgrounds_tiling": [
+				"no-repeat",
+				"no-repeat"
+			]
+		},
+		"images": {
+			"additional_backgrounds": [
+				"glow-right.svg",
+				"glow-left.svg"
+			]
 		}
 	}
 }

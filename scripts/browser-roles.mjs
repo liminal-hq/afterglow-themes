@@ -47,5 +47,14 @@ export const browserRoles = (id) => {
 		link: H.interactive[200],
 		focus: H.interactive[200],
 		selection: H.interactive[600],
+		// A faint wash of the two hues in the corners of the header, as on liminalhq.ca. The light
+		// theme stays flat because a tint on paper reads as a stain rather than a glow.
+		glow:
+			variant.mode === 'dark'
+				? {
+						right: { colour: H.accent[200], opacity: 0.14 },
+						left: { colour: H.interactive[200], opacity: 0.1 },
+					}
+				: null,
 	};
 };

@@ -64,19 +64,48 @@ export const buildFirefoxColours = (id) => {
 	};
 };
 
-export const buildFirefoxTheme = (id) => ({
-	manifest_version: 2,
-	name: browserVariants[id].label,
-	version,
-	description: `Afterglow by Liminal HQ: ${browserVariants[id].summary}.`,
-	author: 'Liminal HQ, Scott Morris',
-	homepage_url: 'https://github.com/liminal-hq/afterglow-themes',
-	browser_specific_settings: { gecko: { id: firefoxId(id), strict_min_version: '115.0' } },
-	theme: {
+// The header glow images, in the order Firefox layers them. Each is anchored to its own corner,
+// so the wash stays in place at any window width.
+export const glowFiles = { right: 'glow-right.svg', left: 'glow-left.svg' };
+
+// A soft ellipse of one colour fading to nothing, centred on the top edge so the header sits in
+// its brightest part. The centre is near the corner the image is anchored to.
+export const glowSvg = (
+	side,
+	{ colour, opacity },
+) => `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="200" viewBox="0 0 900 200">
+	<defs>
+		<radialGradient id="glow">
+			<stop offset="0" stop-color="${colour}" stop-opacity="${opacity}"/>
+			<stop offset="1" stop-color="${colour}" stop-opacity="0"/>
+		</radialGradient>
+	</defs>
+	<ellipse cx="${side === 'right' ? 800 : 100}" cy="0" rx="560" ry="220" fill="url(#glow)"/>
+</svg>
+`;
+
+export const buildFirefoxTheme = (id) => {
+	const { dark, glow } = browserRoles(id);
+	const theme = {
 		colors: buildFirefoxColours(id),
-		properties: { color_scheme: browserRoles(id).dark ? 'dark' : 'light' },
-	},
-});
+		properties: { color_scheme: dark ? 'dark' : 'light' },
+	};
+	if (glow) {
+		theme.images = { additional_backgrounds: [glowFiles.right, glowFiles.left] };
+		theme.properties.additional_backgrounds_alignment = ['right top', 'left top'];
+		theme.properties.additional_backgrounds_tiling = ['no-repeat', 'no-repeat'];
+	}
+	return {
+		manifest_version: 2,
+		name: browserVariants[id].label,
+		version,
+		description: `Afterglow by Liminal HQ: ${browserVariants[id].summary}.`,
+		author: 'Liminal HQ, Scott Morris',
+		homepage_url: 'https://github.com/liminal-hq/afterglow-themes',
+		browser_specific_settings: { gecko: { id: firefoxId(id), strict_min_version: '115.0' } },
+		theme,
+	};
+};
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
 	// Start clean so a renamed or removed theme never lingers in the output
@@ -88,5 +117,13 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 			`${JSON.stringify(buildFirefoxTheme(id), null, '\t')}\n`,
 		);
 		console.log(`wrote firefox/themes/${id}/manifest.json`);
+		const { glow } = browserRoles(id);
+		for (const side of glow ? Object.keys(glowFiles) : []) {
+			writeFileSync(
+				join(root, 'firefox', 'themes', id, glowFiles[side]),
+				glowSvg(side, glow[side]),
+			);
+			console.log(`wrote firefox/themes/${id}/${glowFiles[side]}`);
+		}
 	}
 }
