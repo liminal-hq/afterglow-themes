@@ -44,6 +44,7 @@ To load one, unzip the release, open `chrome://extensions` (or `edge://extension
 - **No transparency.** Neither browser paints its chrome over the desktop, so `afterglow` is an opaque void.
 - **Page content is untouched.** Web pages keep their own colours. `color_scheme: dark` makes Firefox report a dark preference to pages that honour it, and Chrome and Edge have no equivalent in a theme.
 - **Chromium has no menu colours.** Menus, the address bar's dropdown and the settings pages follow the operating system's appearance, so only the frame, tabs, toolbar, address bar and new tab page take Afterglow.
+- **Chromium's accent is not themable.** The address bar's focus ring, the text selection and buttons such as the one on the "installed theme" bar use Chromium's own baseline blue-purple. Colours come from the manifest's `colors` table, which has no accent key, and Chromium sets no seed colour for an extension theme, so it falls back to the baseline palette. The accent that Chrome's own **Customize Chrome** colour picker sets belongs to the profile, not to a theme, and a theme cannot ship it.
 
 ## How it is built and validated
 
