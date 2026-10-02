@@ -1,0 +1,26 @@
+{
+	"manifest_version": 3,
+	"name": "Afterglow Light",
+	"version": "0.2.0",
+	"description": "Afterglow by Liminal HQ: warm paper.",
+	"theme": {
+		"colors": {
+			"frame": [251, 250, 246],
+			"frame_inactive": [242, 239, 244],
+			"frame_incognito": [251, 250, 246],
+			"frame_incognito_inactive": [242, 239, 244],
+			"background_tab": [251, 250, 246],
+			"background_tab_inactive": [251, 250, 246],
+			"tab_text": [43, 42, 51],
+			"tab_background_text": [107, 104, 119],
+			"toolbar": [242, 239, 244],
+			"toolbar_button_icon": [72, 69, 84],
+			"bookmark_text": [43, 42, 51],
+			"omnibox_background": [251, 250, 246],
+			"omnibox_text": [43, 42, 51],
+			"ntp_background": [251, 250, 246],
+			"ntp_text": [43, 42, 51],
+			"ntp_link": [37, 99, 235]
+		}
+	}
+}
