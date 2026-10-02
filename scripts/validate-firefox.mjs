@@ -3,12 +3,12 @@
 // (c) Copyright 2026 Liminal HQ, Scott Morris
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { browserVariants, version } from './browser-roles.mjs';
-import { buildFirefoxTheme, firefoxId } from './build-firefox.mjs';
-import { contrast } from './colour.mjs';
+import { browserRoles, browserVariants, version } from './browser-roles.mjs';
+import { buildFirefoxTheme, firefoxId, glowFiles, glowSvg } from './build-firefox.mjs';
+import { contrast, mix } from './colour.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -44,8 +44,27 @@ const pairs = [
 	['ntp_text', 'ntp_card_background', 4.5],
 ];
 
-// Validate one theme's parsed manifest. Returns the problems found and the contrast pairs measured.
-export const validateFirefoxTheme = (id, manifest) => {
+// Text drawn where the header glow is brightest: the glow's peak opacity is its worst case
+const glowPairs = [
+	['tab_text', 'tab_selected', 4.5],
+	['tab_background_text', 'frame', 4.5],
+	['toolbar_text', 'toolbar', 4.5],
+	['bookmark_text', 'toolbar', 4.5],
+	['icons', 'toolbar', 3],
+];
+
+// The files in a theme's folder, by name, as Firefox would read them
+export const readThemeFiles = (id) => {
+	const dir = join(root, 'firefox', 'themes', id);
+	if (!existsSync(dir)) return {};
+	return Object.fromEntries(
+		readdirSync(dir).map((name) => [name, readFileSync(join(dir, name), 'utf8')]),
+	);
+};
+
+// Validate one theme's parsed manifest and the files beside it. Returns the problems found and the
+// contrast pairs measured.
+export const validateFirefoxTheme = (id, manifest, files = readThemeFiles(id)) => {
 	const errors = [];
 	if (typeof manifest !== 'object' || manifest === null || Array.isArray(manifest)) {
 		return { errors: ['the manifest must be a JSON object'], measured: 0 };
@@ -80,7 +99,38 @@ export const validateFirefoxTheme = (id, manifest) => {
 		errors.push(`firefox/themes/${id}/manifest.json is out of date. Run \`bun run build\`.`);
 	}
 
+	// Only the dark themes carry the header glow, and the images must be exactly what is generated
+	const { glow } = browserRoles(id);
+	const expected = glow ? Object.values(glowFiles) : [];
+	const listed = manifest.theme?.images?.additional_backgrounds ?? [];
+	if (JSON.stringify(listed) !== JSON.stringify(expected)) {
+		errors.push(`additional_backgrounds must be ${JSON.stringify(expected)}`);
+	}
+	for (const [side, name] of Object.entries(glow ? glowFiles : {})) {
+		if (files[name] === undefined) errors.push(`${name} is missing`);
+		else if (files[name] !== glowSvg(side, glow[side])) {
+			errors.push(`${name} is out of date. Run \`bun run build\`.`);
+		}
+	}
+	const images = Object.keys(files).filter((name) => name !== 'manifest.json');
+	for (const name of images) {
+		if (!expected.includes(name)) errors.push(`${name} is not a file the theme uses`);
+	}
+
 	let measured = 0;
+	for (const side of Object.keys(glow ?? {})) {
+		const { colour, opacity } = glow[side];
+		for (const [fg, bg, min] of glowPairs) {
+			if (!HEX.test(colours[fg]) || !HEX.test(colours[bg])) continue;
+			measured++;
+			const ratio = contrast(colours[fg], mix(colours[bg], colour, opacity));
+			if (ratio < min) {
+				errors.push(
+					`${fg} on ${bg} under the ${side} glow is ${ratio.toFixed(2)}:1 (needs ${min}:1)`,
+				);
+			}
+		}
+	}
 	for (const [fg, bg, min] of pairs) {
 		if (!HEX.test(colours[fg]) || !HEX.test(colours[bg])) continue;
 		measured++;

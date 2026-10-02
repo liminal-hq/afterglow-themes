@@ -7,16 +7,22 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { browserRoles, browserVariants, version } from './browser-roles.mjs';
 import { buildChromiumTheme, rgbArray, serialiseChromium } from './build-chromium.mjs';
-import { buildFirefoxTheme, firefoxId } from './build-firefox.mjs';
+import { buildFirefoxTheme, firefoxId, glowFiles, glowSvg } from './build-firefox.mjs';
 import { toHex } from './colour.mjs';
 import { chromiumKeys, isRgb, validateChromiumTheme } from './validate-chromium.mjs';
 import { firefoxKeys, validateFirefoxTheme } from './validate-firefox.mjs';
 
 const ids = Object.keys(browserVariants);
-const firefoxErrors = (id, edit) => {
+const generatedFiles = (id) => {
+	const { glow } = browserRoles(id);
+	return Object.fromEntries(
+		Object.entries(glow ?? {}).map(([side, spec]) => [glowFiles[side], glowSvg(side, spec)]),
+	);
+};
+const firefoxErrors = (id, edit, files = generatedFiles(id)) => {
 	const manifest = structuredClone(buildFirefoxTheme(id));
 	edit(manifest);
-	return validateFirefoxTheme(id, manifest).errors.join('\n');
+	return validateFirefoxTheme(id, manifest, files).errors.join('\n');
 };
 const chromiumErrors = (id, edit) => {
 	const manifest = structuredClone(buildChromiumTheme(id));
@@ -26,7 +32,11 @@ const chromiumErrors = (id, edit) => {
 
 test('the generated themes pass their validators', () => {
 	for (const id of ids) {
-		assert.deepEqual(validateFirefoxTheme(id, buildFirefoxTheme(id)).errors, [], id);
+		assert.deepEqual(
+			validateFirefoxTheme(id, buildFirefoxTheme(id), generatedFiles(id)).errors,
+			[],
+			id,
+		);
 		assert.deepEqual(validateChromiumTheme(id, buildChromiumTheme(id)).errors, [], id);
 	}
 });
@@ -121,5 +131,50 @@ test('the Chromium validator rejects an unknown key, a bad colour and low contra
 	assert.match(
 		chromiumErrors('afterglow', (m) => (m.theme.colors.tab_text = [18, 18, 26])),
 		/tab_text on toolbar/,
+	);
+});
+
+test('only the dark Firefox themes carry the two header glows, and they are valid SVG', () => {
+	for (const id of ['afterglow', 'afterglow-dark']) {
+		const { theme } = buildFirefoxTheme(id);
+		assert.deepEqual(theme.images.additional_backgrounds, Object.values(glowFiles));
+		assert.deepEqual(theme.properties.additional_backgrounds_alignment, ['right top', 'left top']);
+		for (const svg of Object.values(generatedFiles(id))) {
+			assert.match(svg, /^<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);
+			assert.match(svg, /<\/svg>\n$/);
+		}
+	}
+	assert.equal(buildFirefoxTheme('afterglow-light').theme.images, undefined);
+	assert.deepEqual(generatedFiles('afterglow-light'), {});
+});
+
+test('the glow colours are the variant hues, so each theme glows in its own accents', () => {
+	assert.equal(browserRoles('afterglow').glow.right.colour, '#ffaa40');
+	assert.equal(browserRoles('afterglow').glow.left.colour, '#a78bfa');
+	assert.equal(browserRoles('afterglow-dark').glow.right.colour, '#a78bfa');
+	assert.equal(browserRoles('afterglow-dark').glow.left.colour, '#60a5fa');
+});
+
+test('the Firefox validator rejects a missing, stale or stray glow file and a wrong image list', () => {
+	const files = generatedFiles('afterglow');
+	assert.match(
+		firefoxErrors('afterglow', () => {}, { 'glow-left.svg': files['glow-left.svg'] }),
+		/glow-right.svg is missing/,
+	);
+	assert.match(
+		firefoxErrors('afterglow', () => {}, { ...files, 'glow-left.svg': '<svg/>' }),
+		/glow-left.svg is out of date/,
+	);
+	assert.match(
+		firefoxErrors('afterglow', () => {}, { ...files, 'extra.png': 'x' }),
+		/extra.png is not a file the theme uses/,
+	);
+	assert.match(
+		firefoxErrors('afterglow', (m) => delete m.theme.images),
+		/additional_backgrounds must be/,
+	);
+	assert.match(
+		firefoxErrors('afterglow-light', () => {}, { 'glow-left.svg': 'x' }),
+		/glow-left.svg is not a file the theme uses/,
 	);
 });
