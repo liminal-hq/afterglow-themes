@@ -68,7 +68,7 @@ Each theme sets all 72 colour tokens Claude Code defines, from the same role hue
 | `Afterglow Dark`  | Dark  | A softer deep indigo-black with the purple accent.               |
 | `Afterglow Light` | Light | A warm paper theme with deeper accents that hold 4.5:1 contrast. |
 
-Firefox gets all 38 colours its theme manifest defines, and Chrome and Edge share one Manifest V3 theme with the 16 colours Chromium reads: the tab strip, toolbar, address bar, menus and sidebar (Firefox) and the new tab page. Web pages keep their own colours, and neither browser has a see-through variant. See [docs/browser-themes.md](docs/browser-themes.md).
+Firefox gets all 38 colours its theme manifest defines, and Chrome and Edge share one Manifest V3 theme with the 16 colours Chromium reads: the tab strip, toolbar, address bar, menus and sidebar (Firefox) and the new tab page. The dark Firefox themes also carry a faint SVG glow of the accent hues behind the tab strip and toolbars, like the liminalhq.ca background (Chromium only takes PNG theme images, so Chrome and Edge stay flat). Web pages keep their own colours, and neither browser has a see-through variant. See [docs/browser-themes.md](docs/browser-themes.md).
 
 ## The Codex, bat and delta themes
 
