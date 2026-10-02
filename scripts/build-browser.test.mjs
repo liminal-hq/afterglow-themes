@@ -5,12 +5,12 @@
 
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { browserRoles, browserVariants, version } from './browser-roles.mjs';
+import { browserRoles, browserVariants, overlayFill, version } from './browser-roles.mjs';
 import { buildChromiumTheme, rgbArray, serialiseChromium } from './build-chromium.mjs';
 import { buildFirefoxTheme, firefoxId, glowFiles, glowSvg } from './build-firefox.mjs';
 import { toHex } from './colour.mjs';
 import { chromiumKeys, isRgb, validateChromiumTheme } from './validate-chromium.mjs';
-import { firefoxKeys, validateFirefoxTheme } from './validate-firefox.mjs';
+import { firefoxKeys, flatten, validateFirefoxTheme } from './validate-firefox.mjs';
 
 const ids = Object.keys(browserVariants);
 const generatedFiles = (id) => {
@@ -81,7 +81,6 @@ test('Chromium colours are [r, g, b] arrays that match the Firefox hex colours',
 		const chromium = buildChromiumTheme(id).theme.colors;
 		const firefox = buildFirefoxTheme(id).theme.colors;
 		for (const value of Object.values(chromium)) assert.ok(isRgb(value));
-		assert.equal(toHex(chromium.toolbar), firefox.toolbar);
 		assert.equal(toHex(chromium.tab_text), firefox.tab_text);
 	}
 });
@@ -176,5 +175,39 @@ test('the Firefox validator rejects a missing, stale or stray glow file and a wr
 	assert.match(
 		firefoxErrors('afterglow-light', () => {}, { 'glow-left.svg': 'x' }),
 		/glow-left.svg is not a file the theme uses/,
+	);
+});
+
+test('overlayFill gives a translucent fill that lands on the target shade over the base', () => {
+	const fill = overlayFill('#12121a', '#050507', 0.55);
+	assert.match(fill, /^rgba\(\d+, \d+, \d+, 0.55\)$/);
+	const seen = flatten(fill, '#050507');
+	for (const [at, want] of [
+		[1, 0x12],
+		[3, 0x12],
+		[5, 0x1a],
+	]) {
+		assert.ok(Math.abs(parseInt(seen.slice(at, at + 2), 16) - want) <= 1, seen);
+	}
+});
+
+test('dark Firefox themes use the translucent toolbar fill and the light one stays opaque', () => {
+	for (const id of ['afterglow', 'afterglow-dark']) {
+		const { colors } = buildFirefoxTheme(id).theme;
+		assert.match(colors.toolbar, /^rgba\(/);
+		assert.equal(colors.tab_selected, colors.toolbar);
+		assert.match(colors.toolbar_field, /^#/);
+	}
+	assert.match(buildFirefoxTheme('afterglow-light').theme.colors.toolbar, /^#[\da-f]{6}$/);
+});
+
+test('the Firefox validator allows translucency only on the toolbar and selected tab', () => {
+	assert.match(
+		firefoxErrors('afterglow', (m) => (m.theme.colors.popup = 'rgba(0, 0, 0, 0.5)')),
+		/popup: "rgba\(0, 0, 0, 0.5\)" must be #rrggbb/,
+	);
+	assert.match(
+		firefoxErrors('afterglow', (m) => (m.theme.colors.toolbar = 'rgba(255, 255, 255, 0.9)')),
+		/toolbar_text on toolbar/,
 	);
 });

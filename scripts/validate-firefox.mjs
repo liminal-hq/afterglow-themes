@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { browserRoles, browserVariants, version } from './browser-roles.mjs';
 import { buildFirefoxTheme, firefoxId, glowFiles, glowSvg } from './build-firefox.mjs';
-import { contrast, mix } from './colour.mjs';
+import { contrast, mix, toHex } from './colour.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -17,6 +17,18 @@ export const firefoxKeys = JSON.parse(
 	readFileSync(join(root, 'scripts', 'firefox-theme-keys.json'), 'utf8'),
 );
 const HEX = /^#[\da-f]{6}$/i;
+const RGBA = /^rgba\((\d{1,3}), (\d{1,3}), (\d{1,3}), (0?\.\d+|1)\)$/;
+
+// Only the toolbar and the selected tab may be translucent, so the header glow shows through
+const TRANSLUCENT = ['toolbar', 'tab_selected'];
+
+// A colour as an opaque hex, compositing a translucent one over `base` the way Firefox does
+export const flatten = (value, base) => {
+	if (HEX.test(value)) return value;
+	const match = RGBA.exec(value);
+	if (!match) return undefined;
+	return mix(base, toHex(match.slice(1, 4).map(Number)), Number(match[4]));
+};
 
 // Text and icons with the background each sits on and the contrast it needs. 3:1 is only for
 // non-text elements: icons, borders and the selected-tab line.
@@ -91,7 +103,10 @@ export const validateFirefoxTheme = (id, manifest, files = readThemeFiles(id)) =
 	}
 	for (const [key, value] of Object.entries(colours)) {
 		if (!firefoxKeys.includes(key)) errors.push(`${key} is not a colour key Firefox reads`);
-		else if (typeof value !== 'string' || !HEX.test(value)) {
+		else if (
+			typeof value !== 'string' ||
+			!(HEX.test(value) || (TRANSLUCENT.includes(key) && RGBA.test(value)))
+		) {
 			errors.push(`${key}: "${value}" must be #rrggbb`);
 		}
 	}
@@ -117,26 +132,23 @@ export const validateFirefoxTheme = (id, manifest, files = readThemeFiles(id)) =
 		if (!expected.includes(name)) errors.push(`${name} is not a file the theme uses`);
 	}
 
+	// Contrast is measured on the colour the eye sees: a translucent fill laid over the frame,
+	// which is itself under the glow at its brightest.
 	let measured = 0;
-	for (const side of Object.keys(glow ?? {})) {
-		const { colour, opacity } = glow[side];
-		for (const [fg, bg, min] of glowPairs) {
-			if (!HEX.test(colours[fg]) || !HEX.test(colours[bg])) continue;
-			measured++;
-			const ratio = contrast(colours[fg], mix(colours[bg], colour, opacity));
-			if (ratio < min) {
-				errors.push(
-					`${fg} on ${bg} under the ${side} glow is ${ratio.toFixed(2)}:1 (needs ${min}:1)`,
-				);
-			}
-		}
-	}
-	for (const [fg, bg, min] of pairs) {
-		if (!HEX.test(colours[fg]) || !HEX.test(colours[bg])) continue;
+	const check = (fg, bg, min, base, where) => {
+		const fgHex = flatten(colours[fg], base);
+		const bgHex = flatten(colours[bg], base);
+		if (!fgHex || !bgHex) return;
 		measured++;
-		const ratio = contrast(colours[fg], colours[bg]);
-		if (ratio < min) errors.push(`${fg} on ${bg} is ${ratio.toFixed(2)}:1 (needs ${min}:1)`);
+		const ratio = contrast(fgHex, bgHex);
+		if (ratio < min)
+			errors.push(`${fg} on ${bg}${where} is ${ratio.toFixed(2)}:1 (needs ${min}:1)`);
+	};
+	for (const side of Object.keys(glow ?? {})) {
+		const base = mix(colours.frame, glow[side].colour, glow[side].opacity);
+		for (const [fg, bg, min] of glowPairs) check(fg, bg, min, base, ` under the ${side} glow`);
 	}
+	for (const [fg, bg, min] of pairs) check(fg, bg, min, colours.frame, '');
 	return { errors, measured };
 };
 
