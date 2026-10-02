@@ -1,6 +1,6 @@
 {
 	"name": "afterglow-themes",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "Liminal HQ Afterglow: colour themes for the OpenCode terminal UI, VS Code, Midnight Commander, Claude Code, Codex, bat and delta, Firefox and Chrome and Edge",
 	"private": true,
 	"type": "module",
