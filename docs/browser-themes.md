@@ -61,7 +61,3 @@ The generated manifests carry the package version, so a release bump needs `bun 
 
 - The key lists against the MDN reference and the Chromium source.
 - The generators, validators and unit tests, and that the `.xpi` and zip packages contain the manifests at the expected paths.
-
-## What was not verified
-
-- Neither browser has loaded the themes yet. Check them by eye before relying on the colours, and refresh the key lists if a browser adds keys.
