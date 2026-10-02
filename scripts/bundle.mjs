@@ -111,7 +111,15 @@ const chromiumThemes = readdirSync(join(root, 'chromium', 'themes'));
 if (!chromiumThemes.length) throw new Error('No Chromium themes found. Run `bun run build` first.');
 execFileSync(
 	'zip',
-	['-q', '-r', join(out, `afterglow-chromium-themes-v${version}.zip`), ...chromiumThemes],
+	[
+		'-q',
+		'-r',
+		join(out, `afterglow-chromium-themes-v${version}.zip`),
+		...chromiumThemes,
+		// Chromium writes a theme cache next to the manifest when a theme is loaded unpacked
+		'-x',
+		'*.pak',
+	],
 	{ cwd: join(root, 'chromium', 'themes') },
 );
 
