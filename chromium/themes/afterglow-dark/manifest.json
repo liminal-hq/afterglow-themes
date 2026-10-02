@@ -1,0 +1,26 @@
+{
+	"manifest_version": 3,
+	"name": "Afterglow Dark",
+	"version": "0.2.0",
+	"description": "Afterglow by Liminal HQ: solid deep indigo-black.",
+	"theme": {
+		"colors": {
+			"frame": [15, 14, 26],
+			"frame_inactive": [26, 24, 40],
+			"frame_incognito": [15, 14, 26],
+			"frame_incognito_inactive": [26, 24, 40],
+			"background_tab": [15, 14, 26],
+			"background_tab_inactive": [15, 14, 26],
+			"tab_text": [228, 226, 236],
+			"tab_background_text": [143, 141, 166],
+			"toolbar": [26, 24, 40],
+			"toolbar_button_icon": [184, 182, 200],
+			"bookmark_text": [228, 226, 236],
+			"omnibox_background": [15, 14, 26],
+			"omnibox_text": [228, 226, 236],
+			"ntp_background": [15, 14, 26],
+			"ntp_text": [228, 226, 236],
+			"ntp_link": [96, 165, 250]
+		}
+	}
+}

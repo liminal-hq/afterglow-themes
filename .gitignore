@@ -1,3 +1,5 @@
 node_modules/
 dist/
 .DS_Store
+# Written by Chromium when a theme is loaded unpacked from a checkout
+chromium/themes/*/*.pak

@@ -1,7 +1,7 @@
 {
 	"name": "afterglow-themes",
 	"version": "0.2.0",
-	"description": "Liminal HQ Afterglow: colour themes for the OpenCode terminal UI, VS Code, Midnight Commander, Claude Code and Codex, bat and delta",
+	"description": "Liminal HQ Afterglow: colour themes for the OpenCode terminal UI, VS Code, Midnight Commander, Claude Code, Codex, bat and delta, Firefox and Chrome and Edge",
 	"private": true,
 	"type": "module",
 	"license": "Apache-2.0 OR MIT",
@@ -14,9 +14,9 @@
 		"node": ">=22"
 	},
 	"scripts": {
-		"build": "node scripts/build.mjs && node scripts/build-vscode.mjs && node scripts/build-mc.mjs && node scripts/build-claude.mjs && node scripts/build-tmtheme.mjs",
-		"validate:themes": "node scripts/validate-themes.mjs && node scripts/validate-vscode.mjs && node scripts/validate-mc.mjs && node scripts/validate-claude.mjs && node scripts/validate-tmtheme.mjs",
-		"check:themes": "bun run build && git diff --exit-code -- themes vscode/themes mc/skins claude/themes tmtheme",
+		"build": "node scripts/build.mjs && node scripts/build-vscode.mjs && node scripts/build-mc.mjs && node scripts/build-claude.mjs && node scripts/build-tmtheme.mjs && node scripts/build-firefox.mjs && node scripts/build-chromium.mjs",
+		"validate:themes": "node scripts/validate-themes.mjs && node scripts/validate-vscode.mjs && node scripts/validate-mc.mjs && node scripts/validate-claude.mjs && node scripts/validate-tmtheme.mjs && node scripts/validate-firefox.mjs && node scripts/validate-chromium.mjs",
+		"check:themes": "bun run build && git diff --exit-code -- themes vscode/themes mc/skins claude/themes tmtheme firefox/themes chromium/themes",
 		"check:headers": "bash scripts/check-headers.sh",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",

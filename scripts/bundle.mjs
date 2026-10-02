@@ -97,6 +97,33 @@ execFileSync('zip', [
 	join(root, 'LICENSE-MIT'),
 ]);
 
+// A Firefox theme is an .xpi (a zip with the manifest and images at its root), one per theme. These
+// are unsigned, so release Firefox only loads them as temporary add-ons until they are signed.
+const firefoxThemes = readdirSync(join(root, 'firefox', 'themes'));
+if (!firefoxThemes.length) throw new Error('No Firefox themes found. Run `bun run build` first.');
+for (const id of firefoxThemes) {
+	execFileSync('zip', ['-q', '-r', join(out, `${id}-firefox-v${version}.xpi`), '.'], {
+		cwd: join(root, 'firefox', 'themes', id),
+	});
+}
+
+// The Chrome and Edge themes ship as one zip of three folders, each loadable unpacked
+const chromiumThemes = readdirSync(join(root, 'chromium', 'themes'));
+if (!chromiumThemes.length) throw new Error('No Chromium themes found. Run `bun run build` first.');
+execFileSync(
+	'zip',
+	[
+		'-q',
+		'-r',
+		join(out, `afterglow-chromium-themes-v${version}.zip`),
+		...chromiumThemes,
+		// Chromium writes a theme cache next to the manifest when a theme is loaded unpacked
+		'-x',
+		'*.pak',
+	],
+	{ cwd: join(root, 'chromium', 'themes') },
+);
+
 const sums = readdirSync(out)
 	.sort()
 	.map(

@@ -1,0 +1,73 @@
+{
+	"manifest_version": 2,
+	"name": "Afterglow",
+	"version": "0.2.0",
+	"description": "Afterglow by Liminal HQ: the void with the orange accent.",
+	"author": "Liminal HQ, Scott Morris",
+	"homepage_url": "https://github.com/liminal-hq/afterglow-themes",
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "afterglow@liminalhq.ca",
+			"strict_min_version": "115.0"
+		}
+	},
+	"theme": {
+		"colors": {
+			"frame": "#050507",
+			"frame_inactive": "#12121a",
+			"tab_background_text": "#8d97a8",
+			"tab_selected": "rgba(29, 29, 42, 0.55)",
+			"tab_text": "#e0e0e0",
+			"tab_line": "#ffaa40",
+			"tab_loading": "#ffaa40",
+			"toolbar": "rgba(29, 29, 42, 0.55)",
+			"toolbar_text": "#e0e0e0",
+			"toolbar_top_separator": "#333847",
+			"toolbar_bottom_separator": "#333847",
+			"toolbar_vertical_separator": "#333847",
+			"toolbar_field": "#050507",
+			"toolbar_field_text": "#e0e0e0",
+			"toolbar_field_border": "#333847",
+			"toolbar_field_focus": "#050507",
+			"toolbar_field_text_focus": "#f4f4f8",
+			"toolbar_field_border_focus": "#a78bfa",
+			"toolbar_field_highlight": "#3a3157",
+			"toolbar_field_highlight_text": "#f4f4f8",
+			"bookmark_text": "#e0e0e0",
+			"icons": "#b4bfce",
+			"icons_attention": "#ffaa40",
+			"button_background_hover": "#1f2230",
+			"button_background_active": "#333847",
+			"popup": "#12121a",
+			"popup_text": "#e0e0e0",
+			"popup_border": "#333847",
+			"popup_highlight": "#3a3157",
+			"popup_highlight_text": "#f4f4f8",
+			"sidebar": "#12121a",
+			"sidebar_text": "#e0e0e0",
+			"sidebar_border": "#333847",
+			"sidebar_highlight": "#3a3157",
+			"sidebar_highlight_text": "#f4f4f8",
+			"ntp_background": "#050507",
+			"ntp_text": "#e0e0e0",
+			"ntp_card_background": "#12121a"
+		},
+		"properties": {
+			"color_scheme": "dark",
+			"additional_backgrounds_alignment": [
+				"right top",
+				"left top"
+			],
+			"additional_backgrounds_tiling": [
+				"no-repeat",
+				"no-repeat"
+			]
+		},
+		"images": {
+			"additional_backgrounds": [
+				"glow-right.svg",
+				"glow-left.svg"
+			]
+		}
+	}
+}

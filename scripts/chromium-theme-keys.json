@@ -1,0 +1,18 @@
+[
+	"background_tab",
+	"background_tab_inactive",
+	"bookmark_text",
+	"frame",
+	"frame_inactive",
+	"frame_incognito",
+	"frame_incognito_inactive",
+	"ntp_background",
+	"ntp_link",
+	"ntp_text",
+	"omnibox_background",
+	"omnibox_text",
+	"tab_background_text",
+	"tab_text",
+	"toolbar",
+	"toolbar_button_icon"
+]

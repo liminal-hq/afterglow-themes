@@ -1,0 +1,26 @@
+{
+	"manifest_version": 3,
+	"name": "Afterglow",
+	"version": "0.2.0",
+	"description": "Afterglow by Liminal HQ: the void with the orange accent.",
+	"theme": {
+		"colors": {
+			"frame": [5, 5, 7],
+			"frame_inactive": [18, 18, 26],
+			"frame_incognito": [5, 5, 7],
+			"frame_incognito_inactive": [18, 18, 26],
+			"background_tab": [5, 5, 7],
+			"background_tab_inactive": [5, 5, 7],
+			"tab_text": [224, 224, 224],
+			"tab_background_text": [141, 151, 168],
+			"toolbar": [18, 18, 26],
+			"toolbar_button_icon": [180, 191, 206],
+			"bookmark_text": [224, 224, 224],
+			"omnibox_background": [5, 5, 7],
+			"omnibox_text": [224, 224, 224],
+			"ntp_background": [5, 5, 7],
+			"ntp_text": [224, 224, 224],
+			"ntp_link": [167, 139, 250]
+		}
+	}
+}

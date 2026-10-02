@@ -1,0 +1,59 @@
+{
+	"manifest_version": 2,
+	"name": "Afterglow Light",
+	"version": "0.2.0",
+	"description": "Afterglow by Liminal HQ: warm paper.",
+	"author": "Liminal HQ, Scott Morris",
+	"homepage_url": "https://github.com/liminal-hq/afterglow-themes",
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "afterglow-light@liminalhq.ca",
+			"strict_min_version": "115.0"
+		}
+	},
+	"theme": {
+		"colors": {
+			"frame": "#fbfaf6",
+			"frame_inactive": "#f2eff4",
+			"tab_background_text": "#6b6877",
+			"tab_selected": "#f2eff4",
+			"tab_text": "#2b2a33",
+			"tab_line": "#5e44cc",
+			"tab_loading": "#5e44cc",
+			"toolbar": "#f2eff4",
+			"toolbar_text": "#2b2a33",
+			"toolbar_top_separator": "#c9c5d0",
+			"toolbar_bottom_separator": "#c9c5d0",
+			"toolbar_vertical_separator": "#c9c5d0",
+			"toolbar_field": "#fbfaf6",
+			"toolbar_field_text": "#2b2a33",
+			"toolbar_field_border": "#c9c5d0",
+			"toolbar_field_focus": "#fbfaf6",
+			"toolbar_field_text_focus": "#1c1b20",
+			"toolbar_field_border_focus": "#2563eb",
+			"toolbar_field_highlight": "#bfd0f3",
+			"toolbar_field_highlight_text": "#1c1b20",
+			"bookmark_text": "#2b2a33",
+			"icons": "#484554",
+			"icons_attention": "#5e44cc",
+			"button_background_hover": "#e6e0eb",
+			"button_background_active": "#c9c5d0",
+			"popup": "#f2eff4",
+			"popup_text": "#2b2a33",
+			"popup_border": "#c9c5d0",
+			"popup_highlight": "#bfd0f3",
+			"popup_highlight_text": "#1c1b20",
+			"sidebar": "#f2eff4",
+			"sidebar_text": "#2b2a33",
+			"sidebar_border": "#c9c5d0",
+			"sidebar_highlight": "#bfd0f3",
+			"sidebar_highlight_text": "#1c1b20",
+			"ntp_background": "#fbfaf6",
+			"ntp_text": "#2b2a33",
+			"ntp_card_background": "#f2eff4"
+		},
+		"properties": {
+			"color_scheme": "light"
+		}
+	}
+}
