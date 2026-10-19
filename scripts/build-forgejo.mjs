@@ -191,12 +191,16 @@ export const emailHashes = (email) => {
 	return ['md5', 'sha256'].map((algorithm) => createHash(algorithm).update(address).digest('hex'));
 };
 
-export const avatarTemplate = (email) => `<style>
+// Forgejo lets browsers keep a static file for six hours, so the picture's URL carries a hash of its
+// content and a redrawn avatar is fetched again straight away.
+export const avatarVersion = (svg) => createHash('sha256').update(svg).digest('hex').slice(0, 8);
+
+export const avatarTemplate = (email, version) => `<style>
 	/* ${TEMPLATE_MARKER}: the Afterglow picture for the instance's own signature (afterglow-themes, forgejo/avatar). */
 ${emailHashes(email)
 	.map((hash) => `	img[src*="/avatar/${hash}"]`)
 	.join(',\n')} {
-		content: url(/assets/img/forgejo-instance.svg);
+		content: url(/assets/img/forgejo-instance.svg?v=${version});
 	}
 </style>
 `;

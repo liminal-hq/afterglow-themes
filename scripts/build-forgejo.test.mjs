@@ -8,6 +8,7 @@ import { test } from 'node:test';
 import {
 	ALPHAS,
 	avatarTemplate,
+	avatarVersion,
 	buildForgejoCss,
 	buildForgejoOverrides,
 	emailHashes,
@@ -156,9 +157,15 @@ test('the instance avatar template matches the signing email under both hash for
 	const [md5, sha256] = emailHashes('Noreply@192.168.1.113 ');
 	assert.equal(md5.length, 32);
 	assert.equal(sha256.length, 64);
-	const template = avatarTemplate('noreply@192.168.1.113');
+	const template = avatarTemplate('noreply@192.168.1.113', 'abc12345');
 	assert.ok(template.includes(`/avatar/${md5}"`));
 	assert.ok(template.includes(`/avatar/${sha256}"`));
 	assert.ok(template.includes(TEMPLATE_MARKER));
-	assert.ok(template.includes('/assets/img/forgejo-instance.svg'));
+	assert.ok(template.includes('/assets/img/forgejo-instance.svg?v=abc12345'));
+});
+
+test('the avatar version changes with the picture and nothing else', () => {
+	assert.equal(avatarVersion('<svg/>'), avatarVersion('<svg/>'));
+	assert.notEqual(avatarVersion('<svg/>'), avatarVersion('<svg />'));
+	assert.match(avatarVersion('<svg/>'), /^[\da-f]{8}$/);
 });
