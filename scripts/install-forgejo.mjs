@@ -13,7 +13,7 @@ import {
 } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { avatarTemplate, avatarVersion, TEMPLATE_MARKER } from './build-forgejo.mjs';
+import { avatarTemplate, TEMPLATE_MARKER } from './build-forgejo.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -43,8 +43,10 @@ for (const file of readdirSync(themes).filter((f) => f.endsWith('.css'))) {
 if (email) {
 	const img = join(custom, 'public', 'assets', 'img');
 	mkdirSync(img, { recursive: true });
-	const avatar = join(root, 'forgejo', 'avatar', 'forgejo-instance.svg');
-	copyFileSync(avatar, join(img, 'forgejo-instance.svg'));
+	copyFileSync(
+		join(root, 'forgejo', 'avatar', 'forgejo-instance.svg'),
+		join(img, 'forgejo-instance.svg'),
+	);
 	console.log(`installed ${join(img, 'forgejo-instance.svg')}`);
 
 	// Forgejo reads this template for every page, so never replace one that is not ours
@@ -55,7 +57,7 @@ if (email) {
 		process.exit(1);
 	}
 	mkdirSync(templates, { recursive: true });
-	writeFileSync(target, avatarTemplate(email, avatarVersion(readFileSync(avatar))));
+	writeFileSync(target, avatarTemplate(email));
 	console.log(`installed ${target}`);
 }
 
