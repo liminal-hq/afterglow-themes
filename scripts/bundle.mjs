@@ -97,6 +97,21 @@ execFileSync('zip', [
 	join(root, 'LICENSE-MIT'),
 ]);
 
+// The Forgejo themes and the instance avatar ship as a zip for the custom directory's public/assets
+const forgejoThemes = readdirSync(join(root, 'forgejo', 'themes')).filter((f) =>
+	f.endsWith('.css'),
+);
+if (!forgejoThemes.length) throw new Error('No Forgejo themes found. Run `bun run build` first.');
+execFileSync('zip', [
+	'-q',
+	'-j',
+	join(out, `afterglow-forgejo-v${version}.zip`),
+	...forgejoThemes.map((f) => join(root, 'forgejo', 'themes', f)),
+	join(root, 'forgejo', 'avatar', 'forgejo-instance.svg'),
+	join(root, 'LICENSE-APACHE'),
+	join(root, 'LICENSE-MIT'),
+]);
+
 const sums = readdirSync(out)
 	.sort()
 	.map(
