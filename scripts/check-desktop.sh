@@ -4,7 +4,8 @@
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
-# Builds desktop/style into a scratch folder, then compares afterglow.msstyles with desktop/SHA256SUMS
+# Builds desktop/style twice into scratch folders (the default build, with classic scroll bars, and the --scrollbars build with the
+# Afterglow ones), then compares afterglow.msstyles and afterglow-scrollbars.msstyles with desktop/SHA256SUMS
 # (the build is reproducible: same sources, same bytes) and each generated .reg file with the one
 # committed in desktop/schemes. Needs python3 with numpy, llvm-rc and lld-link. The built style stays
 # out of git. Pass a folder to keep the build there; otherwise a temporary one is used and removed.
@@ -21,10 +22,12 @@ if [ -n "${1:-}" ]; then
 	out=$1
 else
 	out=$(mktemp -d)
-	trap 'rm -rf "$out"' EXIT
+	trap 'rm -rf "$out" "$out-scrollbars"' EXIT
 fi
 
 bash desktop/style/build.sh "$out" >/dev/null
+bash desktop/style/build.sh "$out-scrollbars" --scrollbars >/dev/null
+cp "$out-scrollbars/afterglow.msstyles" "$out/afterglow-scrollbars.msstyles"
 
 status=0
 for f in desktop/schemes/*.reg; do
@@ -38,9 +41,9 @@ for f in "$out"/schemes/*.reg; do
 done
 
 if (cd "$out" && sha256sum --check --quiet "$root/desktop/SHA256SUMS"); then
-	echo "afterglow.msstyles matches desktop/SHA256SUMS"
+	echo "afterglow.msstyles and afterglow-scrollbars.msstyles match desktop/SHA256SUMS"
 else
-	echo "afterglow.msstyles does not match desktop/SHA256SUMS"
+	echo "afterglow.msstyles or afterglow-scrollbars.msstyles does not match desktop/SHA256SUMS"
 	status=1
 fi
 

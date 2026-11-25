@@ -33,6 +33,12 @@ There are three routes. The registry route is the safe one.
 
 3. **Display Properties, Appearance, Color scheme.** The list shows all eight names, sorted, and applies the pick at once without logging off: the theme reloads in every process and the scheme's system colours are copied into the classic scheme.
 
+## Scroll bars
+
+By default the scroll bars are the classic Windows ones (cream faces with raised two-pixel edges, black arrows, the dithered track), the same in every scheme. The Afterglow scroll bars (dusk thumbs and gold hot states) are kept in the generator and built on request: `bash desktop/style/build.sh desktop/build --scrollbars`.
+
+The style cannot simply leave scroll bars out. `uxtheme` paints a window's own scroll bars only through the style's `SCROLLBAR` class and has no classic fallback: without the class a themed window gets no arrow buttons and its thumb leaves trails when it moves. So the default style carries a `SCROLLBAR` class drawn to look classic (`style/ini/scroll-classic.ini`), and the grip parts say `BgType = None` because a part with no section is drawn as a default white box. Standalone scroll bar controls and every other control (spin buttons, combo drop-down buttons, list, tree and header controls) are unaffected: none of them use the `scroll/` images.
+
 ## Live switching caveat
 
 Switching colour schemes live in Display Properties reloads the theme in every running process. In testing, many live switches in a row crashed `win32k` once. A single switch is normally fine, but for scripted or repeated changes use the registry route and log off, which loads the scheme once at logon and was stable throughout.

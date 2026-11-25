@@ -2,7 +2,9 @@
 # Generate the sources of the original Afterglow visual style: bitmaps (drawn by agart.py) for each colour scheme, one Normal INI
 # per scheme (from ini/normal.ini), themes.ini, the resource script and each scheme's registry file. Nothing is read from any other
 # visual style.
-# Usage: gen.py OUT_DIR [--preview PNG]   (OUT_DIR receives art/, textfiles/, schemes/ and afterglow.rc)
+# Usage: gen.py OUT_DIR [--preview PNG] [--scrollbars]   (OUT_DIR receives art/, textfiles/, schemes/ and afterglow.rc)
+# By default the scroll bars are classic Windows ones (ini/scroll-classic.ini, classic images in scroll/); --scrollbars builds the
+# Afterglow scroll bars instead (the drawing code and the INI sections are kept either way).
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -125,12 +127,29 @@ def scheme_reg(colour, tok):
 	return "\n".join(lines) + "\n"
 
 
+def drop_sections(ini, stem):
+	"""The INI text without every section whose name starts with stem (case-insensitive), such as "Scrollbar." for all of that class."""
+	out, skipping = [], False
+	for ln in ini.splitlines():
+		if ln.startswith("["):
+			skipping = ln[1:].lower().startswith(stem.lower())
+		if not skipping:
+			out.append(ln)
+	return "\n".join(out)
+
+
 def main():
-	out = sys.argv[1]
-	preview = sys.argv[3] if len(sys.argv) > 3 and sys.argv[2] == "--preview" else None
+	args = sys.argv[1:]
+	out = args.pop(0)
+	scrollbars = "--scrollbars" in args
+	if scrollbars:
+		args.remove("--scrollbars")
+	preview = args[1] if len(args) > 1 and args[0] == "--preview" else None
 	os.makedirs(os.path.join(out, "textfiles"), exist_ok=True)
 	os.makedirs(os.path.join(out, "schemes"), exist_ok=True)
 	src = open(os.path.join(here, "ini", "normal.ini"), encoding="utf-8").read()
+	if not scrollbars:  # the classic scroll bars take the Afterglow ones' place
+		src = drop_sections(src, "Scrollbar.") + "\n" + open(os.path.join(here, "ini", "scroll-classic.ini"), encoding="utf-8").read()
 	# The shipped copy drops comments and blank lines and writes "Key=value" with LF line ends (the engine skips comments, trims
 	# spaces around the "=" and treats CR as a space), which keeps eight INI resources small.
 	# Number lists lose their spaces after commas too ("4,4,4,4"; the engine skips any non-digit between numbers).
@@ -144,7 +163,7 @@ def main():
 	images, arrays, by_bytes = {}, {}, {}
 	ini_total = 0
 	for n, (colour, _tip) in enumerate(COLOURS):
-		art = all_art(colour)
+		art = all_art(colour, scrollbars)
 		names = {}
 		for path, a in art.items():
 			data = encode_bmp(a)

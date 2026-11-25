@@ -296,6 +296,73 @@ def size_box():
 	return stack([f, left])
 
 
+# Classic Windows scroll bars (the default: the scroll bar art of the Afterglow style stays above, behind --scrollbars). The engine
+# draws a window's own scroll bars only through the style's SCROLLBAR class, so the default style carries these classic-looking
+# images instead of leaving the class out. The colours are the classic scheme's, the same in every colour scheme.
+CL_FACE = np.array([212.0, 208.0, 200.0])
+CL_LIGHT = np.array([255.0, 255.0, 255.0])
+CL_SHADOW = np.array([128.0, 128.0, 128.0])
+CL_DARK = np.array([64.0, 64.0, 64.0])
+CL_INK = np.array([0.0, 0.0, 0.0])
+
+
+def _classic_bevel(w, h, pressed=False):
+	"""A classic push button face: raised with two-pixel edges, or flat with a one-pixel shadow outline when pressed."""
+	f = canvas(w, h, CL_FACE)
+	if pressed:
+		f[0, :] = f[-1, :] = f[:, 0] = f[:, -1] = CL_SHADOW
+		return f
+	f[0, :], f[:, 0] = CL_FACE, CL_FACE
+	f[-1, :], f[:, -1] = CL_DARK, CL_DARK
+	f[1, 1 : w - 1], f[1 : h - 1, 1] = CL_LIGHT, CL_LIGHT
+	f[-2, 1 : w - 1], f[1 : h - 1, -2] = CL_SHADOW, CL_SHADOW
+	return f
+
+
+def classic_scroll_arrows():
+	bg, gl = [], []
+	for d in ("up", "down", "left", "right"):
+		for s in range(4):  # normal, hot, pressed, disabled
+			bg.append(_classic_bevel(SB, SB, pressed=(s == 2)))
+			f = canvas(9, 9)
+			m = _arrow_mask(d)
+			if s == 3:  # disabled: shadow grey over a white copy one pixel down and right
+				sh = np.zeros_like(m)
+				sh[1:, 1:] = m[:-1, :-1]
+				f[sh] = CL_LIGHT
+				f[m] = CL_SHADOW
+			else:
+				f[m] = CL_INK
+			gl.append(f)
+	return stack(bg), stack(gl)
+
+
+def classic_scroll_thumb(vertical):
+	w, h = (SB, 24) if vertical else (24, SB)
+	return stack([_classic_bevel(w, h)] * 4)
+
+
+def classic_scroll_track(pressed=False):
+	"""The classic dithered track: a one-pixel checker of the face and white (or of shadow grey and the face while pressed)."""
+	a, b = (CL_SHADOW, CL_FACE) if pressed else (CL_FACE, CL_LIGHT)
+	f = canvas(2, 2, a)
+	f[0, 1] = f[1, 0] = b
+	return f
+
+
+def classic_size_box():
+	f = canvas(SB, SB, CL_FACE)
+	e = SB - 2
+	for d in (3, 7, 11):  # three diagonal ridges: shadow grey with a white edge on the lower-right side
+		for x in range(SB):
+			for y in range(SB):
+				if x <= e and y <= e and x + y == 2 * e - d:
+					f[y, x] = CL_SHADOW
+				elif x <= e + 1 and y <= e + 1 and x + y == 2 * e - d + 1 and x > 0 and y > 0:
+					f[y, x] = CL_LIGHT
+	return stack([f, f[:, ::-1]])
+
+
 # ---- dialog controls (they sit on the classic cream client) ---------------------------------------------------------------------------
 
 
@@ -648,11 +715,11 @@ def show_desktop():
 	return stack(frames)
 
 
-def all_art(scheme="Dusk"):
-	"""Name (path inside the style, as the INI names it) to image, drawn in the named colour scheme."""
+def all_art(scheme="Dusk", scrollbars=False):
+	"""Name (path inside the style, as the INI names it) to image, drawn in the named colour scheme. scrollbars picks the Afterglow
+	scroll bar art; otherwise the scroll bars are the classic Windows ones."""
 	use_scheme(scheme)
 	cap, maxcap = captions()
-	arrows_bg, arrows_gl = scroll_arrows()
 	art = {
 		"window/caption.bmp": cap,
 		"window/caption-max.bmp": maxcap,
@@ -666,13 +733,6 @@ def all_art(scheme="Dusk"):
 		"window/glyph-restore.bmp": caption_glyphs("restore"),
 		"window/glyph-close.bmp": caption_glyphs("close", close=True),
 		"window/glyph-help.bmp": caption_glyphs("help"),
-		"scroll/arrow.bmp": arrows_bg,
-		"scroll/arrow-glyph.bmp": arrows_gl,
-		"scroll/thumb-v.bmp": scroll_thumb(True),
-		"scroll/thumb-h.bmp": scroll_thumb(False),
-		"scroll/grip-v.bmp": scroll_gripper(True),
-		"scroll/grip-h.bmp": scroll_gripper(False),
-		"scroll/sizebox.bmp": size_box(),
 		"controls/push.bmp": push_button(),
 		"controls/check.bmp": check_boxes(),
 		"controls/radio.bmp": radio_buttons(),
@@ -710,4 +770,30 @@ def all_art(scheme="Dusk"):
 		"shell/tray.bmp": tray_background(),
 		"shell/show-desktop.bmp": show_desktop(),
 	}
+	if scrollbars:
+		arrows_bg, arrows_gl = scroll_arrows()
+		art.update(
+			{
+				"scroll/arrow.bmp": arrows_bg,
+				"scroll/arrow-glyph.bmp": arrows_gl,
+				"scroll/thumb-v.bmp": scroll_thumb(True),
+				"scroll/thumb-h.bmp": scroll_thumb(False),
+				"scroll/grip-v.bmp": scroll_gripper(True),
+				"scroll/grip-h.bmp": scroll_gripper(False),
+				"scroll/sizebox.bmp": size_box(),
+			}
+		)
+	else:
+		arrows_bg, arrows_gl = classic_scroll_arrows()
+		art.update(
+			{
+				"scroll/arrow.bmp": arrows_bg,
+				"scroll/arrow-glyph.bmp": arrows_gl,
+				"scroll/thumb-v.bmp": classic_scroll_thumb(True),
+				"scroll/thumb-h.bmp": classic_scroll_thumb(False),
+				"scroll/track.bmp": classic_scroll_track(),
+				"scroll/track-pressed.bmp": classic_scroll_track(True),
+				"scroll/sizebox.bmp": classic_size_box(),
+			}
+		)
 	return art
