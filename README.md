@@ -11,12 +11,13 @@
   <img src="https://img.shields.io/badge/VS%20Code-themes-a78bfa" alt="VS Code themes">
   <img src="https://img.shields.io/badge/Midnight%20Commander-skins-ffaa40" alt="Midnight Commander skins">
   <img src="https://img.shields.io/badge/Claude%20Code-themes-d97757" alt="Claude Code themes">
+  <img src="https://img.shields.io/badge/Forgejo-themes-fb923c" alt="Forgejo themes">
   <img src="https://img.shields.io/badge/Codex%20%C2%B7%20bat%20%C2%B7%20delta-tmThemes-f43f5e" alt="Codex, bat and delta TextMate themes">
   <img src="https://img.shields.io/badge/Firefox%20%C2%B7%20Chrome%20%C2%B7%20Edge-themes-4285f4" alt="Firefox, Chrome and Edge themes">
   <img src="https://img.shields.io/badge/licence-Apache--2.0%20OR%20MIT-3fb950" alt="Licence: Apache-2.0 OR MIT">
 </p>
 
-Afterglow is the Liminal HQ colour theme for the [OpenCode](https://opencode.ai) terminal UI, for VS Code, for [Midnight Commander](https://midnight-commander.org), for [Claude Code](https://code.claude.com), and for the [Codex](https://developers.openai.com/codex) CLI, [bat](https://github.com/sharkdp/bat) and [delta](https://github.com/dandavison/delta) through TextMate themes, and for Firefox, Chrome and Edge: the soft orange, rose and purple that linger on the horizon after the light goes, set against a near-black void. Each comes in three variants, and the OpenCode and Midnight Commander ones have a see-through variant so your terminal's own background and blur show through.
+Afterglow is the Liminal HQ colour theme for the [OpenCode](https://opencode.ai) terminal UI, for VS Code, for [Midnight Commander](https://midnight-commander.org), for [Claude Code](https://code.claude.com), for [Forgejo](https://forgejo.org), and for the [Codex](https://developers.openai.com/codex) CLI, [bat](https://github.com/sharkdp/bat) and [delta](https://github.com/dandavison/delta) through TextMate themes, and for Firefox, Chrome and Edge: the soft orange, rose and purple that linger on the horizon after the light goes, set against a near-black void. Each comes in three variants, and the OpenCode and Midnight Commander ones have a see-through variant so your terminal's own background and blur show through.
 
 > **Status:** early development. The themes are complete and pass the schema and contrast checks in CI. The OpenCode themes target the V2 theme format and are tested against OpenCode v2.0.21. The VS Code extension is not yet published to the Marketplace; install it from a release. The Claude Code themes follow Claude Code's custom theme format, which Anthropic documents but does not version, and the TextMate themes have not been loaded in Codex, bat or delta yet (see the docs for what was verified). The Firefox, Chrome and Edge themes are unsigned and unpublished, so they load temporarily or unpacked (see the install steps).
 
@@ -59,6 +60,17 @@ Every section of the skin is coloured deliberately: the file list and file types
 | `Afterglow Light` | Light | A warm paper theme with deeper accents that hold 4.5:1 contrast, on the `light` preset. |
 
 Each theme sets all 72 colour tokens Claude Code defines, from the same role hues as the other themes: the spinner and brand, modes and dialogs, status colours, diffs, transcript backgrounds, subagent colours and the usage meter. Claude Code draws on your terminal's own background, so there is no transparency to set, and fenced code blocks use Claude Code's own syntax colours. See [docs/claude-code-theme.md](docs/claude-code-theme.md).
+
+## The Forgejo themes
+
+| Theme             | Mode       | What it is                                                                                   |
+| ----------------- | ---------- | -------------------------------------------------------------------------------------------- |
+| `afterglow`       | Dark       | The `#050507` void for the header with orange as the primary colour.                         |
+| `afterglow-dark`  | Dark       | Deep indigo-black with purple as the primary colour.                                         |
+| `afterglow-light` | Light      | Warm paper with a deeper purple primary colour.                                              |
+| `afterglow-auto`  | Follows OS | `afterglow-light` in light mode and `afterglow` in dark mode, like Forgejo's own auto theme. |
+
+Each theme imports one of Forgejo's own themes and recolours its grey ramp and primary colour from the Afterglow palette, so everything else (syntax highlighting, diffs, alerts) stays as Forgejo draws it. There is also an Afterglow avatar for the instance's own commit signature. See [docs/forgejo-theme.md](docs/forgejo-theme.md).
 
 ## The Firefox, Chrome and Edge themes
 
@@ -137,6 +149,17 @@ unzip afterglow-claude-code-themes-v*.zip '*.json' -d ~/.claude/themes
 
 Then run `/theme` in Claude Code and pick **Afterglow**, **Afterglow Dark** or **Afterglow Light** from the custom themes at the end of the list. If you keep your Claude Code configuration somewhere else, use `$CLAUDE_CONFIG_DIR/themes` instead. Restart Claude Code once if the `themes` directory did not exist when it started.
 
+### Forgejo
+
+Download `afterglow-forgejo-vX.Y.Z.zip` from the [releases page](https://github.com/liminal-hq/afterglow-themes/releases) and unpack the `.css` files into `public/assets/css/` of Forgejo's custom directory (`/data/gitea` in the container image). Then list the themes in `app.ini` and restart Forgejo:
+
+```ini
+[ui]
+THEMES = forgejo-auto,forgejo-light,forgejo-dark,afterglow-auto,afterglow,afterglow-dark,afterglow-light
+```
+
+Choose one under **Settings > Appearance**. `bun run install:forgejo -- --custom <dir> --signing-email <address>` does the copying from a checkout and also installs the instance avatar. See [docs/forgejo-theme.md](docs/forgejo-theme.md).
+
 ### Firefox
 
 Afterglow's Firefox themes are unsigned, and Firefox only keeps signed add-ons, so load one temporarily: open `about:debugging#/runtime/this-firefox`, choose **Load Temporary Add-on** and pick the `manifest.json` in a theme's folder under `firefox/themes/` (or the release's `.xpi`). It lasts until Firefox restarts. Firefox Developer Edition, Nightly and ESR can install the `.xpi` for good once `xpinstall.signatures.required` is `false`.
@@ -207,7 +230,7 @@ The themes are generated, so edit the palette and rebuild rather than editing th
 
 ```sh
 bun install
-bun run build            # regenerate themes/, vscode/themes/, mc/skins/, claude/themes/, tmtheme/, firefox/themes/ and chromium/themes/
+bun run build            # regenerate themes/, vscode/themes/, mc/skins/, claude/themes/, tmtheme/, forgejo/themes/, firefox/themes/ and chromium/themes/
 bun run validate:themes  # check the schema rules and 4.5:1 text contrast
 bun run validate         # the full local gate that mirrors CI
 bun run bundle           # build the release assets (including the .vsix) into dist/release
@@ -218,6 +241,7 @@ bun run bundle           # build the release assets (including the .vsix) into d
 - `scripts/build-vscode.mjs` builds the VS Code themes from the same palette, using the Dark+ and Light+ scope rules in `vscode/upstream/` as the structural base.
 - `scripts/build-mc.mjs` builds the Midnight Commander skins (truecolour and 256-colour) from the same palette, and `scripts/validate-mc.mjs` checks every section and key against `scripts/mc-skin-keys.json`, the colour syntax and about 80 contrast pairs per skin.
 - `scripts/build-claude.mjs` builds the Claude Code themes (all 72 tokens, listed in `scripts/claude-theme-tokens.json`) and `scripts/validate-claude.mjs` checks the file schema, the tokens, the colour syntax and about 80 contrast pairs per theme.
+- `scripts/build-forgejo.mjs` builds the Forgejo themes (a grey ramp, a primary colour ramp and an `@import` of Forgejo's own theme each) and `scripts/validate-forgejo.mjs` checks every variable against `scripts/forgejo-theme-variables.json`, the imports and about 60 contrast pairs per theme.
 - `scripts/build-tmtheme.mjs` converts the recoloured VS Code token colours into `.tmTheme` files, so the syntax colours have one source, and `scripts/validate-tmtheme.mjs` checks the plist, the global settings, the scopes against the VS Code themes and the contrast.
 - `scripts/browser-roles.mjs` maps the ramps onto the roles both browsers need. `scripts/build-firefox.mjs` and `scripts/build-chromium.mjs` build the Firefox and the Chrome and Edge theme manifests from it, and `scripts/validate-firefox.mjs` and `scripts/validate-chromium.mjs` check the keys (`scripts/firefox-theme-keys.json`, `scripts/chromium-theme-keys.json`), the colour syntax and the contrast.
 - `scripts/build-wallpapers.mjs` draws the desktop wallpapers from a palette table, `scripts/validate-wallpapers.mjs` checks their colours, structure and contrast, and `scripts/render-wallpapers.mjs` renders and dithers the PNGs and BMPs.
@@ -227,7 +251,7 @@ CI runs the format check, the licence-header check, the theme build and validati
 
 ## Releases
 
-Releases are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. The release workflow runs the full validation, then attaches the three OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the TextMate themes zip, a Firefox `.xpi` per theme, the Chrome and Edge themes zip and a `SHA256SUMS` file to a GitHub release with generated notes.
+Releases are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. The release workflow runs the full validation, then attaches the three OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the Forgejo themes zip, the TextMate themes zip, a Firefox `.xpi` per theme, the Chrome and Edge themes zip and a `SHA256SUMS` file to a GitHub release with generated notes.
 
 ## Contributing
 

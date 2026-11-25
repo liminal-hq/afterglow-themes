@@ -97,6 +97,21 @@ execFileSync('zip', [
 	join(root, 'LICENSE-MIT'),
 ]);
 
+// The Forgejo themes and the instance avatar ship as a zip for the custom directory's public/assets
+const forgejoThemes = readdirSync(join(root, 'forgejo', 'themes')).filter((f) =>
+	f.endsWith('.css'),
+);
+if (!forgejoThemes.length) throw new Error('No Forgejo themes found. Run `bun run build` first.');
+execFileSync('zip', [
+	'-q',
+	'-j',
+	join(out, `afterglow-forgejo-v${version}.zip`),
+	...forgejoThemes.map((f) => join(root, 'forgejo', 'themes', f)),
+	join(root, 'forgejo', 'avatar', 'forgejo-instance.svg'),
+	join(root, 'LICENSE-APACHE'),
+	join(root, 'LICENSE-MIT'),
+]);
+
 // A Firefox theme is an .xpi (a zip with the manifest and images at its root), one per theme. These
 // are unsigned, so release Firefox only loads them as temporary add-ons until they are signed.
 const firefoxThemes = readdirSync(join(root, 'firefox', 'themes'));
