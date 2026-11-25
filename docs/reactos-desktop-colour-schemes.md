@@ -47,6 +47,10 @@ Switching colour schemes live in Display Properties reloads the theme in every r
 
 `uxtheme` reads three lists from resource id 1: `COLORNAMES` and `SIZENAMES` (null-separated names, the first is the default) and `FILERESNAMES` (one INI resource name per colour and size pair). `OpenThemeData` uses `ColorName` and `SizeName` from `HKCU\Software\Microsoft\Windows\CurrentVersion\ThemeManager`. Image names in an INI become resource names, so per-scheme bitmaps are differently named resources, and an image whose bytes equal one already drawn is shared. Display names come from string 1000 + n and tooltips from 2000 + n.
 
+## Pointers
+
+The pointer set is separate from the colour schemes and the same in every one. See `docs/reactos-desktop-pointers.md`.
+
 ## Where the colours come from
 
 See `desktop/PROVENANCE.md`.

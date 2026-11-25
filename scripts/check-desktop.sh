@@ -4,6 +4,10 @@
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
+# Also draws the pointer set (desktop/pointers/gen-cursors.py, needs Pillow) and compares the 16 files with
+# desktop/pointers/SHA256SUMS. With USER32=PATH (a ReactOS 0.4.16 i386 user32.dll, your own copy), it also patches a scratch copy and
+# checks the result against the patched hash in desktop/pointers/SHA256SUMS.user32.
+#
 # Builds desktop/style twice into scratch folders (the default build, with classic scroll bars, and the --scrollbars build with the
 # Afterglow ones), then compares afterglow.msstyles and afterglow-scrollbars.msstyles with desktop/SHA256SUMS
 # (the build is reproducible: same sources, same bytes) and each generated .reg file with the one
@@ -47,5 +51,26 @@ else
 	status=1
 fi
 
-[ "$status" -eq 0 ] && echo "Desktop style is reproducible."
+python3 desktop/pointers/gen-cursors.py "$out/pointers" >/dev/null
+if (cd "$out/pointers" && sha256sum --check --quiet "$root/desktop/pointers/SHA256SUMS"); then
+	echo "the 16 Afterglow pointers match desktop/pointers/SHA256SUMS"
+else
+	echo "the Afterglow pointers do not match desktop/pointers/SHA256SUMS"
+	status=1
+fi
+if [ -n "${USER32:-}" ]; then
+	if python3 desktop/pointers/patch-user32.py "$USER32" "$out/pointers" "$out/user32-afterglow.dll" >/dev/null; then
+		if (cd "$out" && sha256sum --check --quiet "$root/desktop/pointers/SHA256SUMS.user32"); then
+			echo "the patched user32.dll matches desktop/pointers/SHA256SUMS.user32"
+		else
+			echo "the patched user32.dll does not match desktop/pointers/SHA256SUMS.user32"
+			status=1
+		fi
+	else
+		echo "patch-user32.py refused or failed on $USER32"
+		status=1
+	fi
+fi
+
+[ "$status" -eq 0 ] && echo "Desktop style and pointers are reproducible."
 exit "$status"
