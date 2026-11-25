@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img"><title>Forgejo Instance — Afterglow</title><defs>
+<linearGradient id="fi-bg" x1="80" y1="64" x2="432" y2="448" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0E0D12"/><stop offset=".55" stop-color="#0A0A0D"/><stop offset="1" stop-color="#08080B"/></linearGradient>
+<radialGradient id="fi-bloom" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(192 160) rotate(90) scale(420)"><stop offset="0" stop-color="#fff" stop-opacity=".03"/><stop offset=".55" stop-color="#fff" stop-opacity=".01"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+<linearGradient id="fi-brand" x1="112" y1="420" x2="420" y2="100" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#9A4A5C"/><stop offset=".5" stop-color="#E0692A"/><stop offset="1" stop-color="#F19B18"/></linearGradient>
+<radialGradient id="fi-glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(256 268) rotate(90) scale(150 170)"><stop offset="0" stop-color="#F7E2BA" stop-opacity=".30"/><stop offset=".55" stop-color="#F19B18" stop-opacity=".12"/><stop offset="1" stop-color="#F19B18" stop-opacity="0"/></radialGradient>
+<filter id="fi-soft" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="18"/></filter></defs>
+<rect width="512" height="512" rx="112" fill="url(#fi-bg)"/><rect width="512" height="512" rx="112" fill="url(#fi-bloom)"/>
+<ellipse cx="256" cy="290" rx="150" ry="120" fill="url(#fi-glow)" filter="url(#fi-soft)"/>
+<g fill="none" stroke="url(#fi-brand)" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"><path d="M176 156V356"/><path d="M336 216C336 300 262 336 176 344"/></g>
+<g fill="#0A0A0D" stroke="url(#fi-brand)" stroke-width="40"><circle cx="176" cy="148" r="42"/><circle cx="176" cy="364" r="42"/><circle cx="336" cy="196" r="42"/></g>
+<g fill="#ffaa40"><circle cx="176" cy="148" r="14"/><circle cx="176" cy="364" r="14"/><circle cx="336" cy="196" r="14"/></g>
+</svg>
