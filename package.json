@@ -14,14 +14,15 @@
 		"node": ">=22"
 	},
 	"scripts": {
-		"build": "node scripts/build.mjs && node scripts/build-vscode.mjs && node scripts/build-mc.mjs && node scripts/build-claude.mjs && node scripts/build-tmtheme.mjs && node scripts/build-firefox.mjs && node scripts/build-chromium.mjs && node scripts/build-forgejo.mjs",
-		"validate:themes": "node scripts/validate-themes.mjs && node scripts/validate-vscode.mjs && node scripts/validate-mc.mjs && node scripts/validate-claude.mjs && node scripts/validate-tmtheme.mjs && node scripts/validate-firefox.mjs && node scripts/validate-chromium.mjs && node scripts/validate-forgejo.mjs",
-		"check:themes": "bun run build && git diff --exit-code -- themes vscode/themes mc/skins claude/themes tmtheme firefox/themes chromium/themes forgejo/themes",
+		"build": "node scripts/build.mjs && node scripts/build-vscode.mjs && node scripts/build-mc.mjs && node scripts/build-claude.mjs && node scripts/build-tmtheme.mjs && node scripts/build-firefox.mjs && node scripts/build-chromium.mjs && node scripts/build-forgejo.mjs && node scripts/build-wallpapers.mjs",
+		"validate:themes": "node scripts/validate-themes.mjs && node scripts/validate-vscode.mjs && node scripts/validate-mc.mjs && node scripts/validate-claude.mjs && node scripts/validate-tmtheme.mjs && node scripts/validate-firefox.mjs && node scripts/validate-chromium.mjs && node scripts/validate-forgejo.mjs && node scripts/validate-wallpapers.mjs",
+		"check:themes": "bun run build && git diff --exit-code -- themes vscode/themes mc/skins claude/themes tmtheme firefox/themes chromium/themes forgejo/themes assets/wallpapers",
 		"check:headers": "bash scripts/check-headers.sh",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"lint:md": "markdownlint-cli2 '**/*.md' '#node_modules'",
 		"validate": "bun run format:check && bun run check:headers && bun run lint:md && bun run test && bun run build && bun run validate:themes",
+		"render:wallpapers": "node scripts/render-wallpapers.mjs",
 		"bundle": "bun run build && node scripts/bundle.mjs",
 		"install:themes": "bun run build && node scripts/install.mjs",
 		"install:mc": "bun run build && node scripts/install-mc.mjs",
