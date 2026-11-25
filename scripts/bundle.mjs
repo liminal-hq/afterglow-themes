@@ -17,7 +17,7 @@ import {
 	writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -240,11 +240,27 @@ function buildReactosDesktop() {
 					.digest('hex')}  ${dir}/afterglow.msstyles`,
 		);
 		writeFileSync(join(stage, 'SHA256SUMS'), `${styleSums.join('\n')}\n`);
-		copyFileSync(join(desktop, 'README.md'), join(stage, 'README.md'));
+		// The docs are written for the repository layout. In the zip, desktop/ is the root and docs/ sits
+		// beside pointers/, so the links that cross out of desktop/ are rewritten to the zip layout.
+		mkdirSync(join(stage, 'docs', 'images'));
+		copyFileSync(
+			join(root, 'docs', 'images', 'afterglow-pointers.png'),
+			join(stage, 'docs', 'images', 'afterglow-pointers.png'),
+		);
+		const readme = readFileSync(join(desktop, 'README.md'), 'utf8').replaceAll(
+			'](../docs/',
+			'](docs/',
+		);
+		writeFileSync(join(stage, 'README.md'), readme);
 		copyFileSync(join(desktop, 'PROVENANCE.md'), join(stage, 'PROVENANCE.md'));
 		for (const doc of ['reactos-desktop-colour-schemes.md', 'reactos-desktop-pointers.md']) {
-			copyFileSync(join(root, 'docs', doc), join(stage, 'docs', doc));
+			const text = readFileSync(join(root, 'docs', doc), 'utf8').replaceAll(
+				'](../desktop/',
+				'](../',
+			);
+			writeFileSync(join(stage, 'docs', doc), text);
 		}
+		checkLinks(stage);
 		for (const licence of ['LICENSE-APACHE', 'LICENSE-MIT']) {
 			copyFileSync(join(root, licence), join(stage, licence));
 		}
@@ -252,6 +268,36 @@ function buildReactosDesktop() {
 		execFileSync('zip', ['-q', '-r', join(out, `${name}.zip`), name], { cwd: scratch });
 	} finally {
 		rmSync(scratch, { recursive: true, force: true });
+	}
+}
+
+// Fail when a markdown file in the staged zip links to a file that is not in the zip
+function checkLinks(dir) {
+	const files = [];
+	const walk = (d) => {
+		for (const entry of readdirSync(d, { withFileTypes: true })) {
+			const full = join(d, entry.name);
+			if (entry.isDirectory()) walk(full);
+			else if (entry.name.endsWith('.md')) files.push(full);
+		}
+	};
+	walk(dir);
+	const broken = [];
+	for (const file of files) {
+		const text = readFileSync(file, 'utf8');
+		for (const match of text.matchAll(/!?\[[^\]]*\]\(([^)\s]+)[^)]*\)/g)) {
+			const target = match[1].split('#')[0];
+			if (!target || /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(target)) continue;
+			const resolved = resolve(dirname(file), decodeURIComponent(target));
+			if (relative(dir, resolved).startsWith('..') || !existsSync(resolved)) {
+				broken.push(`${relative(dir, file)} -> ${target}`);
+			}
+		}
+	}
+	if (broken.length) {
+		throw new Error(
+			`Links in the ReactOS desktop zip that do not resolve inside it:\n  ${broken.join('\n  ')}`,
+		);
 	}
 }
 
