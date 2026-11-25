@@ -40,11 +40,19 @@ The default style draws classic Windows scroll bars; `--scrollbars` builds the A
 
 `pointers/gen-cursors.py` draws the 14 Afterglow mouse pointers at the standard size (generated, not in git; `pointers/SHA256SUMS` is the record), `pointers/afterglow-pointers.reg` adds the "Afterglow" scheme to Control Panel, Mouse, and `pointers/patch-user32.py` makes them the system pointers by patching a copy of ReactOS 0.4.16's `user32.dll` (ReactOS ignores pointer schemes). The tool never ships a patched binary. See `docs/reactos-desktop-pointers.md`.
 
-![The Afterglow pointers on a dark and on a cream background: enlarged four times, then at true size. In order: arrow, help, working, busy, crosshair, text, unavailable, vertical resize, horizontal resize, two diagonal resizes, move, up arrow, hand, then a second frame of working and of busy.](../docs/images/afterglow-pointers.png)
+![The 14 Afterglow pointers and a second frame of the two animated ones, enlarged eight times on the dark desktop colour, three to a row. In order: arrow, help, working, busy, crosshair, text, unavailable, vertical resize, horizontal resize, two diagonal resizes, move, up arrow, hand, then a second frame of working and of busy.](../docs/images/pointers-dark.png)
 
-_The Afterglow pointers at 4× and at true size, on the dark desktop and on cream._
+_The Afterglow pointers at 8×, on the dark desktop colour. Each pixel of the 32 × 32 art is an 8 × 8 block. The faint tan edge on cream is the pointers' own soft dark halo._
 
-`pointers/render-preview.py` redraws that sheet (`python3 desktop/pointers/render-preview.py docs/images/afterglow-pointers.png`), and `bun run check:desktop` checks that the committed PNG still has the pixels the generator draws.
+![The 14 Afterglow pointers and a second frame of the two animated ones, enlarged eight times on cream, three to a row. In order: arrow, help, working, busy, crosshair, text, unavailable, vertical resize, horizontal resize, two diagonal resizes, move, up arrow, hand, then a second frame of working and of busy.](../docs/images/pointers-cream.png)
+
+_The same pointers at 8×, on cream._
+
+![The Afterglow pointers at true size, 32 by 32 pixels, on the dark desktop colour and on cream, in the same order.](../docs/images/pointers-true-size.png)
+
+_The same pointers at true size, on the dark desktop colour and on cream._
+
+The exact art is in [`docs/images/pointers/`](../docs/images/pointers/): one transparent PNG per pointer at 8×, and a frame strip for each of the two animated pointers. `pointers/render-preview.py` redraws all of these images (`python3 desktop/pointers/render-preview.py docs/images`), and `bun run check:desktop` checks that the committed PNGs still have the pixels the generator draws.
 
 ```sh
 python3 desktop/pointers/gen-cursors.py desktop/build/pointers

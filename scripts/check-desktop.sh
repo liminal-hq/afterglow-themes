@@ -4,7 +4,7 @@
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
-# Also checks the README pointer preview PNG and the SVG pointer masters against the generator, and draws the pointer set (desktop/pointers/gen-cursors.py, needs Pillow) and compares the 16 files with
+# Also checks the pointer preview PNGs in docs/images and the SVG pointer masters against the generator, and draws the pointer set (desktop/pointers/gen-cursors.py, needs Pillow) and compares the 16 files with
 # desktop/pointers/SHA256SUMS. With USER32=PATH (a ReactOS 0.4.16 i386 user32.dll, your own copy), it also patches a scratch copy and
 # checks the result against the patched hash in desktop/pointers/SHA256SUMS.user32.
 #
@@ -65,18 +65,27 @@ else
 	echo "the SVG pointer masters in desktop/pointers/svg are out of date: run desktop/pointers/gen-cursors.py OUT_DIR --svg desktop/pointers/svg"
 	status=1
 fi
-python3 desktop/pointers/render-preview.py "$out/pointers-preview.png"
-# Compared by pixels, not bytes: PNG encoders differ between Pillow and zlib builds.
-if python3 - "$out/pointers-preview.png" docs/images/afterglow-pointers.png <<'PY'
-import sys
+python3 desktop/pointers/render-preview.py "$out/preview"
+# Compared by pixels (RGBA), not bytes: PNG encoders differ between Pillow and zlib builds.
+if python3 - "$out/preview" docs/images <<'PY'
+import os, sys
 from PIL import Image, ImageChops
-fresh, committed = (Image.open(path).convert("RGB") for path in sys.argv[1:3])
-sys.exit(0 if fresh.size == committed.size and ImageChops.difference(fresh, committed).getbbox() is None else 1)
+fresh_root, committed_root = sys.argv[1:3]
+fresh_files = sorted(os.path.relpath(os.path.join(d, f), fresh_root) for d, _, fs in os.walk(fresh_root) for f in fs)
+committed_files = sorted(os.path.relpath(os.path.join(d, f), committed_root) for d, _, fs in os.walk(committed_root) for f in fs)
+bad = [f"unexpected or missing files: {sorted(set(fresh_files) ^ set(committed_files))}"] if fresh_files != committed_files else []
+for name in set(fresh_files) & set(committed_files):
+	fresh, committed = (Image.open(os.path.join(root, name)).convert("RGBA") for root in (fresh_root, committed_root))
+	if fresh.size != committed.size or ImageChops.difference(fresh, committed).getbbox() is not None:
+		bad.append(f"{name} differs")
+for line in bad:
+	print(line)
+sys.exit(1 if bad else 0)
 PY
 then
-	echo "the pointer preview docs/images/afterglow-pointers.png matches the generator"
+	echo "the pointer previews in docs/images match the generator"
 else
-	echo "the pointer preview docs/images/afterglow-pointers.png is out of date: run desktop/pointers/render-preview.py docs/images/afterglow-pointers.png"
+	echo "the pointer previews in docs/images are out of date: run desktop/pointers/render-preview.py docs/images"
 	status=1
 fi
 if [ -n "${USER32:-}" ]; then
