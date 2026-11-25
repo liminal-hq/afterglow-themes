@@ -228,6 +228,8 @@ function buildReactosDesktop() {
 		]) {
 			copyFileSync(join(desktop, 'pointers', file), join(pointers, file));
 		}
+		// The SVG masters are reference art beside the raster pointers
+		cpSync(join(desktop, 'pointers', 'svg'), join(pointers, 'svg'), { recursive: true });
 
 		mkdirSync(join(stage, 'docs'));
 		// desktop/SHA256SUMS names the two builds for the check script; here they sit in folders
