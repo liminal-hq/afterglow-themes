@@ -1,0 +1,37 @@
+# Installs the tools that build the ReactOS desktop style and pointers: LLVM (llvm-rc, lld-link, and clang for llvm-rc's preprocessor)
+# and Python with numpy and the Pillow version the pointer hashes were recorded with.
+#
+# (c) Copyright 2026 Liminal HQ, Scott Morris
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+name: Desktop tools
+description: Install llvm-rc, lld-link and a pinned Python environment for desktop/style and desktop/pointers
+
+runs:
+  using: composite
+  steps:
+    - name: Install LLVM and Python
+      shell: bash
+      run: |
+        set -euo pipefail
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq --no-install-recommends llvm lld clang python3
+
+        # The unversioned names come from the llvm and lld packages; fall back to the versioned ones if they are missing.
+        for tool in llvm-rc lld-link; do
+          if ! command -v "${tool}" >/dev/null; then
+            versioned="$(compgen -c "${tool}-" | sort -V | tail -n 1)"
+            sudo ln -s "$(command -v "${versioned}")" "/usr/local/bin/${tool}"
+          fi
+        done
+        llvm-rc --version || true
+        lld-link --version
+
+    # Pillow 13.0.0 is the version the pointer hashes in desktop/pointers/SHA256SUMS were recorded with. The runner is
+    # single-use, so the packages go into its system Python and no PATH change is needed.
+    - name: Install numpy and Pillow
+      shell: bash
+      run: |
+        set -euo pipefail
+        sudo apt-get install -y -qq --no-install-recommends python3-pip
+        sudo python3 -m pip install --quiet --break-system-packages numpy==2.5.4 Pillow==13.0.0

@@ -46,6 +46,7 @@ jobs:
           persist-credentials: false
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
+      - uses: ./.github/actions/desktop-tools
 
       - name: Resolve release tag
         id: meta
@@ -94,6 +95,9 @@ jobs:
 
       - name: Run the full validation gate
         run: bun run validate
+
+      - name: Check the desktop style and pointers
+        run: bun run check:desktop
 
       - name: Build release assets
         run: bun run bundle

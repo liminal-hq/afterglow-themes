@@ -124,10 +124,11 @@ Under `## Summary`, use flat bullets with **bold** lead-ins. Under `## Test plan
 
 CI and release follow the Liminal HQ house pipeline.
 
-- **Workflows** live in `.github/workflows/`: `ci.yml` (format, licence headers and theme checks on every PR and push to `main`), `ci-lint.yml` (actionlint and markdownlint on PRs), `security-audit.yml` (zizmor, non-blocking) and `release.yml` (tag-driven releases).
+- **Workflows** live in `.github/workflows/`: `ci.yml` (format, licence headers, theme checks, the desktop style check and the release bundle on every PR and push to `main`), `ci-lint.yml` (actionlint and markdownlint on PRs), `security-audit.yml` (zizmor, non-blocking) and `release.yml` (tag-driven releases).
 - **Generated-file drift is a CI failure.** CI rebuilds the themes and diffs them against the committed copy.
+- **Desktop tools.** The `Desktop style` job, the release bundle job and the release workflow install llvm-rc, lld-link, clang, numpy and Pillow 13.0.0 with the `.github/actions/desktop-tools` composite action. The bundler requires them; `AFTERGLOW_SKIP_REACTOS=1` skips the ReactOS zip for a local run. See `docs/desktop-release-assets.md`.
 - **Licence headers** are enforced by `scripts/check-headers.sh`.
-- **Releases** are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. To release: bump `version` on a `chore/release-v<version>` branch, merge to `main`, then push the matching tag (or run the Release workflow with `workflow_dispatch`, optionally as a draft). The workflow validates, bundles and attaches the OpenCode themes, a zip, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the TextMate themes zip, the Firefox `.xpi` files, the Chrome and Edge themes zip and `SHA256SUMS` to a GitHub release with generated notes. Publishing to the VS Code Marketplace or Open VSX is a separate manual step.
+- **Releases** are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. To release: bump `version` on a `chore/release-v<version>` branch, merge to `main`, then push the matching tag (or run the Release workflow with `workflow_dispatch`, optionally as a draft). The workflow validates, bundles and attaches the OpenCode themes, a zip, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the TextMate themes zip, the Firefox `.xpi` files, the Chrome and Edge themes zip, the wallpapers zip, the ReactOS desktop zip and `SHA256SUMS` to a GitHub release with generated notes. Publishing to the VS Code Marketplace or Open VSX is a separate manual step.
 - **Dependabot** labels npm updates `build` and Actions updates `ci`.
 - Never push tags, trigger releases or dispatch workflows unless explicitly asked.
 
@@ -142,8 +143,8 @@ CI and release follow the Liminal HQ house pipeline.
 - `tmtheme/`: the generated TextMate themes, committed so releases and manual installs work without a build
 - `firefox/` and `chromium/`: the generated browser theme manifests in `themes/<id>/`, committed so releases and manual loads work without a build
 - `assets/`: authored visual assets (`hero.svg`) and the generated desktop wallpapers in `wallpapers/`, committed so they can be used without a build
-- `docs/`: `theme-format.md` (the OpenCode V2 format, token conventions and design decisions), `vscode-theme.md` (how the VS Code themes are built, validated and packaged) `mc-skin.md` (how the Midnight Commander skins are built, validated and tested), `claude-code-theme.md` (the Claude Code theme format, token roles and what was verified), `forgejo-theme.md` (the Forgejo themes, installation, the instance avatar and what was verified), `tmtheme.md` (the TextMate themes for Codex, bat and delta), `browser-themes.md` (the Firefox, Chrome and Edge themes) and `desktop-wallpapers.md` (the desktop wallpapers, their renders and how to set them)
-- `.github/`: workflows, `dependabot.yml`, `release.yml` (changelog categories) and `zizmor.yml`
+- `docs/`: `theme-format.md` (the OpenCode V2 format, token conventions and design decisions), `vscode-theme.md` (how the VS Code themes are built, validated and packaged) `mc-skin.md` (how the Midnight Commander skins are built, validated and tested), `claude-code-theme.md` (the Claude Code theme format, token roles and what was verified), `forgejo-theme.md` (the Forgejo themes, installation, the instance avatar and what was verified), `tmtheme.md` (the TextMate themes for Codex, bat and delta), `browser-themes.md` (the Firefox, Chrome and Edge themes) `desktop-wallpapers.md` (the desktop wallpapers, their renders and how to set them) and `desktop-release-assets.md` (the wallpapers and ReactOS desktop zips, how they are built and what pins their hashes)
+- `.github/`: workflows, the `desktop-tools` composite action, `dependabot.yml`, `release.yml` (changelog categories) and `zizmor.yml`
 
 ## Licence and Copyright
 

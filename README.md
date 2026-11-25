@@ -241,7 +241,7 @@ bun install
 bun run build            # regenerate themes/, vscode/themes/, mc/skins/, claude/themes/, tmtheme/, forgejo/themes/, firefox/themes/ and chromium/themes/
 bun run validate:themes  # check the schema rules and 4.5:1 text contrast
 bun run validate         # the full local gate that mirrors CI
-bun run bundle           # build the release assets (including the .vsix) into dist/release
+bun run bundle           # build the release assets (including the .vsix and the desktop zips) into dist/release; needs llvm-rc, lld-link and Pillow, or AFTERGLOW_SKIP_REACTOS=1
 ```
 
 - `scripts/palette.mjs` holds the brand colours, the deeper light-mode variants and the neutral ramps.
@@ -259,7 +259,7 @@ CI runs the format check, the licence-header check, the theme build and validati
 
 ## Releases
 
-Releases are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. The release workflow runs the full validation, then attaches the three OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the Forgejo themes zip, the TextMate themes zip, a Firefox `.xpi` per theme, the Chrome and Edge themes zip and a `SHA256SUMS` file to a GitHub release with generated notes.
+Releases are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. The release workflow runs the full validation, then attaches the three OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the Forgejo themes zip, the TextMate themes zip, a Firefox `.xpi` per theme, the Chrome and Edge themes zip, the wallpapers zip (`afterglow-wallpapers-vX.Y.Z.zip`), the ReactOS desktop zip (`afterglow-reactos-desktop-vX.Y.Z.zip`: both styles, the eight colour schemes and the pointers, with no patched binary) and a `SHA256SUMS` file to a GitHub release with generated notes.
 
 ## Contributing
 
