@@ -47,127 +47,132 @@ GROUPS = {
 }
 
 
-def align(v, a):
-	return (v + a - 1) // a * a
+def align_up(value, alignment):
+	return (value + alignment - 1) // alignment * alignment
 
 
 def read_cur(path):
 	"""The single 32 x 32 image of a .cur file: (hotspot, image bytes, bit count)."""
-	d = open(path, "rb").read()
-	reserved, typ, count = struct.unpack_from("<HHH", d, 0)
-	assert typ == 2 and count == 1, path
-	w, h, _, _, hx, hy, size, off = struct.unpack_from("<BBBBHHII", d, 6)
-	img = d[off : off + size]
-	bpp = struct.unpack_from("<H", img, 14)[0]
-	return (hx, hy), img, bpp
+	with open(path, "rb") as cur_file:
+		data = cur_file.read()
+	_, kind, count = struct.unpack_from("<HHH", data, 0)
+	assert kind == 2 and count == 1, path
+	_, _, _, _, hotspot_x, hotspot_y, size, offset = struct.unpack_from("<BBBBHHII", data, 6)
+	image = data[offset : offset + size]
+	bit_count = struct.unpack_from("<H", image, 14)[0]
+	return (hotspot_x, hotspot_y), image, bit_count
 
 
 def main():
 	if len(sys.argv) != 4:
 		print("usage: patch-user32.py USER32_IN CURSOR_DIR USER32_OUT", file=sys.stderr)
 		sys.exit(2)
-	src, curdir, dst = sys.argv[1:]
-	if os.path.abspath(src) == os.path.abspath(dst):
+	source_path, cursor_dir, output_path = sys.argv[1:]
+	if os.path.abspath(source_path) == os.path.abspath(output_path):
 		print("patch-user32: the output must be a different file from the input (work on a copy)", file=sys.stderr)
 		sys.exit(2)
-	b = bytearray(open(src, "rb").read())
-	if len(b) != EXPECTED_SIZE or hashlib.sha256(b).hexdigest() != EXPECTED_SHA256:
+	with open(source_path, "rb") as source_file:
+		pe_bytes = bytearray(source_file.read())
+	if len(pe_bytes) != EXPECTED_SIZE or hashlib.sha256(pe_bytes).hexdigest() != EXPECTED_SHA256:
 		# An already patched copy is told apart so a caller can skip it.
-		if b[:2] == b"MZ" and b".agcur" in bytes(b[: struct.unpack_from("<I", b, 0x3C)[0] + 1024]):
+		if pe_bytes[:2] == b"MZ" and b".agcur" in bytes(pe_bytes[: struct.unpack_from("<I", pe_bytes, 0x3C)[0] + 1024]):
 			print("already patched (has an .agcur section); nothing written")
 			sys.exit(3)
 		print(
 			"refusing: %s is not the user32.dll of ReactOS 0.4.16 i386 (expected %d bytes, SHA-256 %s; got %d bytes, %s)"
-			% (src, EXPECTED_SIZE, EXPECTED_SHA256, len(b), hashlib.sha256(b).hexdigest()),
+			% (source_path, EXPECTED_SIZE, EXPECTED_SHA256, len(pe_bytes), hashlib.sha256(pe_bytes).hexdigest()),
 			file=sys.stderr,
 		)
 		sys.exit(4)
-	pe = struct.unpack_from("<I", b, 0x3C)[0]
-	nsec = struct.unpack_from("<H", b, pe + 6)[0]
-	optsz = struct.unpack_from("<H", b, pe + 20)[0]
-	opt = pe + 24
-	assert struct.unpack_from("<H", b, opt)[0] == 0x10B, "PE32 expected"
-	salign, falign = struct.unpack_from("<II", b, opt + 32)
-	soh = struct.unpack_from("<I", b, opt + 60)[0]
-	st = opt + optsz
-	secs = [struct.unpack_from("<8sIIII", b, st + 40 * i) for i in range(nsec)]
-	if st + 40 * (nsec + 1) > soh:
+	pe_offset = struct.unpack_from("<I", pe_bytes, 0x3C)[0]
+	section_count = struct.unpack_from("<H", pe_bytes, pe_offset + 6)[0]
+	optional_header_size = struct.unpack_from("<H", pe_bytes, pe_offset + 20)[0]
+	optional_header = pe_offset + 24
+	assert struct.unpack_from("<H", pe_bytes, optional_header)[0] == 0x10B, "PE32 expected"
+	section_alignment, file_alignment = struct.unpack_from("<II", pe_bytes, optional_header + 32)
+	size_of_headers = struct.unpack_from("<I", pe_bytes, optional_header + 60)[0]
+	section_table = optional_header + optional_header_size
+	# Each section is (name, virtual size, virtual address, raw size, raw offset).
+	sections = [struct.unpack_from("<8sIIII", pe_bytes, section_table + 40 * i) for i in range(section_count)]
+	if section_table + 40 * (section_count + 1) > size_of_headers:
 		sys.exit("no room for another section header")
-	rsrc_rva = struct.unpack_from("<I", b, opt + 96 + 8 * 2)[0]
-	rs = next(s for s in secs if s[2] <= rsrc_rva < s[2] + max(s[1], s[3]))
-	rsrc_raw = rs[4] + (rsrc_rva - rs[2])
+	rsrc_rva = struct.unpack_from("<I", pe_bytes, optional_header + 96 + 8 * 2)[0]
+	rsrc_section = next(section for section in sections if section[2] <= rsrc_rva < section[2] + max(section[1], section[3]))
+	rsrc_raw = rsrc_section[4] + (rsrc_rva - rsrc_section[2])
 
-	def entries(dir_off):
-		named, ids = struct.unpack_from("<HH", b, rsrc_raw + dir_off + 12)
-		for i in range(named + ids):
-			name, target = struct.unpack_from("<II", b, rsrc_raw + dir_off + 16 + 8 * i)
+	def directory_entries(directory_offset):
+		"""The (name or id, target) pairs of one resource directory."""
+		named_count, id_count = struct.unpack_from("<HH", pe_bytes, rsrc_raw + directory_offset + 12)
+		for i in range(named_count + id_count):
+			name, target = struct.unpack_from("<II", pe_bytes, rsrc_raw + directory_offset + 16 + 8 * i)
 			yield name, target
 
 	def data_entries(type_id):
 		"""id -> file offset of the first language's IMAGE_RESOURCE_DATA_ENTRY."""
-		out = {}
-		for name, target in entries(0):
+		offsets = {}
+		for name, type_target in directory_entries(0):
 			if name == type_id:
-				for rid, t2 in entries(target & 0x7FFFFFFF):
-					if rid & 0x80000000:
+				for resource_id, id_target in directory_entries(type_target & 0x7FFFFFFF):
+					if resource_id & 0x80000000:
 						continue
-					for _, t3 in entries(t2 & 0x7FFFFFFF):
-						out[rid] = rsrc_raw + (t3 & 0x7FFFFFFF)
+					for _, language_target in directory_entries(id_target & 0x7FFFFFFF):
+						offsets[resource_id] = rsrc_raw + (language_target & 0x7FFFFFFF)
 						break
-		return out
+		return offsets
 
-	groups = data_entries(RT_GROUP_CURSOR)
-	cursors = data_entries(RT_CURSOR)
-	last = secs[-1]
-	new_rva = align(last[2] + max(last[1], last[3]), salign)
-	new_raw = align(len(b), falign)
+	group_entries = data_entries(RT_GROUP_CURSOR)
+	cursor_entries = data_entries(RT_CURSOR)
+	last_section = sections[-1]
+	new_rva = align_up(last_section[2] + max(last_section[1], last_section[3]), section_alignment)
+	new_raw = align_up(len(pe_bytes), file_alignment)
 	# The first cursor of each group, read before anything is moved.
-	firsts = {}
-	for ids in GROUPS.values():
-		for gid in ids:
-			if gid in groups:
-				g_rva = struct.unpack_from("<I", b, groups[gid])[0]
-				g_raw = next(s[4] + (g_rva - s[2]) for s in secs if s[2] <= g_rva < s[2] + max(s[1], s[3]))
-				firsts[gid] = struct.unpack_from("<H", b, g_raw + 6 + 12)[0]
-	blob = bytearray()
+	first_cursor_ids = {}
+	for group_ids in GROUPS.values():
+		for group_id in group_ids:
+			if group_id in group_entries:
+				group_rva = struct.unpack_from("<I", pe_bytes, group_entries[group_id])[0]
+				group_raw = next(section[4] + (group_rva - section[2]) for section in sections if section[2] <= group_rva < section[2] + max(section[1], section[3]))
+				first_cursor_ids[group_id] = struct.unpack_from("<H", pe_bytes, group_raw + 6 + 12)[0]
+	new_section = bytearray()
 	patched = []
-	for name, ids in GROUPS.items():
-		hot, img, bpp = read_cur(os.path.join(curdir, f"afterglow-{name}.cur"))
-		cur = struct.pack("<HH", *hot) + img
-		c_off = len(blob)  # one copy of the image, shared by both group ids
-		blob += cur + bytes(align(len(cur), 8) - len(cur))
-		for gid in ids:
-			if gid not in groups:
+	for name, group_ids in GROUPS.items():
+		hotspot, image, bit_count = read_cur(os.path.join(cursor_dir, f"afterglow-{name}.cur"))
+		cursor_resource = struct.pack("<HH", *hotspot) + image
+		cursor_offset = len(new_section)  # one copy of the image, shared by both group ids
+		new_section += cursor_resource + bytes(align_up(len(cursor_resource), 8) - len(cursor_resource))
+		for group_id in group_ids:
+			if group_id not in group_entries:
 				continue
-			gde = groups[gid]
-			first_id = firsts[gid]
-			cde = cursors[first_id]
+			group_entry = group_entries[group_id]
+			first_cursor_id = first_cursor_ids[group_id]
+			cursor_entry = cursor_entries[first_cursor_id]
 			# new one-entry group: CURSORDIR entry (width, height*2, planes, bit count, bytes, id)
-			grp = struct.pack("<HHH", 0, 2, 1) + struct.pack("<HHHHIH", 32, 64, 1, bpp, len(cur), first_id)
-			g_off = len(blob)
-			blob += grp + bytes(align(len(grp), 8) - len(grp))
-			struct.pack_into("<II", b, cde, new_rva + c_off, len(cur))
-			struct.pack_into("<II", b, gde, new_rva + g_off, len(grp))
-			patched.append((name, gid, first_id))
-	raw_size = align(len(blob), falign)
-	b += bytes(new_raw - len(b))
-	b += blob + bytes(raw_size - len(blob))
-	hdr = struct.pack("<8sIIIIIIHHI", b".agcur", len(blob), new_rva, raw_size, new_raw, 0, 0, 0, 0, 0x40000040)
-	b[st + 40 * nsec : st + 40 * nsec + 40] = hdr
-	struct.pack_into("<H", b, pe + 6, nsec + 1)
-	struct.pack_into("<I", b, opt + 56, align(new_rva + len(blob), salign))  # SizeOfImage
-	# PE checksum
-	struct.pack_into("<I", b, opt + 64, 0)
-	csum = 0
-	for i in range(0, len(b) - (len(b) & 1), 2):
-		csum += b[i] | (b[i + 1] << 8)
-		csum = (csum & 0xFFFF) + (csum >> 16)
-	csum = (csum & 0xFFFF) + (csum >> 16)
-	struct.pack_into("<I", b, opt + 64, (csum & 0xFFFF) + len(b))
-	open(dst, "wb").write(bytes(b))
-	print(f"patched {len(patched)} cursor groups; new section {len(blob)} bytes at RVA {new_rva:#x}")
-	for p in patched:
-		print("  %-10s group %5d -> cursor %d" % p)
+			group_resource = struct.pack("<HHH", 0, 2, 1) + struct.pack("<HHHHIH", 32, 64, 1, bit_count, len(cursor_resource), first_cursor_id)
+			group_offset = len(new_section)
+			new_section += group_resource + bytes(align_up(len(group_resource), 8) - len(group_resource))
+			struct.pack_into("<II", pe_bytes, cursor_entry, new_rva + cursor_offset, len(cursor_resource))
+			struct.pack_into("<II", pe_bytes, group_entry, new_rva + group_offset, len(group_resource))
+			patched.append((name, group_id, first_cursor_id))
+	raw_size = align_up(len(new_section), file_alignment)
+	pe_bytes += bytes(new_raw - len(pe_bytes))
+	pe_bytes += new_section + bytes(raw_size - len(new_section))
+	section_header = struct.pack("<8sIIIIIIHHI", b".agcur", len(new_section), new_rva, raw_size, new_raw, 0, 0, 0, 0, 0x40000040)
+	pe_bytes[section_table + 40 * section_count : section_table + 40 * section_count + 40] = section_header
+	struct.pack_into("<H", pe_bytes, pe_offset + 6, section_count + 1)
+	struct.pack_into("<I", pe_bytes, optional_header + 56, align_up(new_rva + len(new_section), section_alignment))  # SizeOfImage
+	# PE checksum: the sum of the 16-bit words with the carry folded back in, plus the file length
+	struct.pack_into("<I", pe_bytes, optional_header + 64, 0)
+	checksum = 0
+	for i in range(0, len(pe_bytes) - (len(pe_bytes) & 1), 2):
+		checksum += pe_bytes[i] | (pe_bytes[i + 1] << 8)
+		checksum = (checksum & 0xFFFF) + (checksum >> 16)
+	checksum = (checksum & 0xFFFF) + (checksum >> 16)
+	struct.pack_into("<I", pe_bytes, optional_header + 64, (checksum & 0xFFFF) + len(pe_bytes))
+	with open(output_path, "wb") as output_file:
+		output_file.write(bytes(pe_bytes))
+	print(f"patched {len(patched)} cursor groups; new section {len(new_section)} bytes at RVA {new_rva:#x}")
+	for entry in patched:
+		print("  %-10s group %5d -> cursor %d" % entry)
 
 
 if __name__ == "__main__":
