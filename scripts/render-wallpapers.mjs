@@ -12,7 +12,14 @@ import { spawnSync } from 'node:child_process';
 import { mkdirSync, rmSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { HEIGHT, WIDTH, parseId, wallpaperDir, wallpaperIds } from './build-wallpapers.mjs';
+import {
+	DAY_SUN,
+	HEIGHT,
+	WIDTH,
+	parseId,
+	wallpaperDir,
+	wallpaperIds,
+} from './build-wallpapers.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -141,7 +148,13 @@ if (ids.length > 1) {
 	]);
 	say(sheet);
 
-	// Stepped and smooth side by side at 100%, cropped around the sun where the bands are closest
+	// Stepped and smooth side by side at 100%, cropped around the sun where the bands are closest:
+	// the sky above the setting sun at dusk, and the high sun centred by day
+	const crop = (id) => {
+		if (parseId(id).mode === 'dark') return '640x360+1120+600';
+		const at = (v, size, span) => Math.min(Math.max(Math.round(v / 2 - size / 2), 0), span - size);
+		return `640x360+${at(DAY_SUN.cx, 640, 1920)}+${at(DAY_SUN.cy, 360, 1080)}`;
+	};
 	const pairs = ids.filter((id) => id.endsWith('-stepped'));
 	const compare = join(out, 'compare-stepped-smooth.png');
 	run('magick', [
@@ -152,7 +165,7 @@ if (ids.length > 1) {
 				return [
 					'-label',
 					name.replace('afterglow-', ''),
-					`${join(out, 'png', `${name}-1920x1080.png`)}[640x360+1120+600]`,
+					`${join(out, 'png', `${name}-1920x1080.png`)}[${crop(name)}]`,
 				];
 			}),
 		),

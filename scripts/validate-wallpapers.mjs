@@ -8,7 +8,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
 	CENTRE,
-	GLOW,
+	DAY_SUN,
 	HEIGHT,
 	HORIZONS,
 	MODES,
@@ -24,10 +24,11 @@ import {
 import { contrast } from './colour.mjs';
 import { brand, neutrals } from './palette.mjs';
 
-// Desktop icon labels: white (with the usual dark shadow) on a dark wallpaper, and the paper
-// theme's text colour on a light one. A taskbar or panel is assumed to carry light text.
+// Desktop icon labels and the text of a see-through taskbar: white (with the usual dark shadow)
+// on a dark wallpaper, and the paper theme's text colour on a light one, as light desktop styles
+// draw them.
 const LABEL = { dark: '#ffffff', light: neutrals.paper[100] };
-const TASKBAR_TEXT = '#ffffff';
+const TASKBAR_TEXT = LABEL;
 
 // The y of every point and control point on a crest path (its numbers are x, y pairs)
 const crestYs = (crest) =>
@@ -46,7 +47,11 @@ export const validatePalettes = () => {
 			}
 			if (!neutrals[roles.neutral])
 				errors.push(`${palette}-${mode}: unknown neutral ${roles.neutral}`);
-			for (const hue of [roles.sun, ...(roles.glow ?? [])])
+			for (const hue of [
+				roles.sun,
+				...(roles.glow ?? []),
+				...(mode === 'light' ? [roles.sky, roles.hills] : []),
+			])
 				if (!brand[hue] || hue === 'void' || hue.startsWith('text'))
 					errors.push(`${palette}-${mode}: unknown hue ${hue}`);
 			if (!roles.glow?.length) errors.push(`${palette}-${mode}: the glow needs at least one hue`);
@@ -73,8 +78,12 @@ export const validateWallpaper = (id, svg) => {
 		if (!defined.has(ref)) errors.push(`${id}: url(#${ref}) is not defined`);
 
 	const c = sceneColours(parsed.palette, parsed.mode);
+	const scene =
+		parsed.mode === 'dark'
+			? [c.centre, c.star, ...c.bands, ...c.halo]
+			: [c.centre.fill, ...c.wash.map((w) => w.fill)];
 	const allowed = new Set(
-		[c.skyTop, c.horizon, c.centre, c.star, c.sunDisc, ...c.sky, ...c.bands, ...c.halo]
+		[c.skyTop, c.horizon, c.sunDisc, ...c.sky, ...scene]
 			.concat(c.sheets.flatMap((s) => [s.fill, s.edge]))
 			.map((v) => v.toLowerCase()),
 	);
@@ -90,14 +99,12 @@ export const validateContrast = (palette, mode) => {
 	const label = LABEL[mode];
 	let worst = Infinity;
 	for (let x = CENTRE.x[0]; x <= CENTRE.x[1]; x += 32)
-		for (let y = CENTRE.y[0]; y <= CENTRE.y[1]; y += 32) {
-			const r = Math.hypot((x - GLOW.cx) / GLOW.rx, (y - GLOW.cy) / GLOW.ry);
-			worst = Math.min(worst, contrast(label, c.glowAt(r)));
-		}
+		for (let y = CENTRE.y[0]; y <= CENTRE.y[1]; y += 32)
+			worst = Math.min(worst, contrast(label, c.colourAt(x, y)));
 	if (worst < 4.5)
 		errors.push(`${palette}-${mode}: icon labels reach only ${worst.toFixed(2)}:1 in the centre`);
 	const front = c.sheets.at(-1).fill;
-	const bar = contrast(TASKBAR_TEXT, front);
+	const bar = contrast(TASKBAR_TEXT[mode], front);
 	if (bar < 4.5)
 		errors.push(`${palette}-${mode}: taskbar text on ${front} is only ${bar.toFixed(2)}:1`);
 	// The front sheet covers the whole taskbar strip, and no horizon rises into the calm centre
@@ -105,6 +112,13 @@ export const validateContrast = (palette, mode) => {
 		errors.push(`${palette}-${mode}: the front horizon dips into the taskbar strip`);
 	if (Math.min(...HORIZONS.flatMap((h) => crestYs(h.crest))) < CENTRE.y[1])
 		errors.push(`${palette}-${mode}: a horizon rises into the calm centre`);
+	// The daytime sun stands clear above the calm centre and the horizons, inside the 4:3 crop
+	if (mode === 'light') {
+		const { cx, cy, r } = DAY_SUN;
+		if (cy + r > CENTRE.y[0]) errors.push(`${palette}-${mode}: the sun dips into the calm centre`);
+		if (cx - r < 480 || cx + r > 3360)
+			errors.push(`${palette}-${mode}: the sun leaves the 4:3 crop`);
+	}
 	return { errors, label: worst, taskbar: bar };
 };
 

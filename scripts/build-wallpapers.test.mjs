@@ -6,7 +6,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
+	DAY_SUN,
+	HORIZONS,
 	MODES,
+	SUN,
 	STYLES,
 	WALLPAPER_PALETTES,
 	parseId,
@@ -52,5 +55,28 @@ test('the glow is brightest at the sun and fades out', () => {
 		const { bands, skyTop } = sceneColours(palette, 'dark');
 		assert.ok(luminance(bands[0]) > luminance(bands.at(-1)), palette);
 		assert.ok(luminance(bands.at(-1)) - luminance(skyTop) < 0.002, palette);
+	}
+});
+
+test('the light scenes are daytime: a high sun, a bright sky and no stars', () => {
+	const backCrest = Math.min(
+		...[...HORIZONS[0].crest.matchAll(/-?\d+(?:\.\d+)?/g)].map(Number).filter((_, i) => i % 2),
+	);
+	assert.ok(DAY_SUN.cy + DAY_SUN.r * 2.6 < backCrest / 2, 'the sun stands in the upper sky');
+	assert.ok(SUN.cy - SUN.r < backCrest + 200, 'the dusk sun still sits on the horizon');
+	for (const palette of Object.keys(WALLPAPER_PALETTES)) {
+		const day = sceneColours(palette, 'light');
+		const dusk = sceneColours(palette, 'dark');
+		// The sky brightens towards the horizon, the sun outshines the sky around it, and the day
+		// sky is far brighter than the dusk one
+		assert.ok(luminance(day.horizon) > luminance(day.skyTop), palette);
+		assert.ok(luminance(day.sunDisc) > luminance(day.colourAt(DAY_SUN.cx, DAY_SUN.cy)), palette);
+		assert.ok(luminance(day.skyTop) > 0.6 && luminance(dusk.skyTop) < 0.05, palette);
+		assert.ok(day.wash[0].alpha > day.wash.at(-1).alpha, palette);
+		for (const style of STYLES) {
+			const svg = wallpaperSvg(`afterglow-${palette}-light-${style}`);
+			assert.ok(!svg.includes('Stars'), palette);
+			assert.match(svg, new RegExp(`cx="${DAY_SUN.cx}" cy="${DAY_SUN.cy}" r="${DAY_SUN.r}"`));
+		}
 	}
 });

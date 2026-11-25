@@ -82,7 +82,7 @@ These are standard TextMate `.tmTheme` files, with the same syntax colours as th
 
 ## Desktop wallpapers
 
-The same dusk in wallpaper form: a low sun setting behind layered paper horizons, with the glow fading across a calm sky. It comes in five palettes (`dusk`, `indigo`, `ember`, `aurora` and `graphite`), each in dark and light, with flat stepped bands for 16-bit and 256-colour displays or smooth gradients for 24-bit and 32-bit ones. The SVG sources are in `assets/wallpapers/`, and `bun run render:wallpapers` renders PNGs at 3840×2160, 2560×1440 and 1920×1080 and 1024×768 BMPs for ReactOS. See [docs/desktop-wallpapers.md](docs/desktop-wallpapers.md).
+The same landscape of layered paper horizons in wallpaper form, at two times of day: dusk in the dark wallpapers, a low sun setting with its glow fading across a calm sky, and full day in the light ones, the sun high in a bright sky. It comes in five palettes (`dusk`, `indigo`, `ember`, `aurora` and `graphite`), each in dark and light, with flat stepped bands for 16-bit and 256-colour displays or smooth gradients for 24-bit and 32-bit ones. The SVG sources are in `assets/wallpapers/`, and `bun run render:wallpapers` renders PNGs at 3840×2160, 2560×1440 and 1920×1080 and 1024×768 BMPs for ReactOS. See [docs/desktop-wallpapers.md](docs/desktop-wallpapers.md).
 
 ## Install
 
