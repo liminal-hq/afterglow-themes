@@ -77,6 +77,10 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
 
+      - name: Check release notes
+        id: notes
+        run: bun run check:release-notes
+
       - name: Run unit tests
         id: tests
         run: bun run test
@@ -95,6 +99,7 @@ jobs:
         run: |
           {
             echo "## Themes"
+            echo "- Release notes: \`${{ steps.notes.outcome }}\` (\`bun run check:release-notes\`)"
             echo "- Unit tests: \`${{ steps.tests.outcome }}\` (\`bun run test\`)"
             echo "- Generated files in sync: \`${{ steps.drift.outcome }}\` (\`bun run check:themes\`)"
             echo "- Schema and contrast: \`${{ steps.validate.outcome }}\` (\`bun run validate:themes\`)"

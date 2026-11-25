@@ -93,6 +93,20 @@ jobs:
             exit 1
           fi
 
+      # Notes are optional: with no file the release body is GitHub's generated list alone. A file
+      # that exists must keep its shape, which the validation gate checks.
+      - name: Look for hand-written release notes
+        env:
+          TAG_NAME: ${{ steps.meta.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          NOTES="docs/releases/${TAG_NAME#v}.md"
+          if [[ -f "${NOTES}" ]]; then
+            echo "Release notes: ${NOTES}"
+          else
+            echo "::warning title=No release notes::${NOTES} does not exist, so ${TAG_NAME} gets generated notes only."
+          fi
+
       - name: Run the full validation gate
         run: bun run validate
 
@@ -122,6 +136,29 @@ jobs:
           name: release-assets
           path: release-assets
 
+      # The notes come from the commit the release is built from, the one the tag points at.
+      - name: Check out the release notes
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: docs/releases
+          persist-credentials: false
+
+      - name: Find hand-written release notes
+        id: notes
+        env:
+          TAG_NAME: ${{ needs.verify-and-build.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          NOTES="docs/releases/${TAG_NAME#v}.md"
+          if [[ -f "${NOTES}" ]]; then
+            echo "path=${NOTES}" >> "${GITHUB_OUTPUT}"
+          else
+            echo "path=" >> "${GITHUB_OUTPUT}"
+          fi
+
+      # body_path leads the release and GitHub's generated list is appended; an empty path leaves
+      # the generated list alone.
       - name: Create or update release
         uses: softprops/action-gh-release@v3
         with:
@@ -129,6 +166,7 @@ jobs:
           name: Afterglow themes ${{ needs.verify-and-build.outputs.tag_name }}
           target_commitish: ${{ github.sha }}
           draft: ${{ github.event_name == 'workflow_dispatch' && inputs.release_draft }}
+          body_path: ${{ steps.notes.outputs.path }}
           generate_release_notes: true
           files: release-assets/*
           fail_on_unmatched_files: true
