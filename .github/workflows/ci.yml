@@ -100,6 +100,30 @@ jobs:
             echo "- Schema and contrast: \`${{ steps.validate.outcome }}\` (\`bun run validate:themes\`)"
           } >> "${GITHUB_STEP_SUMMARY}"
 
+  desktop-style:
+    name: Desktop style
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+      - uses: ./.github/actions/desktop-tools
+
+      # Rebuilds both ReactOS styles and the pointers, then compares them with the committed hashes and scheme files.
+      - name: Check the desktop style and pointers
+        id: desktop
+        run: bun run check:desktop
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "## Desktop style"
+            echo "- Result: \`${{ steps.desktop.outcome }}\`"
+            echo "- Command: \`bun run check:desktop\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
   bundle:
     name: Release bundle
     runs-on: ubuntu-24.04
@@ -109,6 +133,7 @@ jobs:
           persist-credentials: false
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
+      - uses: ./.github/actions/desktop-tools
 
       - name: Build release assets
         id: bundle

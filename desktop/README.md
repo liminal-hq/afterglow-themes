@@ -21,7 +21,7 @@ The generator for the Afterglow visual style for ReactOS 0.4.16: dusk captions, 
 
 ## Build and check
 
-Needs Python 3 with numpy and Pillow, `llvm-rc` and `lld-link` (LLVM). `bun run check:desktop` also redraws the pointers and compares them with `pointers/SHA256SUMS` (and the SVG masters with `pointers/svg/`).
+Needs Python 3 with numpy and Pillow 13.0.0, `llvm-rc` and `lld-link` (LLVM; on Ubuntu the `llvm`, `lld` and `clang` packages, since `llvm-rc` runs `clang` as its preprocessor). The style hashes were identical with LLVM 18 and LLVM 23. `bun run check:desktop` also redraws the pointers and compares them with `pointers/SHA256SUMS` (and the SVG masters with `pointers/svg/`).
 
 ```sh
 bash desktop/style/build.sh desktop/build            # the style is desktop/build/afterglow.msstyles
@@ -30,7 +30,7 @@ bash desktop/style/build.sh desktop/build --scrollbars  # the Afterglow scroll b
 bun run check:desktop                                # rebuild both and the pointers, then compare with the SHA256SUMS files and schemes/*.reg
 ```
 
-The built style stays out of git (`desktop/build/` is ignored); the build is reproducible (`/Brepro`), so the same sources give the same bytes and `SHA256SUMS` is the record. The `check:desktop` script is not part of `bun run validate` because it needs the LLVM tools.
+The built style stays out of git (`desktop/build/` is ignored); the build is reproducible (`/Brepro`), so the same sources give the same bytes and `SHA256SUMS` is the record. The `check:desktop` script is not part of `bun run validate` because it needs the LLVM tools; the `Desktop style` CI job runs it, and releases ship the result (`docs/desktop-release-assets.md`).
 
 ## Scroll bars
 
