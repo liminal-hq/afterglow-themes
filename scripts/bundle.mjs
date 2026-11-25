@@ -1,4 +1,4 @@
-// Package the themes into release assets: the JSON files, zip bundles, the .vsix, and SHA256SUMS
+// Package the themes into release assets: the JSON files, zip bundles, the .vsix, the desktop zips and SHA256SUMS
 //
 // (c) Copyright 2026 Liminal HQ, Scott Morris
 // SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -10,11 +10,13 @@ import {
 	cpSync,
 	existsSync,
 	mkdirSync,
+	mkdtempSync,
 	readFileSync,
 	readdirSync,
 	rmSync,
 	writeFileSync,
 } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -138,6 +140,118 @@ execFileSync(
 	],
 	{ cwd: join(root, 'chromium', 'themes') },
 );
+
+// The desktop wallpapers ship as a zip of the SVG sources
+const wallpapers = readdirSync(join(root, 'assets', 'wallpapers')).filter((f) =>
+	f.endsWith('.svg'),
+);
+if (!wallpapers.length) throw new Error('No wallpapers found. Run `bun run build` first.');
+execFileSync('zip', [
+	'-q',
+	'-j',
+	join(out, `afterglow-wallpapers-v${version}.zip`),
+	...wallpapers.map((f) => join(root, 'assets', 'wallpapers', f)),
+	join(root, 'LICENSE-APACHE'),
+	join(root, 'LICENSE-MIT'),
+]);
+
+// The ReactOS desktop zip needs python3 (numpy and Pillow), llvm-rc and lld-link. CI and releases
+// require them; AFTERGLOW_SKIP_REACTOS=1 skips this one zip, with a warning, for a local run without them.
+if (process.env.AFTERGLOW_SKIP_REACTOS === '1') {
+	console.warn('warning: AFTERGLOW_SKIP_REACTOS=1, so the ReactOS desktop zip is not built.');
+} else {
+	buildReactosDesktop();
+}
+
+function buildReactosDesktop() {
+	const missing = ['python3', 'llvm-rc', 'lld-link'].filter((tool) => {
+		try {
+			execFileSync('which', [tool], { stdio: 'ignore' });
+			return false;
+		} catch {
+			return true;
+		}
+	});
+	if (missing.length) {
+		throw new Error(
+			`The ReactOS desktop zip needs ${missing.join(', ')} on the PATH (python3 with numpy and Pillow, ` +
+				'and the LLVM tools llvm-rc and lld-link). Install them, or set AFTERGLOW_SKIP_REACTOS=1 to skip ' +
+				'that zip for a local run.',
+		);
+	}
+	const desktop = join(root, 'desktop');
+	const scratch = mkdtempSync(join(tmpdir(), 'afterglow-reactos-'));
+	try {
+		const name = `afterglow-reactos-desktop-v${version}`;
+		const stage = join(scratch, name);
+		mkdirSync(stage, { recursive: true });
+
+		// Both builds keep the file name afterglow.msstyles, which is the name the style registry entries use,
+		// so they live in separate folders: style/ has the classic scroll bars, style-scrollbars/ the Afterglow ones.
+		execFileSync('bash', [join(desktop, 'style', 'build.sh'), join(scratch, 'build')], {
+			stdio: 'ignore',
+		});
+		execFileSync(
+			'bash',
+			[join(desktop, 'style', 'build.sh'), join(scratch, 'build-scrollbars'), '--scrollbars'],
+			{ stdio: 'ignore' },
+		);
+		mkdirSync(join(stage, 'style'));
+		mkdirSync(join(stage, 'style-scrollbars'));
+		copyFileSync(
+			join(scratch, 'build', 'afterglow.msstyles'),
+			join(stage, 'style', 'afterglow.msstyles'),
+		);
+		copyFileSync(
+			join(scratch, 'build-scrollbars', 'afterglow.msstyles'),
+			join(stage, 'style-scrollbars', 'afterglow.msstyles'),
+		);
+
+		// The eight colour schemes and the script that applies one
+		cpSync(join(desktop, 'schemes'), join(stage, 'schemes'), { recursive: true });
+		mkdirSync(join(stage, 'install'));
+		copyFileSync(
+			join(desktop, 'install', 'afterglow-original.reg'),
+			join(stage, 'install', 'afterglow-original.reg'),
+		);
+
+		// The pointers are drawn here, not committed. The user32.dll patch tool ships; a patched binary never does.
+		const pointers = join(stage, 'pointers');
+		execFileSync('python3', [join(desktop, 'pointers', 'gen-cursors.py'), pointers], {
+			stdio: 'ignore',
+		});
+		for (const file of [
+			'afterglow-pointers.reg',
+			'patch-user32.py',
+			'SHA256SUMS',
+			'SHA256SUMS.user32',
+		]) {
+			copyFileSync(join(desktop, 'pointers', file), join(pointers, file));
+		}
+
+		mkdirSync(join(stage, 'docs'));
+		// desktop/SHA256SUMS names the two builds for the check script; here they sit in folders
+		const styleSums = ['style', 'style-scrollbars'].map(
+			(dir) =>
+				`${createHash('sha256')
+					.update(readFileSync(join(stage, dir, 'afterglow.msstyles')))
+					.digest('hex')}  ${dir}/afterglow.msstyles`,
+		);
+		writeFileSync(join(stage, 'SHA256SUMS'), `${styleSums.join('\n')}\n`);
+		copyFileSync(join(desktop, 'README.md'), join(stage, 'README.md'));
+		copyFileSync(join(desktop, 'PROVENANCE.md'), join(stage, 'PROVENANCE.md'));
+		for (const doc of ['reactos-desktop-colour-schemes.md', 'reactos-desktop-pointers.md']) {
+			copyFileSync(join(root, 'docs', doc), join(stage, 'docs', doc));
+		}
+		for (const licence of ['LICENSE-APACHE', 'LICENSE-MIT']) {
+			copyFileSync(join(root, licence), join(stage, licence));
+		}
+
+		execFileSync('zip', ['-q', '-r', join(out, `${name}.zip`), name], { cwd: scratch });
+	} finally {
+		rmSync(scratch, { recursive: true, force: true });
+	}
+}
 
 const sums = readdirSync(out)
 	.sort()
