@@ -80,6 +80,10 @@ Firefox gets all 38 colours its theme manifest defines, and Chrome and Edge shar
 
 These are standard TextMate `.tmTheme` files, with the same syntax colours as the VS Code themes. The Codex CLI uses them to highlight fenced code blocks and diffs, and bat and delta read the same format. See [docs/tmtheme.md](docs/tmtheme.md).
 
+## Desktop wallpapers
+
+The same dusk in wallpaper form: a low sun setting behind layered paper horizons, with the glow fading across a calm sky. It comes in five palettes (`dusk`, `indigo`, `ember`, `aurora` and `graphite`), each in dark and light, with flat stepped bands for 16-bit and 256-colour displays or smooth gradients for 24-bit and 32-bit ones. The SVG sources are in `assets/wallpapers/`, and `bun run render:wallpapers` renders PNGs at 3840×2160, 2560×1440 and 1920×1080 and 1024×768 BMPs for ReactOS. See [docs/desktop-wallpapers.md](docs/desktop-wallpapers.md).
+
 ## Install
 
 ### OpenCode
@@ -216,6 +220,7 @@ bun run bundle           # build the release assets (including the .vsix) into d
 - `scripts/build-claude.mjs` builds the Claude Code themes (all 72 tokens, listed in `scripts/claude-theme-tokens.json`) and `scripts/validate-claude.mjs` checks the file schema, the tokens, the colour syntax and about 80 contrast pairs per theme.
 - `scripts/build-tmtheme.mjs` converts the recoloured VS Code token colours into `.tmTheme` files, so the syntax colours have one source, and `scripts/validate-tmtheme.mjs` checks the plist, the global settings, the scopes against the VS Code themes and the contrast.
 - `scripts/browser-roles.mjs` maps the ramps onto the roles both browsers need. `scripts/build-firefox.mjs` and `scripts/build-chromium.mjs` build the Firefox and the Chrome and Edge theme manifests from it, and `scripts/validate-firefox.mjs` and `scripts/validate-chromium.mjs` check the keys (`scripts/firefox-theme-keys.json`, `scripts/chromium-theme-keys.json`), the colour syntax and the contrast.
+- `scripts/build-wallpapers.mjs` draws the desktop wallpapers from a palette table, `scripts/validate-wallpapers.mjs` checks their colours, structure and contrast, and `scripts/render-wallpapers.mjs` renders and dithers the PNGs and BMPs.
 - `scripts/validate-themes.mjs` mirrors the V2 theme schema bundled in OpenCode (the published JSON schema for V2 themes is not available yet), resolves every reference, and checks the contrast of text, syntax and Markdown colours. `scripts/validate-vscode.mjs` does the same for the VS Code themes (about 90 foreground and background pairs, with alpha composited first) and also checks every colour key against VS Code's published list.
 
 CI runs the format check, the licence-header check, the theme build and validation (including a check that the committed JSON matches what the palette generates), Markdown and workflow linting, and a zizmor security audit of the workflows.
