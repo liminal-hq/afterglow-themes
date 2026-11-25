@@ -20,7 +20,7 @@ Every release attaches two zips for the desktop, next to the editor and terminal
 
 `bun run bundle` builds both zips with the rest of the release. The ReactOS zip is drawn from source at bundle time, so the machine needs Python 3 with numpy and Pillow, `llvm-rc` and `lld-link`. Without them the bundle fails with a message naming what is missing. For a local run without those tools, set `AFTERGLOW_SKIP_REACTOS=1` to skip the ReactOS zip with a warning. CI and the release workflow never set it.
 
-CI and the release workflow install the tools with the `.github/actions/desktop-tools` composite action: the `llvm`, `lld` and `clang` packages on `ubuntu-24.04` (`llvm-rc` runs `clang` as its preprocessor), and numpy 2.5.4 and Pillow 13.0.0 in a virtual environment. The `Desktop style` CI job runs `bun run check:desktop` with them on every pull request and push, and the release workflow runs the same check before it bundles.
+CI and the release workflow install the tools with the `.github/actions/desktop-tools` composite action: the `llvm`, `lld` and `clang` packages on `ubuntu-24.04` (`llvm-rc` runs `clang` as its preprocessor), and numpy 2.5.4 and Pillow 13.0.0 from pip. The `Desktop style` CI job runs `bun run check:desktop` with them on every pull request and push, and the release workflow runs the same check before it bundles.
 
 ## Reproducibility
 

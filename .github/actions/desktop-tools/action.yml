@@ -15,7 +15,7 @@ runs:
       run: |
         set -euo pipefail
         sudo apt-get update -qq
-        sudo apt-get install -y -qq --no-install-recommends llvm lld clang python3 python3-venv
+        sudo apt-get install -y -qq --no-install-recommends llvm lld clang python3
 
         # The unversioned names come from the llvm and lld packages; fall back to the versioned ones if they are missing.
         for tool in llvm-rc lld-link; do
@@ -27,13 +27,11 @@ runs:
         llvm-rc --version || true
         lld-link --version
 
-    # Pillow 13.0.0 is the version the pointer hashes in desktop/pointers/SHA256SUMS were recorded with.
+    # Pillow 13.0.0 is the version the pointer hashes in desktop/pointers/SHA256SUMS were recorded with. The runner is
+    # single-use, so the packages go into its system Python and no PATH change is needed.
     - name: Install numpy and Pillow
       shell: bash
-      env:
-        VENV: ${{ runner.temp }}/desktop-venv
       run: |
         set -euo pipefail
-        python3 -m venv "${VENV}"
-        "${VENV}/bin/pip" install --quiet numpy==2.5.4 Pillow==13.0.0
-        echo "${VENV}/bin" >> "${GITHUB_PATH}"
+        sudo apt-get install -y -qq --no-install-recommends python3-pip
+        sudo python3 -m pip install --quiet --break-system-packages numpy==2.5.4 Pillow==13.0.0
