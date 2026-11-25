@@ -2,7 +2,7 @@
 # Draw the Afterglow pointer set procedurally and write it as 32 x 32 ARGB .cur files (and .ani for the two busy pointers):
 # a navy body with a soft gold rim, a light highlight and a faint dark halo, so each pointer reads on the dark desktop and on a
 # white page. Each one has the footprint and hot spot of the standard ReactOS pointer it replaces. Every shape is defined here as polygons, circles and strokes; nothing is traced from another pointer set.
-# Usage: gen-cursors.py OUT_DIR [--sheet PNG]
+# Usage: gen-cursors.py OUT_DIR [--sheet PNG] [--svg SVG_DIR]
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -76,7 +76,7 @@ def circle_box(centre_x, centre_y, radius):
 
 def mask_from_shapes(shapes):
 	"""Draw shapes into one supersampled 8-bit mask. A shape is a polygon (a list of points), ("circle", x, y, radius), ("ring", x, y,
-	radius, stroke_width), ("line", points, stroke_width) with round caps, or ("rrect", left, top, right, bottom, corner_radius)."""
+	radius, stroke_width), ("arc", x, y, radius, stroke_width, start_degrees, end_degrees), ("line", points, stroke_width) with round caps, or ("rrect", left, top, right, bottom, corner_radius)."""
 	mask = Image.new("L", (HIRES, HIRES), 0)
 	draw = ImageDraw.Draw(mask)
 	for shape in shapes:
@@ -94,6 +94,10 @@ def mask_from_shapes(shapes):
 			draw.line(polygon_points(points), fill=255, width=int(stroke_width * SUPERSAMPLE), joint="curve")
 			for x, y in (point_transform(*points[0]), point_transform(*points[-1])):
 				draw.ellipse(circle_box(x, y, stroke_width / 2), fill=255)
+		elif shape[0] == "arc":
+			_, centre_x, centre_y, radius, stroke_width, start_angle, end_angle = shape
+			(centre_x, centre_y), radius, stroke_width = point_transform(centre_x, centre_y), scale_length(radius), scale_length(stroke_width)
+			draw.arc(circle_box(centre_x, centre_y, radius), start_angle, end_angle, fill=255, width=int(stroke_width * SUPERSAMPLE))
 		elif shape[0] == "rrect":
 			_, left, top, right, bottom, corner_radius = shape
 			(left, top), (right, bottom), corner_radius = point_transform(left, top), point_transform(right, bottom), scale_length(corner_radius)
@@ -158,99 +162,113 @@ def downsample(supersampled):
 
 
 # ---- shapes ---------------------------------------------------------------------------------------------------------------------------
+# Each pointer is a spec: the body shapes with their placement, the colours, and the extra layers drawn over the body. The raster path
+# (draw) and the SVG path (svg_document) both read the same spec, so the two never disagree about a shape. A layer is a dict with
+# "placement" (as for set_placement), "shapes" (as for mask_from_shapes), "colour", and optionally "grow" (dilate by that many pixels
+# before painting, or erode if negative) and "spin" (the layer turns round the ring in the animated SVG).
+IDENTITY = (1.0, 0, 0, 0, 0)
+ARROW_PLACEMENT = (0.72, 2.5, 2.5, 2.5, 2.5)
 ARROW = [(2.5, 2.5), (2.5, 22.5), (7.2, 18.2), (10.6, 26.2), (14.0, 24.8), (10.7, 17.0), (17.0, 17.0)]
+SPINNER_ARC_DEGREES = 110
 
 
-def arrow_body():
-	return mask_from_shapes([ARROW])
+def layer(placement, shapes, colour=None, grow=0, spin=False):
+	return {"placement": placement, "shapes": shapes, "colour": colour, "grow": grow, "spin": spin}
 
 
-def arrow():
-	set_placement(0.72, 2.5, 2.5, 2.5, 2.5)  # about 11 x 19, tip and hot spot at (2, 2)
-	return compose(arrow_body()), (2, 2)
+def spec(body_placement, body_shapes, hotspot, rim=GOLD, fill=NAVY, highlight=True, extras=(), halo_cut=None):
+	return {"body": layer(body_placement, body_shapes), "hotspot": hotspot, "rim": rim, "fill": fill, "highlight": highlight, "extras": list(extras), "halo_cut": halo_cut}
 
 
-def help_cursor():
-	set_placement(0.62, 18.5, 5.5, 14.5, 3.5)  # a 10 px question mark beside the arrow
-	question_mark = mask_from_shapes([("line", [(18.5, 9.0), (19.5, 6.5), (22.5, 5.5), (25.5, 6.5), (26.2, 9.0), (25.0, 11.2), (22.6, 12.6), (22.4, 15.0)], 2.6), ("circle", 22.4, 19.2, 1.6)])
-	set_placement(0.72, 2.5, 2.5, 2.5, 2.5)
-	return compose(arrow_body(), extra=[(grow_mask(question_mark, 0.8), INK), (question_mark, GOLD)]), (2, 2)
+def layer_mask(item):
+	set_placement(*item["placement"])
+	mask = mask_from_shapes(item["shapes"])
+	if item["grow"] > 0:
+		mask = grow_mask(mask, item["grow"])
+	elif item["grow"] < 0:
+		mask = shrink_mask(mask, -item["grow"])
+	return mask
 
 
-def spinner_masks(centre_x, centre_y, radius, stroke_width, phase):
-	"""The ring and the 110 degree arc that travels round it, one mask each; phase counts eighths of a turn."""
-	ring = mask_from_shapes([("ring", centre_x, centre_y, radius, stroke_width)])
-	arc = Image.new("L", (HIRES, HIRES), 0)
-	draw = ImageDraw.Draw(arc)
+def draw(pointer):
+	"""A spec as a supersampled RGBA canvas and its hot spot."""
+	extras = [(layer_mask(item), item["colour"]) for item in pointer["extras"]]
+	halo_cut = layer_mask(pointer["halo_cut"]) if pointer["halo_cut"] else None
+	body = layer_mask(pointer["body"])
+	return compose(body, rim=pointer["rim"], fill=pointer["fill"], highlight=pointer["highlight"], extra=extras, halo_cut=halo_cut), pointer["hotspot"]
+
+
+def spinner(centre_x, centre_y, radius, stroke_width, phase, placement):
+	"""The ring and the 110 degree arc that travels round it; phase counts eighths of a turn."""
 	start_angle = phase * 45 - 90
-	(centre_x, centre_y), radius, stroke_width = point_transform(centre_x, centre_y), scale_length(radius), scale_length(stroke_width)
-	draw.arc(circle_box(centre_x, centre_y, radius), start_angle, start_angle + 110, fill=255, width=int(stroke_width * SUPERSAMPLE))
-	return ring, arc
+	return layer(placement, [("ring", centre_x, centre_y, radius, stroke_width)], GOLD), layer(placement, [("arc", centre_x, centre_y, radius, stroke_width, start_angle, start_angle + SPINNER_ARC_DEGREES)], ROSE, spin=True)
 
 
-def working(phase=0):
-	set_placement(1.0, 0, 0, 0, 0)  # a 14 px ring at the arrow's foot
-	ring, arc = spinner_masks(17.5, 18.0, 5.2, 2.2, phase)
-	disc = mask_from_shapes([("circle", 17.5, 18.0, 6.2)])
-	set_placement(0.72, 2.5, 2.5, 2.5, 2.5)
-	body = arrow_body()
-	return compose(body, extra=[(grow_mask(disc, 0.8), INK), (disc, NAVY), (ring, GOLD), (arc, ROSE)]), (2, 2)
+def arrow_spec():
+	return spec(ARROW_PLACEMENT, [ARROW], (2, 2))  # about 11 x 19, tip and hot spot at (2, 2)
 
 
-def busy(phase=0):
+def help_spec():
+	question_mark = [("line", [(18.5, 9.0), (19.5, 6.5), (22.5, 5.5), (25.5, 6.5), (26.2, 9.0), (25.0, 11.2), (22.6, 12.6), (22.4, 15.0)], 2.6), ("circle", 22.4, 19.2, 1.6)]
+	placement = (0.62, 18.5, 5.5, 14.5, 3.5)  # a 10 px question mark beside the arrow
+	return spec(ARROW_PLACEMENT, [ARROW], (2, 2), extras=[layer(placement, question_mark, INK, grow=0.8), layer(placement, question_mark, GOLD)])
+
+
+def working_spec(phase=0):
+	ring, arc = spinner(17.5, 18.0, 5.2, 2.2, phase, IDENTITY)  # a 14 px ring at the arrow's foot
+	disc = [("circle", 17.5, 18.0, 6.2)]
+	return spec(ARROW_PLACEMENT, [ARROW], (2, 2), extras=[layer(IDENTITY, disc, INK, grow=0.8), layer(IDENTITY, disc, NAVY), ring, arc])
+
+
+def busy_spec(phase=0):
 	# The Quill ring: a gold ring on a navy disc, with a rose arc that travels round it.
-	set_placement(0.62, 16, 16, 16, 16)  # 16 px across, hot spot in the middle
-	disc = mask_from_shapes([("circle", 16, 16, 11.5)])
-	ring, arc = spinner_masks(16, 16, 9.0, 3.6, phase)
-	nib = mask_from_shapes([("circle", 16, 16, 2.0)])
-	return compose(disc, rim=GOLD_LIGHT, highlight=False, extra=[(ring, GOLD), (arc, ROSE), (nib, CREAM)]), (16, 16)
+	placement = (0.62, 16, 16, 16, 16)  # 16 px across, hot spot in the middle
+	ring, arc = spinner(16, 16, 9.0, 3.6, phase, placement)
+	nib = layer(placement, [("circle", 16, 16, 2.0)], CREAM)
+	return spec(placement, [("circle", 16, 16, 11.5)], (16, 16), rim=GOLD_LIGHT, highlight=False, extras=[ring, arc, nib])
 
 
-def crosshair():
-	set_placement(0.52, 16, 16, 11.5, 11.5)  # 17 x 17, hot spot (11, 11)
+def crosshair_spec():
+	placement = (0.52, 16, 16, 11.5, 11.5)  # 17 x 17, hot spot (11, 11)
 	arms = [("rrect", 14.4, 2, 17.6, 12.5, 1.0), ("rrect", 14.4, 19.5, 17.6, 30, 1.0), ("rrect", 2, 14.4, 12.5, 17.6, 1.0), ("rrect", 19.5, 14.4, 30, 17.6, 1.0)]
-	centre_dot = mask_from_shapes([("circle", 16, 16, 1.2)])
-	return compose(mask_from_shapes(arms), highlight=False, extra=[(centre_dot, GOLD)]), (11, 11)
+	return spec(placement, arms, (11, 11), highlight=False, extras=[layer(placement, [("circle", 16, 16, 1.2)], GOLD)])
 
 
-def ibeam():
-	set_placement(0.62, 16, 16, 6.5, 9.5)  # 7 x 16, hot spot (6, 9)
+def ibeam_spec():
+	placement = (0.62, 16, 16, 6.5, 9.5)  # 7 x 16, hot spot (6, 9)
 	shapes = [("rrect", 14.5, 6, 17.5, 26, 0.8), ("rrect", 11, 4.5, 15.6, 6.8, 1.0), ("rrect", 16.4, 4.5, 21, 6.8, 1.0), ("rrect", 11, 25.2, 15.6, 27.5, 1.0), ("rrect", 16.4, 25.2, 21, 27.5, 1.0)]
-	return compose(mask_from_shapes(shapes), highlight=False), (6, 9)
+	return spec(placement, shapes, (6, 9), highlight=False)
 
 
-def unavailable():
-	set_placement(0.75, 16, 16, 12.5, 12.5)  # 20 x 20, hot spot in the middle
-	ring = mask_from_shapes([("ring", 16, 16, 11, 3.4)])
-	slash = mask_from_shapes([[(8.6, 21.3), (21.3, 8.6), (23.4, 10.7), (10.7, 23.4)]])
-	body = Image.fromarray(np.maximum(np.asarray(ring), np.asarray(slash)))
-	inner_hole = shrink_mask(mask_from_shapes([("circle", 16, 16, 9.3)]), 0.5)
-	return compose(body, rim=INK, fill=ROSE, highlight=False, halo_cut=inner_hole), (12, 12)
+def unavailable_spec():
+	placement = (0.75, 16, 16, 12.5, 12.5)  # 20 x 20, hot spot in the middle
+	body = [("ring", 16, 16, 11, 3.4), [(8.6, 21.3), (21.3, 8.6), (23.4, 10.7), (10.7, 23.4)]]  # the ring and the slash
+	return spec(placement, body, (12, 12), rim=INK, fill=ROSE, highlight=False, halo_cut=layer(placement, [("circle", 16, 16, 9.3)], grow=-0.5))
 
 
-def double_arrow(angle):
+def double_arrow_spec(angle):
 	"""A two-headed arrow along the x axis, rotated by angle degrees about the centre."""
 	points = [(3, 16), (9, 9.5), (9, 14), (23, 14), (23, 9.5), (29, 16), (23, 22.5), (23, 18), (9, 18), (9, 22.5)]
 	radians = math.radians(angle)
-	set_placement(0.72 if angle % 90 == 0 else 0.62, 16, 16, 15.5, 15.5)  # 21 x 11 straight, 15 x 15 diagonal
+	placement = (0.72 if angle % 90 == 0 else 0.62, 16, 16, 15.5, 15.5)  # 21 x 11 straight, 15 x 15 diagonal
 	rotated = [(16 + (x - 16) * math.cos(radians) - (y - 16) * math.sin(radians), 16 + (x - 16) * math.sin(radians) + (y - 16) * math.cos(radians)) for x, y in points]
-	return compose(mask_from_shapes([rotated]), highlight=False), (15, 15)
+	return spec(placement, [rotated], (15, 15), highlight=False)
 
 
-def move():
-	set_placement(0.78, 16, 16, 15.5, 15.5)  # 23 x 23
+def move_spec():
+	placement = (0.78, 16, 16, 15.5, 15.5)  # 23 x 23
 	outline = [(3, 16), (8, 11), (8, 14.5), (14.5, 14.5), (14.5, 8), (11, 8), (16, 3), (21, 8), (17.5, 8), (17.5, 14.5), (24, 14.5), (24, 11), (29, 16), (24, 21), (24, 17.5), (17.5, 17.5), (17.5, 24), (21, 24), (16, 29), (11, 24), (14.5, 24), (14.5, 17.5), (8, 17.5), (8, 21)]
-	return compose(mask_from_shapes([outline]), highlight=False), (15, 15)
+	return spec(placement, [outline], (15, 15), highlight=False)
 
 
-def up_arrow():
-	set_placement(0.68, 16, 2, 15.5, 5.0)  # 11 x 19, tip and hot spot at (15, 5)
+def up_arrow_spec():
+	placement = (0.68, 16, 2, 15.5, 5.0)  # 11 x 19, tip and hot spot at (15, 5)
 	points = [(16, 2), (24, 11), (19, 11), (19, 28), (13, 28), (13, 11), (8, 11)]
-	return compose(mask_from_shapes([points]), highlight=True), (15, 5)
+	return spec(placement, [points], (15, 5))
 
 
-def hand():
-	set_placement(0.62, 12.3, 2.5, 9.5, 2.5)  # about 14 x 19, fingertip and hot spot at (9, 2)
+def hand_spec():
+	placement = (0.62, 12.3, 2.5, 9.5, 2.5)  # about 14 x 19, fingertip and hot spot at (9, 2)
 	shapes = [
 		("rrect", 10.0, 2.5, 14.6, 20, 2.3),  # index finger
 		("rrect", 14.0, 10.0, 18.4, 21, 2.2),
@@ -260,25 +278,186 @@ def hand():
 		[(10.4, 22.5), (5.5, 16.5), (5.0, 14.8), (6.4, 14.0), (10.6, 17.2)],  # thumb
 		("rrect", 11.5, 24, 24.5, 29.5, 1.5),  # wrist
 	]
-	return compose(mask_from_shapes(shapes)), (9, 2)
+	return spec(placement, shapes, (9, 2))
 
 
-CURSORS = {
-	"arrow": (arrow, "Arrow"),
-	"help": (help_cursor, "Help"),
-	"working": (working, "AppStarting"),
-	"busy": (busy, "Wait"),
-	"cross": (crosshair, "Crosshair"),
-	"ibeam": (ibeam, "IBeam"),
-	"no": (unavailable, "No"),
-	"size-ns": (lambda: double_arrow(90), "SizeNS"),
-	"size-we": (lambda: double_arrow(0), "SizeWE"),
-	"size-nwse": (lambda: double_arrow(45), "SizeNWSE"),
-	"size-nesw": (lambda: double_arrow(-45), "SizeNESW"),
-	"move": (move, "SizeAll"),
-	"up": (up_arrow, "UpArrow"),
-	"hand": (hand, "Hand"),
+def drawn(spec_function):
+	return lambda *phase: draw(spec_function(*phase))
+
+
+working = drawn(working_spec)
+busy = drawn(busy_spec)
+
+# name: (spec function, ReactOS cursor name); the animated pointers take a phase (eighths of a turn)
+SPECS = {
+	"arrow": (arrow_spec, "Arrow"),
+	"help": (help_spec, "Help"),
+	"working": (working_spec, "AppStarting"),
+	"busy": (busy_spec, "Wait"),
+	"cross": (crosshair_spec, "Crosshair"),
+	"ibeam": (ibeam_spec, "IBeam"),
+	"no": (unavailable_spec, "No"),
+	"size-ns": (lambda: double_arrow_spec(90), "SizeNS"),
+	"size-we": (lambda: double_arrow_spec(0), "SizeWE"),
+	"size-nwse": (lambda: double_arrow_spec(45), "SizeNWSE"),
+	"size-nesw": (lambda: double_arrow_spec(-45), "SizeNESW"),
+	"move": (move_spec, "SizeAll"),
+	"up": (up_arrow_spec, "UpArrow"),
+	"hand": (hand_spec, "Hand"),
 }
+CURSORS = {name: (drawn(spec_function), cursor_name) for name, (spec_function, cursor_name) in SPECS.items()}
+ANIMATED = {"working": working_spec, "busy": busy_spec}
+
+
+# ---- SVG masters ----------------------------------------------------------------------------------------------------------------------
+# The same specs as scalable art in the pointer's own 32 x 32 pixel grid. These are idealised: the rim, halo and highlight are
+# expressed with strokes and translucent layers, not the morphological filters and box reduction the raster uses, so they are close to
+# the .cur images but not pixel-identical. The shipped files stay the raster output.
+HALO_LAYERS = ((1.75, 0.12), (1.4, 0.12), (1.1, 0.12))  # (pixels beyond the edge, opacity): a stepped stand-in for the blurred halo
+HIGHLIGHT_SHIFT = int(SUPERSAMPLE * 0.9) / SUPERSAMPLE
+SVG_FRAME_SECONDS = 0.1  # 6 jiffies per frame, as in the .ani files
+
+
+def hex_colour(colour):
+	return "#{:02x}{:02x}{:02x}".format(*colour)
+
+
+def number(value):
+	text = f"{value:.3f}".rstrip("0").rstrip(".")
+	return "0" if text in ("", "-0") else text
+
+
+def shape_svg(shape, placement, colour, grow=0.0, erode_to=None):
+	"""One shape as an SVG element in image units. grow widens it by that many pixels (a stroke of the same colour); erode_to is a
+	colour to stroke the outline with, 0.75 px in, to shrink a filled shape."""
+	scale, anchor_x, anchor_y, target_x, target_y = placement
+
+	def at(x, y):
+		return target_x + (x - anchor_x) * scale, target_y + (y - anchor_y) * scale
+
+	def pair(x, y):
+		return f"{number(at(x, y)[0])} {number(at(x, y)[1])}"
+
+	paint = f'fill="{colour}"'
+	if grow > 0:
+		paint += f' stroke="{colour}" stroke-width="{number(grow * 2)}" stroke-linejoin="round"'
+	if erode_to:
+		paint += f' stroke="{erode_to}" stroke-width="1.5" stroke-linejoin="round"'
+	kind = shape[0] if isinstance(shape[0], str) else "polygon"
+	if kind == "polygon":
+		return f'<path d="M{"L".join(pair(x, y) for x, y in shape)}Z" {paint}/>'
+	if kind == "circle":
+		_, centre_x, centre_y, radius = shape
+		return f'<circle cx="{number(at(centre_x, centre_y)[0])}" cy="{number(at(centre_x, centre_y)[1])}" r="{number(max(radius * scale + (0 if erode_to else grow), 0))}" {paint if erode_to else f'fill="{colour}"'}/>'
+	if kind == "rrect":
+		_, left, top, right, bottom, corner = shape
+		(left, top), (right, bottom) = at(left, top), at(right, bottom)
+		pad = 0 if erode_to else grow
+		return f'<rect x="{number(left - pad)}" y="{number(top - pad)}" width="{number(right - left + 2 * pad)}" height="{number(bottom - top + 2 * pad)}" rx="{number(corner * scale + pad)}" {f"fill=\"{colour}\"" if not erode_to else paint}/>'
+	# Strokes. PIL draws ring and arc widths inward from the radius, so the centre line sits half a width inside it.
+	assert not erode_to, "only filled shapes are eroded"
+	if kind == "ring":
+		_, centre_x, centre_y, radius, width = shape
+		width, radius = width * scale, radius * scale
+		return f'<circle cx="{number(at(centre_x, centre_y)[0])}" cy="{number(at(centre_x, centre_y)[1])}" r="{number(radius - width / 2)}" fill="none" stroke="{colour}" stroke-width="{number(width + 2 * grow)}"/>'
+	if kind == "arc":
+		_, centre_x, centre_y, radius, width, start, end = shape
+		width, radius = width * scale, radius * scale
+		x0, y0 = at(centre_x, centre_y)
+		middle = radius - width / 2
+		ends = [(x0 + middle * math.cos(math.radians(angle)), y0 + middle * math.sin(math.radians(angle))) for angle in (start, end)]
+		return f'<path d="M{number(ends[0][0])} {number(ends[0][1])}A{number(middle)} {number(middle)} 0 0 1 {number(ends[1][0])} {number(ends[1][1])}" fill="none" stroke="{colour}" stroke-width="{number(width + 2 * grow)}"/>'
+	assert kind == "line", kind
+	_, points, width = shape
+	return f'<polyline points="{" ".join(pair(x, y) for x, y in points)}" fill="none" stroke="{colour}" stroke-width="{number(width * scale + 2 * grow)}" stroke-linecap="round" stroke-linejoin="round"/>'
+
+
+def shapes_svg(item, colour, grow=0.0, erode_to=None):
+	return [shape_svg(shape, item["placement"], colour, grow, erode_to) for shape in item["shapes"]]
+
+
+def svg_document(name, cursor_name, pointer, animated=False, frame=None):
+	"""A pointer spec as an SVG file. animated turns the travelling arc with SMIL; frame (for a still) is only used in the title."""
+	body, ink = pointer["body"], hex_colour(INK)
+	out = []
+	add = lambda line, depth=1: out.append("\t" * depth + line)
+	title = f"Afterglow pointer: {cursor_name}" + (f", frame {frame}" if frame is not None else "") + (", animated" if animated else "")
+	hotspot_x, hotspot_y = pointer["hotspot"]
+	out.append(f"""<!--
+	{title}. Idealised vector master of afterglow-{name}.cur, drawn in the pointer's own 32 x 32 pixel grid; the shipped pointer is the raster file.
+	Hot spot at ({hotspot_x}, {hotspot_y}). Generated by desktop/pointers/gen-cursors.py from the shapes the raster is drawn from; edit the generator, not this file.
+
+	(c) Copyright 2026 Liminal HQ, Scott Morris
+	SPDX-License-Identifier: Apache-2.0 OR MIT
+-->""")
+	out.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {CURSOR_SIZE} {CURSOR_SIZE}" width="{CURSOR_SIZE * 8}" height="{CURSOR_SIZE * 8}" role="img" data-hotspot="{hotspot_x},{hotspot_y}">')
+	add(f"<title>{title}</title>")
+	add(f"<desc>Hot spot at pixel ({hotspot_x}, {hotspot_y}) of the 32 x 32 grid.</desc>")
+	masks = []
+	if pointer["halo_cut"] or pointer["highlight"]:
+		masks.append("<defs>")
+		if pointer["halo_cut"]:
+			masks.append('\t<mask id="outside-hole" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">')
+			masks.append('\t\t<rect width="32" height="32" fill="#fff"/>')
+			masks.extend("\t\t" + element for element in shapes_svg(pointer["halo_cut"], "#000", pointer["halo_cut"]["grow"]))
+			masks.append("\t</mask>")
+		if pointer["highlight"]:
+			masks.append('\t<mask id="core" maskUnits="userSpaceOnUse" x="-8" y="-8" width="48" height="48">')
+			masks.extend("\t\t" + element for element in shapes_svg(body, "#fff", erode_to="#000"))
+			masks.append("\t</mask>")
+			masks.append('\t<mask id="upper-left" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">')
+			masks.append('\t\t<rect width="32" height="32" fill="#000"/>')
+			masks.append('\t\t<g mask="url(#core)"><rect x="-8" y="-8" width="48" height="48" fill="#fff"/></g>')
+			masks.append(f'\t\t<g transform="translate({number(HIGHLIGHT_SHIFT)} {number(HIGHLIGHT_SHIFT)})"><g mask="url(#core)"><rect x="-8" y="-8" width="48" height="48" fill="#000"/></g></g>')
+			masks.append("\t</mask>")
+		masks.append("</defs>")
+		out.extend("\t" + line for line in masks)
+	cut = ' mask="url(#outside-hole)"' if pointer["halo_cut"] else ""
+	add(f'<g id="halo" fill="{ink}"{cut}>')
+	for reach, opacity in HALO_LAYERS:
+		add(f'<g opacity="{opacity}">', 2)
+		out.extend("\t\t\t" + element for element in shapes_svg(body, hex_colour(INK), reach))
+		add("</g>", 2)
+	add("</g>")
+	add(f'<g id="rim">')
+	out.extend("\t\t" + element for element in shapes_svg(body, hex_colour(pointer["rim"]), 1.0))
+	add("</g>")
+	add('<g id="body">')
+	out.extend("\t\t" + element for element in shapes_svg(body, hex_colour(pointer["fill"])))
+	add("</g>")
+	if pointer["highlight"]:
+		add(f'<rect id="highlight" width="32" height="32" fill="{hex_colour(NAVY_HI)}" opacity="0.9" mask="url(#upper-left)"/>')
+	for index, item in enumerate(pointer["extras"]):
+		elements = shapes_svg(item, hex_colour(item["colour"]), item["grow"])
+		if animated and item["spin"]:
+			centre = point_through(item["placement"], *item["shapes"][0][1:3])
+			turns = ";".join(f"{step * 45} {number(centre[0])} {number(centre[1])}" for step in range(8))
+			add('<g id="travelling-arc">')
+			out.extend("\t\t" + element for element in elements)
+			add(f'\t<animateTransform attributeName="transform" type="rotate" values="{turns}" dur="{number(8 * SVG_FRAME_SECONDS)}s" calcMode="discrete" repeatCount="indefinite"/>')
+			add("</g>")
+		else:
+			out.extend("\t" + element for element in elements)
+	out.append("</svg>")
+	return "\n".join(out) + "\n"
+
+
+def point_through(placement, x, y):
+	scale, anchor_x, anchor_y, target_x, target_y = placement
+	return target_x + (x - anchor_x) * scale, target_y + (y - anchor_y) * scale
+
+
+def svg_files():
+	"""The SVG masters as {relative path: text}: one per pointer, an animated one for each busy pointer, and the 8 frames of those."""
+	files = {}
+	for name, (spec_function, cursor_name) in SPECS.items():
+		files[f"afterglow-{name}.svg"] = svg_document(name, cursor_name, spec_function())
+	for name, spec_function in ANIMATED.items():
+		cursor_name = SPECS[name][1]
+		files[f"afterglow-{name}-animated.svg"] = svg_document(name, cursor_name, spec_function(0), animated=True)
+		for frame in range(8):
+			files[f"frames/afterglow-{name}-{frame}.svg"] = svg_document(name, cursor_name, spec_function(frame), frame=frame)
+	return files
 
 
 # ---- file formats ---------------------------------------------------------------------------------------------------------------------
@@ -316,7 +495,14 @@ def ani_file(frames, hotspot, rate):
 
 def main():
 	out_dir = sys.argv[1]
-	sheet_path = sys.argv[3] if len(sys.argv) > 3 and sys.argv[2] == "--sheet" else None
+	options = sys.argv[2:]
+	sheet_path = options[options.index("--sheet") + 1] if "--sheet" in options else None
+	svg_dir = options[options.index("--svg") + 1] if "--svg" in options else None
+	if svg_dir:
+		for relative, text in svg_files().items():
+			os.makedirs(os.path.dirname(os.path.join(svg_dir, relative)), exist_ok=True)
+			with open(os.path.join(svg_dir, relative), "w") as svg_out:
+				svg_out.write(text)
 	os.makedirs(out_dir, exist_ok=True)
 	images = {}
 	for name, (draw_cursor, _) in CURSORS.items():

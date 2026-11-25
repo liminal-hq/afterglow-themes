@@ -4,7 +4,7 @@
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
-# Also checks the README pointer preview PNG against the generator, and draws the pointer set (desktop/pointers/gen-cursors.py, needs Pillow) and compares the 16 files with
+# Also checks the README pointer preview PNG and the SVG pointer masters against the generator, and draws the pointer set (desktop/pointers/gen-cursors.py, needs Pillow) and compares the 16 files with
 # desktop/pointers/SHA256SUMS. With USER32=PATH (a ReactOS 0.4.16 i386 user32.dll, your own copy), it also patches a scratch copy and
 # checks the result against the patched hash in desktop/pointers/SHA256SUMS.user32.
 #
@@ -56,6 +56,13 @@ if (cd "$out/pointers" && sha256sum --check --quiet "$root/desktop/pointers/SHA2
 	echo "the 16 Afterglow pointers match desktop/pointers/SHA256SUMS"
 else
 	echo "the Afterglow pointers do not match desktop/pointers/SHA256SUMS"
+	status=1
+fi
+python3 desktop/pointers/gen-cursors.py "$out/pointers-scratch" --svg "$out/pointers-svg" >/dev/null
+if diff -r "$out/pointers-svg" desktop/pointers/svg >/dev/null; then
+	echo "the SVG pointer masters in desktop/pointers/svg match the generator"
+else
+	echo "the SVG pointer masters in desktop/pointers/svg are out of date: run desktop/pointers/gen-cursors.py OUT_DIR --svg desktop/pointers/svg"
 	status=1
 fi
 python3 desktop/pointers/render-preview.py "$out/pointers-preview.png"
