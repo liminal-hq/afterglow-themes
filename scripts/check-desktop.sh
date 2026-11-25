@@ -4,7 +4,7 @@
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
-# Also draws the pointer set (desktop/pointers/gen-cursors.py, needs Pillow) and compares the 16 files with
+# Also checks the README pointer preview PNG against the generator, and draws the pointer set (desktop/pointers/gen-cursors.py, needs Pillow) and compares the 16 files with
 # desktop/pointers/SHA256SUMS. With USER32=PATH (a ReactOS 0.4.16 i386 user32.dll, your own copy), it also patches a scratch copy and
 # checks the result against the patched hash in desktop/pointers/SHA256SUMS.user32.
 #
@@ -56,6 +56,20 @@ if (cd "$out/pointers" && sha256sum --check --quiet "$root/desktop/pointers/SHA2
 	echo "the 16 Afterglow pointers match desktop/pointers/SHA256SUMS"
 else
 	echo "the Afterglow pointers do not match desktop/pointers/SHA256SUMS"
+	status=1
+fi
+python3 desktop/pointers/render-preview.py "$out/pointers-preview.png"
+# Compared by pixels, not bytes: PNG encoders differ between Pillow and zlib builds.
+if python3 - "$out/pointers-preview.png" docs/images/afterglow-pointers.png <<'PY'
+import sys
+from PIL import Image, ImageChops
+fresh, committed = (Image.open(path).convert("RGB") for path in sys.argv[1:3])
+sys.exit(0 if fresh.size == committed.size and ImageChops.difference(fresh, committed).getbbox() is None else 1)
+PY
+then
+	echo "the pointer preview docs/images/afterglow-pointers.png matches the generator"
+else
+	echo "the pointer preview docs/images/afterglow-pointers.png is out of date: run desktop/pointers/render-preview.py docs/images/afterglow-pointers.png"
 	status=1
 fi
 if [ -n "${USER32:-}" ]; then

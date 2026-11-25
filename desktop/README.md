@@ -39,6 +39,12 @@ The default style draws classic Windows scroll bars; `--scrollbars` builds the A
 
 `pointers/gen-cursors.py` draws the 14 Afterglow mouse pointers at the standard size (generated, not in git; `pointers/SHA256SUMS` is the record), `pointers/afterglow-pointers.reg` adds the "Afterglow" scheme to Control Panel, Mouse, and `pointers/patch-user32.py` makes them the system pointers by patching a copy of ReactOS 0.4.16's `user32.dll` (ReactOS ignores pointer schemes). The tool never ships a patched binary. See `docs/reactos-desktop-pointers.md`.
 
+![The Afterglow pointers on a dark and on a cream background: enlarged four times, then at true size. In order: arrow, help, working, busy, crosshair, text, unavailable, vertical resize, horizontal resize, two diagonal resizes, move, up arrow, hand, then a second frame of working and of busy.](../docs/images/afterglow-pointers.png)
+
+_The Afterglow pointers at 4× and at true size, on the dark desktop and on cream._
+
+`pointers/render-preview.py` redraws that sheet (`python3 desktop/pointers/render-preview.py docs/images/afterglow-pointers.png`), and `bun run check:desktop` checks that the committed PNG still has the pixels the generator draws.
+
 ```sh
 python3 desktop/pointers/gen-cursors.py desktop/build/pointers
 python3 desktop/pointers/patch-user32.py USER32_COPY desktop/build/pointers USER32_PATCHED

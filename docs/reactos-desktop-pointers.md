@@ -1,5 +1,11 @@
 # ReactOS desktop pointers
 
+![The Afterglow pointers on a dark and on a cream background: enlarged four times, then at true size. In order: arrow, help, working, busy, crosshair, text, unavailable, vertical resize, horizontal resize, two diagonal resizes, move, up arrow, hand, then a second frame of working and of busy.](images/afterglow-pointers.png)
+
+_The Afterglow pointers at 4× and at true size, on the dark desktop and on cream._
+
+`desktop/pointers/render-preview.py` draws this sheet from the same generator code.
+
 The Afterglow mouse pointers for ReactOS 0.4.16: 14 pointers at the standard size (32 × 32 images, with the footprint and hot spot of the stock ReactOS pointer each one replaces, not enlarged), drawn procedurally by `desktop/pointers/gen-cursors.py`. Each has a dusk-navy body with a soft gold rim, a light highlight and a faint dark halo, so it reads on a dark desktop and on a white page.
 
 | File                                             | Pointer                                        |
