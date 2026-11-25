@@ -100,9 +100,17 @@ The same landscape of layered paper horizons in wallpaper form, at two times of 
 
 A matching set of 14 mouse pointers for ReactOS, drawn procedurally in navy with a gold rim so they read on the dark desktop and on a white page. A scheme file adds them to the Mouse control panel, and a patch tool makes them the system pointers in your own copy of `user32.dll`. See [docs/reactos-desktop-pointers.md](docs/reactos-desktop-pointers.md).
 
-![The Afterglow pointers on a dark and on a cream background: enlarged four times, then at true size. In order: arrow, help, working, busy, crosshair, text, unavailable, vertical resize, horizontal resize, two diagonal resizes, move, up arrow, hand, then a second frame of working and of busy.](docs/images/afterglow-pointers.png)
+![The 14 Afterglow pointers and a second frame of the two animated ones, enlarged eight times on the dark desktop colour, three to a row. In order: arrow, help, working, busy, crosshair, text, unavailable, vertical resize, horizontal resize, two diagonal resizes, move, up arrow, hand, then a second frame of working and of busy.](docs/images/pointers-dark.png)
 
-_The Afterglow pointers at 4× and at true size, on the dark desktop and on cream._
+_The Afterglow pointers at 8×, on the dark desktop colour. Each pixel of the 32 × 32 art is an 8 × 8 block. The faint tan edge on cream is the pointers' own soft dark halo._
+
+![The 14 Afterglow pointers and a second frame of the two animated ones, enlarged eight times on cream, three to a row. In order: arrow, help, working, busy, crosshair, text, unavailable, vertical resize, horizontal resize, two diagonal resizes, move, up arrow, hand, then a second frame of working and of busy.](docs/images/pointers-cream.png)
+
+_The same pointers at 8×, on cream._
+
+![The Afterglow pointers at true size, 32 by 32 pixels, on the dark desktop colour and on cream, in the same order.](docs/images/pointers-true-size.png)
+
+_The same pointers at true size, on the dark desktop colour and on cream._
 
 ## Install
 

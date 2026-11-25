@@ -1,10 +1,18 @@
 # ReactOS desktop pointers
 
-![The Afterglow pointers on a dark and on a cream background: enlarged four times, then at true size. In order: arrow, help, working, busy, crosshair, text, unavailable, vertical resize, horizontal resize, two diagonal resizes, move, up arrow, hand, then a second frame of working and of busy.](images/afterglow-pointers.png)
+![The 14 Afterglow pointers and a second frame of the two animated ones, enlarged eight times on the dark desktop colour, three to a row. In order: arrow, help, working, busy, crosshair, text, unavailable, vertical resize, horizontal resize, two diagonal resizes, move, up arrow, hand, then a second frame of working and of busy.](images/pointers-dark.png)
 
-_The Afterglow pointers at 4× and at true size, on the dark desktop and on cream._
+_The Afterglow pointers at 8×, on the dark desktop colour. Each pixel of the 32 × 32 art is an 8 × 8 block. The faint tan edge on cream is the pointers' own soft dark halo._
 
-`desktop/pointers/render-preview.py` draws this sheet from the same generator code.
+![The 14 Afterglow pointers and a second frame of the two animated ones, enlarged eight times on cream, three to a row. In order: arrow, help, working, busy, crosshair, text, unavailable, vertical resize, horizontal resize, two diagonal resizes, move, up arrow, hand, then a second frame of working and of busy.](images/pointers-cream.png)
+
+_The same pointers at 8×, on cream._
+
+![The Afterglow pointers at true size, 32 by 32 pixels, on the dark desktop colour and on cream, in the same order.](images/pointers-true-size.png)
+
+_The same pointers at true size, on the dark desktop colour and on cream._
+
+The exact art is in [`images/pointers/`](images/pointers/): one transparent PNG per pointer at 8× (`arrow.png`, `help.png` and so on), and `working-frames.png` and `busy-frames.png` with all eight frames of each animated pointer. `desktop/pointers/render-preview.py` draws all of these images from the same generator code, with whole-number nearest-neighbour scaling and no resampling.
 
 The Afterglow mouse pointers for ReactOS 0.4.16: 14 pointers at the standard size (32 × 32 images, with the footprint and hot spot of the stock ReactOS pointer each one replaces, not enlarged), drawn procedurally by `desktop/pointers/gen-cursors.py`. Each has a dusk-navy body with a soft gold rim, a light highlight and a faint dark halo, so it reads on a dark desktop and on a white page.
 
