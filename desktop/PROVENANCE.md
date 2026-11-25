@@ -35,6 +35,15 @@ The colours are in the `SCHEMES` table in `style/agdraw.py`, one entry per colou
 - **Microsoft's public visual styles documentation** ("Parts and States", the property names), only through the names in `vssym32.h` and `stylemap.c`; no web page text was used.
 - **The Lunar, Lautus, Mizu and Blackshade themes were not opened.**
 
-## Not here yet
+## Pointers
 
-The pointer set (`gen-cursors.py` and the `.cur` and `.ani` files) and the `user32.dll` patch tool (`patch-user32.py`) are a separate change. Until they land, `install/afterglow-original.reg` selects the style and the caption metrics only.
+**Original art.** The 14 pointers are drawn by `pointers/gen-cursors.py` from polygons, circles, rounded rectangles and strokes defined in the script on a 32-unit grid, supersampled 8× with Pillow and reduced to 32 × 32 with 8-bit alpha. Nothing was traced or recoloured, and no Lunar, Mizu, Blackshade or other pointer set was opened or used. The colours are the Dusk palette (navy `#1f2554`, gold `#ffaa40`, rose `#f43f5e`).
+
+**What was measured.** `user32.rc`'s list of resource ids and names was read to know which groups to repoint, and the stock ReactOS pointers in `user32.dll` were measured for bounding boxes and hot spots only, so each Afterglow pointer has the stock pointer's footprint and hot spot at the standard size. None of their pixels are used.
+
+**The patch tool.** `pointers/patch-user32.py` is written for this repository and contains no ReactOS code. It reads a caller-supplied copy of the ReactOS 0.4.16 i386 `user32.dll` (LGPL-2.1), checks its size and SHA-256, and writes a separate file with an extra section. No patched binary is committed or distributed; the sums in `pointers/SHA256SUMS.user32` are a record for checking your own output.
+
+| Asset                                           | Made by                   | Notes                                                                    |
+| ----------------------------------------------- | ------------------------- | ------------------------------------------------------------------------ |
+| `pointers/afterglow-*.cur`, `.ani` (not in git) | `pointers/gen-cursors.py` | Deterministic; `pointers/SHA256SUMS`, checked by `bun run check:desktop` |
+| `pointers/afterglow-pointers.reg`               | Written by hand           | The "Afterglow" scheme under `HKCU\Control Panel\Cursors`                |

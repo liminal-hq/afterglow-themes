@@ -96,6 +96,14 @@ These are standard TextMate `.tmTheme` files, with the same syntax colours as th
 
 The same landscape of layered paper horizons in wallpaper form, at two times of day: dusk in the dark wallpapers, a low sun setting with its glow fading across a calm sky, and full day in the light ones, the sun high in a bright sky. It comes in five palettes (`dusk`, `indigo`, `ember`, `aurora` and `graphite`), each in dark and light, with flat stepped bands for 16-bit and 256-colour displays or smooth gradients for 24-bit and 32-bit ones. The SVG sources are in `assets/wallpapers/`, and `bun run render:wallpapers` renders PNGs at 3840×2160, 2560×1440 and 1920×1080 and 1024×768 BMPs for ReactOS. See [docs/desktop-wallpapers.md](docs/desktop-wallpapers.md).
 
+## Desktop pointers
+
+A matching set of 14 mouse pointers for ReactOS, drawn procedurally in navy with a gold rim so they read on the dark desktop and on a white page. A scheme file adds them to the Mouse control panel, and a patch tool makes them the system pointers in your own copy of `user32.dll`. See [docs/reactos-desktop-pointers.md](docs/reactos-desktop-pointers.md).
+
+![The Afterglow pointers on a dark and on a cream background: enlarged four times, then at true size. In order: arrow, help, working, busy, crosshair, text, unavailable, vertical resize, horizontal resize, two diagonal resizes, move, up arrow, hand, then a second frame of working and of busy.](docs/images/afterglow-pointers.png)
+
+_The Afterglow pointers at 4× and at true size, on the dark desktop and on cream._
+
 ## Install
 
 ### OpenCode

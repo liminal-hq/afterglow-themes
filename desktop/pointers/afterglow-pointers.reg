@@ -1,0 +1,31 @@
+Windows Registry Editor Version 5.00
+
+; The Afterglow pointer scheme: files in C:\ReactOS\Cursors\Afterglow (copy the output of gen-cursors.py there), listed as
+; "Afterglow" in Control Panel, Mouse, Pointers. Static busy pointers are named here (the dialog shows no preview for .ani files);
+; the animated afterglow-working.ani and afterglow-busy.ani ship next to them for Windows. ReactOS 0.4.16 itself does not load
+; a pointer scheme; see patch-user32.py and docs/reactos-desktop-pointers.md.
+;
+; (c) Copyright 2026 Liminal HQ, Scott Morris
+; SPDX-License-Identifier: Apache-2.0 OR MIT
+
+[HKEY_CURRENT_USER\Control Panel\Cursors]
+@="Afterglow"
+"Scheme Source"=dword:00000001
+"Arrow"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-arrow.cur"
+"Help"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-help.cur"
+"AppStarting"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-working.cur"
+"Wait"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-busy.cur"
+"Crosshair"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-cross.cur"
+"IBeam"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-ibeam.cur"
+"NWPen"=""
+"No"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-no.cur"
+"SizeNS"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-size-ns.cur"
+"SizeWE"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-size-we.cur"
+"SizeNWSE"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-size-nwse.cur"
+"SizeNESW"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-size-nesw.cur"
+"SizeAll"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-move.cur"
+"UpArrow"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-up.cur"
+"Hand"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-hand.cur"
+
+[HKEY_CURRENT_USER\Control Panel\Cursors\Schemes]
+"Afterglow"="C:\\ReactOS\\Cursors\\Afterglow\\afterglow-arrow.cur,C:\\ReactOS\\Cursors\\Afterglow\\afterglow-help.cur,C:\\ReactOS\\Cursors\\Afterglow\\afterglow-working.cur,C:\\ReactOS\\Cursors\\Afterglow\\afterglow-busy.cur,C:\\ReactOS\\Cursors\\Afterglow\\afterglow-cross.cur,C:\\ReactOS\\Cursors\\Afterglow\\afterglow-ibeam.cur,,C:\\ReactOS\\Cursors\\Afterglow\\afterglow-no.cur,C:\\ReactOS\\Cursors\\Afterglow\\afterglow-size-ns.cur,C:\\ReactOS\\Cursors\\Afterglow\\afterglow-size-we.cur,C:\\ReactOS\\Cursors\\Afterglow\\afterglow-size-nwse.cur,C:\\ReactOS\\Cursors\\Afterglow\\afterglow-size-nesw.cur,C:\\ReactOS\\Cursors\\Afterglow\\afterglow-move.cur,C:\\ReactOS\\Cursors\\Afterglow\\afterglow-up.cur,C:\\ReactOS\\Cursors\\Afterglow\\afterglow-hand.cur"
