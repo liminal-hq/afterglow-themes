@@ -58,6 +58,18 @@ Each token has a deliberate colour from the shared role hues: orange for the bra
 - the committed file matches the generator,
 - about 80 contrast pairs per theme: 4.5:1 for text and glyphs on the variant's surface (neutral 900) and for body text on every tinted background, and `inverseText` on every colour that is filled behind it. A 3:1 floor applies only to deliberately dim elements: borders, the faint `subtle` text, the empty usage meter, the mascot and shimmer animation frames.
 
+## Using the themes inside tmux
+
+Claude Code limits itself to 256 colours when `$TMUX` is set, even if `tmux` and the outer terminal support truecolour. The dark surfaces then round to the nearest entry in the 256-colour cube instead of staying near-black: `#12121a`, the Afterglow prompt background, becomes palette entry 17 (`#00005f`), a saturated navy. Text and accent colours are barely affected, so only the dark surface tokens look wrong.
+
+Set `CLAUDE_CODE_TMUX_TRUECOLOR=1` to keep truecolour inside `tmux`, for example in your shell profile:
+
+```sh
+export CLAUDE_CODE_TMUX_TRUECOLOR=1
+```
+
+Restart Claude Code afterwards, since it reads the variable at startup. `tmux` itself must pass 24-bit colour through. The `flags=` value on each `Terminal` line of `tmux info` should include `0x10`, and if it does not, add `set -as terminal-features ",*:RGB"` to `~/.tmux.conf` and restart the server. The clamp was read from Claude Code 2.1.284, and the fix was confirmed by eye in `tmux` 3.7c.
+
 ## What was verified
 
 Checked against the installed Claude Code 2.1.266 binary and the official documentation at [code.claude.com](https://code.claude.com/docs/en/terminal-config#create-a-custom-theme), which agree:

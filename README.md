@@ -13,12 +13,13 @@
   <img src="https://img.shields.io/badge/Claude%20Code-themes-d97757" alt="Claude Code themes">
   <img src="https://img.shields.io/badge/Forgejo-themes-fb923c" alt="Forgejo themes">
   <img src="https://img.shields.io/badge/Codex%20%C2%B7%20bat%20%C2%B7%20delta-tmThemes-f43f5e" alt="Codex, bat and delta TextMate themes">
+  <img src="https://img.shields.io/badge/Firefox%20%C2%B7%20Chrome%20%C2%B7%20Edge-themes-4285f4" alt="Firefox, Chrome and Edge themes">
   <img src="https://img.shields.io/badge/licence-Apache--2.0%20OR%20MIT-3fb950" alt="Licence: Apache-2.0 OR MIT">
 </p>
 
-Afterglow is the Liminal HQ colour theme for the [OpenCode](https://opencode.ai) terminal UI, for VS Code, for [Midnight Commander](https://midnight-commander.org), for [Claude Code](https://code.claude.com), for [Forgejo](https://forgejo.org), and for the [Codex](https://developers.openai.com/codex) CLI, [bat](https://github.com/sharkdp/bat) and [delta](https://github.com/dandavison/delta) through TextMate themes: the soft orange, rose and purple that linger on the horizon after the light goes, set against a near-black void. Each comes in three variants, and the OpenCode and Midnight Commander ones have a see-through variant so your terminal's own background and blur show through.
+Afterglow is the Liminal HQ colour theme for the [OpenCode](https://opencode.ai) terminal UI, for VS Code, for [Midnight Commander](https://midnight-commander.org), for [Claude Code](https://code.claude.com), for [Forgejo](https://forgejo.org), and for the [Codex](https://developers.openai.com/codex) CLI, [bat](https://github.com/sharkdp/bat) and [delta](https://github.com/dandavison/delta) through TextMate themes, and for Firefox, Chrome and Edge: the soft orange, rose and purple that linger on the horizon after the light goes, set against a near-black void. Each comes in three variants, and the OpenCode and Midnight Commander ones have a see-through variant so your terminal's own background and blur show through.
 
-> **Status:** early development. The themes are complete and pass the schema and contrast checks in CI. The OpenCode themes target the V2 theme format and are tested against OpenCode v2.0.21. The VS Code extension is not yet published to the Marketplace; install it from a release. The Claude Code themes follow Claude Code's custom theme format, which Anthropic documents but does not version, and the TextMate themes have not been loaded in Codex, bat or delta yet (see the docs for what was verified).
+> **Status:** early development. The themes are complete and pass the schema and contrast checks in CI. The OpenCode themes target the V2 theme format and are tested against OpenCode v2.0.21. The VS Code extension is not yet published to the Marketplace; install it from a release. The Claude Code themes follow Claude Code's custom theme format, which Anthropic documents but does not version, and the TextMate themes have not been loaded in Codex, bat or delta yet (see the docs for what was verified). The Firefox, Chrome and Edge themes are unsigned and unpublished, so they load temporarily or unpacked (see the install steps).
 
 ## The OpenCode themes
 
@@ -70,6 +71,16 @@ Each theme sets all 72 colour tokens Claude Code defines, from the same role hue
 | `afterglow-auto`  | Follows OS | `afterglow-light` in light mode and `afterglow` in dark mode, like Forgejo's own auto theme. |
 
 Each theme imports one of Forgejo's own themes and recolours its grey ramp and primary colour from the Afterglow palette, so everything else (syntax highlighting, diffs, alerts) stays as Forgejo draws it. There is also an Afterglow avatar for the instance's own commit signature. See [docs/forgejo-theme.md](docs/forgejo-theme.md).
+
+## The Firefox, Chrome and Edge themes
+
+| Theme             | Mode  | What it is                                                       |
+| ----------------- | ----- | ---------------------------------------------------------------- |
+| `Afterglow`       | Dark  | The `#050507` void with the orange accent.                       |
+| `Afterglow Dark`  | Dark  | A softer deep indigo-black with the purple accent.               |
+| `Afterglow Light` | Light | A warm paper theme with deeper accents that hold 4.5:1 contrast. |
+
+Firefox gets all 38 colours its theme manifest defines, and Chrome and Edge share one Manifest V3 theme with the 16 colours Chromium reads: the tab strip, toolbar, address bar, menus and sidebar (Firefox) and the new tab page. The dark Firefox themes also carry a faint SVG glow of the accent hues behind the tab strip and toolbars, like the liminalhq.ca background (Chromium only takes PNG theme images, so Chrome and Edge stay flat). Web pages keep their own colours, and neither browser has a see-through variant. See [docs/browser-themes.md](docs/browser-themes.md).
 
 ## The Codex, bat and delta themes
 
@@ -145,6 +156,14 @@ THEMES = forgejo-auto,forgejo-light,forgejo-dark,afterglow-auto,afterglow,afterg
 
 Choose one under **Settings > Appearance**. `bun run install:forgejo -- --custom <dir> --signing-email <address>` does the copying from a checkout and also installs the instance avatar. See [docs/forgejo-theme.md](docs/forgejo-theme.md).
 
+### Firefox
+
+Afterglow's Firefox themes are unsigned, and Firefox only keeps signed add-ons, so load one temporarily: open `about:debugging#/runtime/this-firefox`, choose **Load Temporary Add-on** and pick the `manifest.json` in a theme's folder under `firefox/themes/` (or the release's `.xpi`). It lasts until Firefox restarts. Firefox Developer Edition, Nightly and ESR can install the `.xpi` for good once `xpinstall.signatures.required` is `false`.
+
+### Chrome and Edge
+
+Download `afterglow-chromium-themes-vX.Y.Z.zip` from the [releases page](https://github.com/liminal-hq/afterglow-themes/releases) and unzip it. Open `chrome://extensions` (or `edge://extensions`), turn on **Developer mode**, choose **Load unpacked** and pick `afterglow`, `afterglow-dark` or `afterglow-light`. See [docs/browser-themes.md](docs/browser-themes.md) for the details and limits.
+
 ### Codex, bat and delta
 
 Download `afterglow-tmthemes-vX.Y.Z.zip` from the [releases page](https://github.com/liminal-hq/afterglow-themes/releases). For the Codex CLI (v0.105 or newer), unpack it into the Codex themes directory:
@@ -207,7 +226,7 @@ The themes are generated, so edit the palette and rebuild rather than editing th
 
 ```sh
 bun install
-bun run build            # regenerate themes/, vscode/themes/, mc/skins/, claude/themes/, tmtheme/ and forgejo/themes/
+bun run build            # regenerate themes/, vscode/themes/, mc/skins/, claude/themes/, tmtheme/, forgejo/themes/, firefox/themes/ and chromium/themes/
 bun run validate:themes  # check the schema rules and 4.5:1 text contrast
 bun run validate         # the full local gate that mirrors CI
 bun run bundle           # build the release assets (including the .vsix) into dist/release
@@ -220,13 +239,14 @@ bun run bundle           # build the release assets (including the .vsix) into d
 - `scripts/build-claude.mjs` builds the Claude Code themes (all 72 tokens, listed in `scripts/claude-theme-tokens.json`) and `scripts/validate-claude.mjs` checks the file schema, the tokens, the colour syntax and about 80 contrast pairs per theme.
 - `scripts/build-forgejo.mjs` builds the Forgejo themes (a grey ramp, a primary colour ramp and an `@import` of Forgejo's own theme each) and `scripts/validate-forgejo.mjs` checks every variable against `scripts/forgejo-theme-variables.json`, the imports and about 60 contrast pairs per theme.
 - `scripts/build-tmtheme.mjs` converts the recoloured VS Code token colours into `.tmTheme` files, so the syntax colours have one source, and `scripts/validate-tmtheme.mjs` checks the plist, the global settings, the scopes against the VS Code themes and the contrast.
+- `scripts/browser-roles.mjs` maps the ramps onto the roles both browsers need. `scripts/build-firefox.mjs` and `scripts/build-chromium.mjs` build the Firefox and the Chrome and Edge theme manifests from it, and `scripts/validate-firefox.mjs` and `scripts/validate-chromium.mjs` check the keys (`scripts/firefox-theme-keys.json`, `scripts/chromium-theme-keys.json`), the colour syntax and the contrast.
 - `scripts/validate-themes.mjs` mirrors the V2 theme schema bundled in OpenCode (the published JSON schema for V2 themes is not available yet), resolves every reference, and checks the contrast of text, syntax and Markdown colours. `scripts/validate-vscode.mjs` does the same for the VS Code themes (about 90 foreground and background pairs, with alpha composited first) and also checks every colour key against VS Code's published list.
 
 CI runs the format check, the licence-header check, the theme build and validation (including a check that the committed JSON matches what the palette generates), Markdown and workflow linting, and a zizmor security audit of the workflows.
 
 ## Releases
 
-Releases are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. The release workflow runs the full validation, then attaches the three OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the Forgejo themes zip, the TextMate themes zip and a `SHA256SUMS` file to a GitHub release with generated notes.
+Releases are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. The release workflow runs the full validation, then attaches the three OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the Forgejo themes zip, the TextMate themes zip, a Firefox `.xpi` per theme, the Chrome and Edge themes zip and a `SHA256SUMS` file to a GitHub release with generated notes.
 
 ## Contributing
 

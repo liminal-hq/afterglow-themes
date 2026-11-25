@@ -2,7 +2,7 @@
 	"name": "afterglow",
 	"displayName": "Afterglow by Liminal HQ",
 	"description": "Calm, glowing colour themes from Liminal HQ: a deep void, a solid indigo dark, and a warm paper light. Built on Dark+ and Light+ scope coverage.",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"publisher": "liminal-hq",
 	"license": "(Apache-2.0 OR MIT)",
 	"engines": {
