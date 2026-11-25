@@ -1,0 +1,31 @@
+Windows Registry Editor Version 5.00
+
+; Selects the original Afterglow visual style (colour "Dusk", size "Normal") for the current user, with its caption metrics.
+; The colour block tunes only the title colours of the classic scheme; every colour an application's client area uses stays the classic
+; cream scheme.
+;
+; (c) Copyright 2026 Liminal HQ, Scott Morris
+; SPDX-License-Identifier: Apache-2.0 OR MIT
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\ThemeManager]
+"ThemeActive"="1"
+"DllName"="C:\\ReactOS\\Resources\\Themes\\Afterglow\\afterglow.msstyles"
+"ColorName"="Dusk"
+"SizeName"="Normal"
+
+[HKEY_CURRENT_USER\Control Panel\Colors]
+"ActiveTitle"="31 37 84"
+"GradientActiveTitle"="122 69 98"
+"InactiveTitle"="20 22 29"
+"GradientInactiveTitle"="27 30 40"
+"TitleText"="255 255 255"
+"InactiveTitleText"="124 135 150"
+
+; Caption metrics, in negative twips (-15 per pixel at 96 dpi), read by win32k at logon. SM_CYCAPTION becomes 25 and SM_CYSIZE
+; 24; the theme engine then draws the title in a 14 px box, so an 8 pt bold title is never clipped. Small (tool window)
+; captions get 23. The frame (BorderWidth) and the fonts stay as they are; ReactOS 0.4.16 has no PaddedBorderWidth.
+[HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics]
+"CaptionHeight"="-360"
+"CaptionWidth"="-360"
+"SmCaptionHeight"="-345"
+"SmCaptionWidth"="-345"
