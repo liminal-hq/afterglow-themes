@@ -1,10 +1,10 @@
 <!--
-Afterglow shortcut-arrow overlay: A1 (straight · disc · tinted · neutral · lift · fill · bend 135°), 32 px frame
+Afterglow shortcut-arrow overlay: A1 (straight · disc · tinted · neutral · lift · fill), 32 px frame
 
 (c) Copyright 2026 Liminal HQ, Scott Morris
 SPDX-License-Identifier: Apache-2.0 OR MIT
 -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
 <defs><filter id="A1-32-b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0.631"/></filter></defs>
-<path d="M0 26 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 Z" fill="#0a1230" opacity="0.38" transform="translate(0.528 0.819)" filter="url(#A1-32-b)"/><path d="M0 26 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 Z" fill="#fbfaf6"/><path d="M0.5 26 a4.5 4.5 0 1 0 9 0 a4.5 4.5 0 1 0 -9 0 Z" fill="none" stroke="#5f5d78" stroke-opacity="0.75" stroke-width="1"/><g><path d="M2.866 28.576 L3.866 26.162 Q4.116 25.558 4.72 25.308 L5.866 24.833" fill="none" stroke="#1f2554" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.25 26.442 L7.134 24.308 L5 23.424 Z" fill="#1f2554" stroke="#1f2554" stroke-width="0.825" stroke-linejoin="round"/></g>
+<path d="M0 26 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 Z" fill="#0a1230" opacity="0.38" transform="translate(0.528 0.819)" filter="url(#A1-32-b)"/><path d="M0 26 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 Z" fill="#fbfaf6"/><path d="M0.5 26 a4.5 4.5 0 1 0 9 0 a4.5 4.5 0 1 0 -9 0 Z" fill="none" stroke="#5f5d78" stroke-opacity="0.75" stroke-width="1"/><g><path d="M2.424 28.576 L6.232 24.768" fill="none" stroke="#1f2554" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.216 23.312 L7.688 23.312 L7.688 26.784 Z" fill="#1f2554" stroke="#1f2554" stroke-width="0.825" stroke-linejoin="round"/></g>
 </svg>
