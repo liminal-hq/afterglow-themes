@@ -691,25 +691,26 @@ def flash_button():
 
 
 def tray_background():
-	W, H = 12, 30
-	rows = [mix(P["raised2"], P["panel2"], (y / (H - 1))) for y in range(H)]
-	a, m = shape(W, H, 4, None, None, corners="tl bl", rows=rows)
-	e = inner_edge(m)
-	e[:, W - 1] = False
-	e[0, :] &= np.arange(W) < 5
-	e[H - 1, :] &= np.arange(W) < 5
-	a[e] = DUSK[1]
-	a[0, 4:] = DUSK[1]
+	"""The notification area: the taskbar's own rows, so it reads as part of the band (same hairline, same lift and fall, no tint of its
+	own), with a one-pixel neutral divider down its left edge."""
+	W = 12
+	column = taskbar_background()[:, -1]
+	a = np.zeros((len(column), W, 3))
+	a[:, :] = column[:, None, :]
+	a[2:, 0] = mix(column[2:], P["raised3"], 0.55)
 	return a
 
 
 def show_desktop():
+	"""The Show Desktop button at the tray's right end. Its resting states let the tray show through (key colour) behind a neutral
+	divider, so it never shows a block of its own colour; hot and pressed states fill."""
 	W, H = 8, 26
-	looks = [(P["raised"], DUSK[1]), (DUSK[1], DUSK[3]), (P["night"], P["gold"]), (P["raised"], P["raised2"]), (P["raised"], DUSK[1])]
+	divider = mix(P["raised2"], P["raised3"], 0.55)
+	looks = [(None, divider), (P["raised3"], divider), (P["night"], P["gold"]), (None, divider), (None, divider)]
 	frames = []
 	for fill, line in looks:
 		a = np.zeros((H, W, 3))
-		a[:, :] = fill
+		a[:, :] = KEY if fill is None else fill
 		a[:, 0] = line
 		frames.append(a)
 	return stack(frames)
