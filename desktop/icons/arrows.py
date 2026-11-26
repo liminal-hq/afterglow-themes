@@ -15,6 +15,7 @@
 #   python3 arrows.py --list                                the axes, their tags and the variants
 #   python3 arrows.py --no-outline                          keep sheet text as text (faster)
 import argparse
+import math
 import os
 import re
 import shutil
@@ -107,6 +108,32 @@ AXES = {
 	},
 }
 ORDER = ["glyph", "badge", "edge", "colour", "depth", "size"]
+# Two more axes for the straight glyph (the obtuse-head round). Defaults reproduce A1-A8 exactly.
+AXES["head"] = {
+	"90": "a right-angled head: the arms run flat and upright from the tip (A1, A4)",
+	"105": "the arms open 7.5° wider each side: barely flatter",
+	"120": "the arms open 15° wider each side: a clearly wider, flatter head",
+	"135": "the arms open 22.5° wider each side: a flat wedge, close to a bar across the shaft",
+}
+AXES["shaft"] = {
+	"straight": "a straight diagonal shaft",
+	"curved": "the shaft rises from the bottom-left and bends into the head's axis (a soft swoosh)",
+}
+# The bent-arrow round (on A1): an elbow in the shaft. 180 is A1's straight diagonal, 90 the stock right angle.
+AXES["bend"] = {
+	"180": "no elbow: A1's straight diagonal",
+	"150": "a 150° elbow: a slight kink",
+	"135": "135°",
+	"120": "120°: a clear but gentle bend",
+	"110": "110°",
+	"90": "the stock right angle (for comparison)",
+}
+AXES["benddir"] = {
+	"up-right": "the tail rises steeply from the bottom-left, then turns flatter toward the upper right; the head points right-ish",
+	"right-up": "the mirror: the tail runs flatter first, then turns up; the head points up-ish",
+	"return": "the up-right path reversed: the head sits at the bottom-left and points down-left, a 'return' hook",
+}
+EXTRA = {"head": "90", "shaft": "straight", "bend": "180", "benddir": "up-right"}
 
 VARIANTS = {
 	"A1": dict(glyph="straight", badge="disc", edge="tinted", colour="neutral", depth="lift", size="fill"),
@@ -118,7 +145,34 @@ VARIANTS = {
 	"A7": dict(glyph="straight", badge="none", edge="shadow", colour="cream-dusk", depth="flat", size="fill"),
 	"A8": dict(glyph="curved", badge="squircle", edge="tinted", colour="neutral", depth="gradient", size="fill"),
 }
+# The obtuse-head round: A4's chip (navy squircle, paper halo, lift, pad) and gold arrow, with wider heads
+OBTUSE = {
+	"A4-105": dict(VARIANTS["A4"], head="105"),
+	"A4-120": dict(VARIANTS["A4"], head="120"),
+	"A4-135": dict(VARIANTS["A4"], head="135"),
+	"A4-120c": dict(VARIANTS["A4"], head="120", shaft="curved"),
+}
+# The bent-arrow round: A1's paper coin with an obtuse elbow in the shaft
+BENT = {
+	"A1-110": dict(VARIANTS["A1"], bend="110"),
+	"A1-120": dict(VARIANTS["A1"], bend="120"),
+	"A1-135": dict(VARIANTS["A1"], bend="135"),
+	"A1-150": dict(VARIANTS["A1"], bend="150"),
+	"A1-120u": dict(VARIANTS["A1"], bend="120", benddir="right-up"),
+	"A1-120r": dict(VARIANTS["A1"], bend="120", benddir="return"),
+}
+ALL = {**VARIANTS, **OBTUSE, **BENT}
 NAMES = {
+	"A1-110": "Paper coin, bend 110°",
+	"A1-120": "Paper coin, bend 120°",
+	"A1-135": "Paper coin, bend 135°",
+	"A1-150": "Paper coin, bend 150°",
+	"A1-120u": "Paper coin, 120°, right then up",
+	"A1-120r": "Paper coin, 120°, return",
+	"A4-105": "Gold chip, head 105°",
+	"A4-120": "Gold chip, head 120°",
+	"A4-135": "Gold chip, head 135°",
+	"A4-120c": "Gold chip, 120°, swoosh",
 	"A0": "Stock (stand-in)",
 	"A1": "Paper coin",
 	"A2": "Dusk tile, return",
@@ -158,7 +212,38 @@ BOX = {48: 16, 32: 11, 16: 8}  # ReactOS: the overlay's art box at each frame si
 
 
 def tags(cfg):
-	return " · ".join(cfg[a] for a in ORDER)
+	t = " · ".join(cfg[a] for a in ORDER)
+	extra = [("head %s°" % cfg["head"]) if a == "head" else ("bend %s°" % cfg["bend"]) if a == "bend" else cfg[a]
+		for a in EXTRA if cfg.get(a, EXTRA[a]) != EXTRA[a]]
+	return t + "".join(" · " + e for e in extra)
+
+
+def obtuse(head, shaft):
+	"""Straight-glyph geometry in unit space for a head angle: the barb span stays that of the 90° head, the tip moves in as the head opens."""
+	half = math.radians(int(head)) / 2
+	span = 0.44 + 0.003 * (int(head) - 90)  # half the barb-tip distance: 0.44 at 90°, wider as the head opens (0.575 at 135°)
+	L = span / math.sin(half)
+	r2 = math.sqrt(0.5)
+	back = (-r2, r2)  # from the tip back down the shaft (screen y runs down)
+
+	def rot(v, a):
+		return (v[0] * math.cos(a) - v[1] * math.sin(a), v[0] * math.sin(a) + v[1] * math.cos(a))
+	tip = (0.98, 0.02)
+	b1 = tuple(t + L * c for t, c in zip(tip, rot(back, half)))
+	b2 = tuple(t + L * c for t, c in zip(tip, rot(back, -half)))
+	over = max(0.02 - min(b1[1], b2[1]), max(b1[0], b2[0]) - 0.98, 0)
+	sh = over / r2  # move everything in along the axis until the barbs fit the box
+	mv = lambda p: (p[0] + back[0] * sh, p[1] + back[1] * sh)  # noqa: E731
+	tip, b1, b2 = mv(tip), mv(b1), mv(b2)
+	base = ((b1[0] + b2[0]) / 2, (b1[1] + b2[1]) / 2)
+	end = (base[0] + 0.05 * r2, base[1] - 0.05 * r2)  # the shaft tucks just inside the head
+	tail = (0.04, 0.96)
+	if shaft == "curved":
+		c2 = (base[0] - 0.32 * r2, base[1] + 0.32 * r2)
+		line = ("cubic", tail, (0.04, 0.6), c2, end)
+	else:
+		line = ("line", tail, end)
+	return line, (tip, b1, b2)
 
 
 def halo_colour(cfg):
@@ -193,9 +278,51 @@ def plate_path(shape, x, y, w):
 		_n(x + r), _n(r), _n(r), _n(x), _n(y + w - r), _n(y + r), _n(r), _n(r), _n(x + r), _n(y))
 
 
-def glyph_parts(glyph, cx, cy, cw):
+def bent(bend, benddir):
+	"""Bent-arrow geometry in unit space: (tail, elbow-in, elbow, elbow-out, shaft end), (tip, barb, barb). The two legs sit
+	symmetrically about the diagonal, each (180 - bend) / 2 off it; the 90° head is the set's standard solid head."""
+	dev = math.radians(180 - int(bend)) / 2
+	a0 = -math.pi / 4  # up-right, screen y down
+	a1, a2 = (a0 - dev, a0 + dev) if benddir != "right-up" else (a0 + dev, a0 - dev)
+	u1, u2 = (math.cos(a1), math.sin(a1)), (math.cos(a2), math.sin(a2))
+	add = lambda p, v, k: (p[0] + v[0] * k, p[1] + v[1] * k)  # noqa: E731
+	P0 = (0.0, 0.0)
+	E = add(P0, u1, 1.0)
+	T = add(E, u2, 1.0)
+	hd = hs = 0.5
+	r = 0.2  # the elbow is rounded over this length of each leg
+	if benddir == "return":  # the head sits at P0 and points back down the first leg
+		tip, d = P0, (-u1[0], -u1[1])
+		path = [T, add(E, u2, r), E, add(E, u1, -r), add(P0, u1, hd - 0.08)]
+	else:
+		tip, d = T, u2
+		path = [P0, add(E, u1, -r), E, add(E, u2, r), add(T, u2, -(hd - 0.08))]
+	n = (-d[1], d[0])
+	base = add(tip, d, -hd)
+	barbs = (add(base, n, hs), add(base, n, -hs))
+	pts = path + [tip, *barbs]
+	x0, x1 = min(p[0] for p in pts), max(p[0] for p in pts)
+	y0, y1 = min(p[1] for p in pts), max(p[1] for p in pts)
+	k = 0.92 / max(x1 - x0, y1 - y0)
+	ox, oy = 0.5 - (x0 + x1) / 2 * k, 0.5 - (y0 + y1) / 2 * k
+	f = lambda p: (ox + p[0] * k, oy + p[1] * k)  # noqa: E731
+	return [f(p) for p in path], (f(tip), f(barbs[0]), f(barbs[1]))
+
+
+def glyph_parts(glyph, cx, cy, cw, head="90", shaft="straight", bend="180", benddir="up-right"):
 	"""(kind, d) in box coordinates: 'line' is stroked with the glyph width, 'fill' is a filled, round-joined shape."""
 	P = lambda u, v: "%s %s" % (_n(cx + u * cw), _n(cy + v * cw))  # noqa: E731
+	if glyph == "straight" and (bend != "180" or benddir != "up-right"):
+		path, (tip, b1, b2) = bent(bend, benddir)
+		d = "M%s L%s Q%s %s L%s" % tuple(P(*p) for p in path)
+		return [("line", d), ("fill", "M%s L%s L%s Z" % (P(*b1), P(*tip), P(*b2)))]
+	if glyph == "straight" and (head != "90" or shaft != "straight"):
+		line, (tip, b1, b2) = obtuse(head, shaft)
+		if line[0] == "cubic":
+			d = "M%s C%s %s %s" % tuple(P(*p) for p in line[1:])
+		else:
+			d = "M%s L%s" % (P(*line[1]), P(*line[2]))
+		return [("line", d), ("head", "M%s L%s L%s Z" % (P(*b1), P(*tip), P(*b2)))]
 	if glyph == "straight":
 		return [("line", "M%s L%s" % (P(0.04, 0.96), P(0.72, 0.28))), ("fill", "M%s L%s L%s Z" % (P(0.36, 0.02), P(0.98, 0.02), P(0.98, 0.64)))]
 	if glyph == "curved":
@@ -211,15 +338,17 @@ def glyph_parts(glyph, cx, cy, cw):
 	raise ValueError(glyph)
 
 
-def glyph_svg(glyph, cx, cy, cw, w, colour, opacity=1.0, extra=0.0, filt=""):
+def glyph_svg(glyph, cx, cy, cw, w, colour, opacity=1.0, extra=0.0, filt="", head="90", shaft="straight", bend="180", benddir="up-right"):
 	"""Draw the glyph; extra widens every stroke (used for halos and edges under the glyph)."""
 	op = '' if opacity >= 1 else ' opacity="%s"' % _n(opacity)
 	out = []
-	for kind, d in glyph_parts(glyph, cx, cy, cw):
+	for kind, d in glyph_parts(glyph, cx, cy, cw, head, shaft, bend, benddir):
 		if kind == "line":
 			out.append('<path d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-linecap="round" stroke-linejoin="round"/>' % (d, colour, _n(w + extra)))
 		elif kind == "chev":
 			out.append('<path d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-linecap="round" stroke-linejoin="round"/>' % (d, colour, _n(w * 1.25 + extra)))
+		elif kind == "head":  # an obtuse head keeps crisper barb points than the 90° fill
+			out.append('<path d="%s" fill="%s" stroke="%s" stroke-width="%s" stroke-linejoin="round"/>' % (d, colour, colour, _n(min(w * 0.4, 0.45 + cw / 30) + extra)))
 		elif kind == "fill":
 			out.append('<path d="%s" fill="%s" stroke="%s" stroke-width="%s" stroke-linejoin="round"/>' % (d, colour, colour, _n(min(w * 0.55, 0.6 + cw / 20) + extra)))
 		elif kind == "dot":
@@ -238,6 +367,8 @@ def glyph_svg(glyph, cx, cy, cw, w, colour, opacity=1.0, extra=0.0, filt=""):
 def vector(cfg, S, uid):
 	"""One overlay frame of size S as SVG (defs, body)."""
 	n = BOX[S]
+	gs = lambda *a: glyph_svg(*a, head=cfg.get("head", "90"), shaft=cfg.get("shaft", "straight"),  # noqa: E731
+		bend=str(cfg.get("bend", "180")), benddir=cfg.get("benddir", "up-right"))
 	k = n / 16
 	s = SCHEMES[cfg["colour"]]
 	defs, body = [], []
@@ -258,18 +389,18 @@ def vector(cfg, S, uid):
 		if cfg["edge"] == "shadow" or cfg["depth"] == "lift":
 			defs.append(blur)
 			body.append('<g transform="translate(%s %s)">%s</g>' % (_n(0.5 * k + 0.2), _n(0.8 * k + 0.3),
-				glyph_svg(g, cx, cy, cw, w, SHADOW, 0.8, 1.0 * k, ' filter="url(#%s-b)"' % uid)))
+				gs(g, cx, cy, cw, w, SHADOW, 0.8, 1.0 * k, ' filter="url(#%s-b)"' % uid)))
 		if halo:
 			hc, ho = halo_colour(cfg)
-			body.append(glyph_svg(g, cx, cy, cw, w, hc, ho, 2 * max(1.0, 1.2 * k)))
+			body.append(gs(g, cx, cy, cw, w, hc, ho, 2 * max(1.0, 1.2 * k)))
 		if cfg["edge"] == "tinted":
 			ec, eo = s["gedge"]
-			body.append(glyph_svg(g, cx, cy, cw, w, ec, eo or 0.7, 1.2))
+			body.append(gs(g, cx, cy, cw, w, ec, eo or 0.7, 1.2))
 		fill = s["glyph"]
 		if cfg["depth"] == "gradient":
 			defs.append('<linearGradient id="%s-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="%s"/><stop offset="1" stop-color="%s"/></linearGradient>' % (
 				uid, mix(fill, T["paper"], 0.3), mix(fill, T["tile"], 0.12)))
-		body.append(glyph_svg(g, cx, cy, cw, w, fill))
+		body.append(gs(g, cx, cy, cw, w, fill))
 		return "".join(defs), "".join(body)
 	pd = plate_path(cfg["badge"], bx, by, bw)
 	if cfg["depth"] == "lift" or cfg["edge"] == "shadow":
@@ -293,7 +424,7 @@ def vector(cfg, S, uid):
 		body.append('<path d="%s" fill="none" stroke="%s" stroke-opacity="0.45" stroke-width="1" clip-path="url(#%s-t)"/>' % (
 			plate_path(cfg["badge"], bx + (1.5 if cfg["edge"] == "tinted" else 0.5), by + (1.5 if cfg["edge"] == "tinted" else 0.5),
 				bw - (3 if cfg["edge"] == "tinted" else 1)), T["paper"] if cfg["colour"] != "neutral" else WHITE, uid))
-	body.append(glyph_svg(cfg["glyph"], cx, cy, cw, w, s["glyph"]))
+	body.append(gs(cfg["glyph"], cx, cy, cw, w, s["glyph"]))
 	return "".join(defs), "".join(body)
 
 
@@ -325,6 +456,59 @@ GLYPH6 = {
 	"link": ["...+##", "..+#.#", ".+#.#+", "+#.#+.", "#.#+..", "##+..."],
 	"tail": ["...###", "....##", "...#.#", "..#...", "......", "#....."],
 }
+
+
+# Obtuse heads at 16 (straight glyph). In a 5 x 5 interior the only exact integer heads are 90° and about 127°, so 105° is the
+# 90° head with a softened tip and half-pixel barb ends, 120° is a wider wedge whose barbs reach the box edges, and 135° collapses
+# towards a bar across the shaft. Keyed (head, shaft).
+HEAD5 = {
+	("90", "straight"): GLYPH5["straight"],
+	("105", "straight"): [".+##o", "...##", "..#.#", ".#..+", "#...."],
+	("120", "straight"): [".##+.", "..##.", "..###", ".#..#", "#...."],
+	("135", "straight"): [".+...", "..#+.", "..##+", ".#.#.", "#...+"],
+	("90", "curved"): ["..##.", "...##", ".+#.#", "#....", "#...."],
+	("105", "curved"): [".##+.", "..##.", ".+###", "#...#", "#...."],
+	("120", "curved"): [".##+.", "..##.", ".+###", "#...#", "#...."],
+	("135", "curved"): [".+...", "..#+.", ".+##+", "#..#.", "#...+"],
+}
+
+
+# Bent arrows at 16 (straight glyph, 6 x 6, up-right). A 6-pixel arrow has legs of about 3 pixels, so neighbouring angles differ by
+# less than a pixel: 110° draws as a right-angle hook, 150° as a straight arrow with a kinked tail; 120° and 135° are the distinct bends.
+BEND6 = {
+	90: ["...###", "....##", ".###.#", ".#....", ".#....", ".#...."],
+	110: ["...###", "....##", ".###.#", "#.....", "#.....", "#....."],
+	120: ["...###", "....##", ".+##.#", ".#....", "#.....", "#....."],
+	135: ["...###", "....##", "..##.#", ".#....", ".#....", "#....."],
+	150: ["...###", "....##", "...#.#", "..#...", ".#....", ".#...."],
+}
+RETURN6 = ["......", "...###", "..#...", "#.#...", "##....", "###..."]  # drawn at 120°, used for every return bend
+
+
+def _mirror6(rows):
+	"""Reflect across the up-right diagonal: (x, y) -> (5 - y, 5 - x)."""
+	return ["".join(rows[5 - x][5 - y] for x in range(6)) for y in range(6)]
+
+
+def bend_rows(cfg, n):
+	b = int(cfg.get("bend", "180"))
+	near = min(BEND6, key=lambda k: abs(k - b))
+	d = cfg.get("benddir", "up-right")
+	r = RETURN6 if d == "return" else _mirror6(BEND6[near]) if d == "right-up" else BEND6[near]
+	return r if n == 6 else [row[1:] for row in r[1:]]  # padded plates crop the 6 x 6 map (not hand-tuned)
+
+
+def glyph_rows(cfg, n):
+	"""The 16 px glyph map, 5 x 5 or 6 x 6; a 6 x 6 obtuse map is the 5 x 5 one moved up-right with the shaft carried one pixel further."""
+	if cfg["glyph"] == "straight" and (str(cfg.get("bend", "180")) != "180" or cfg.get("benddir", "up-right") != "up-right"):
+		return bend_rows(cfg, n)
+	key = (cfg.get("head", "90"), cfg.get("shaft", "straight"))
+	if cfg["glyph"] != "straight" or key == ("90", "straight"):
+		return (GLYPH6 if n == 6 else GLYPH5)[cfg["glyph"]]
+	r = HEAD5[key]
+	if n == 5:
+		return r
+	return ["." + row for row in r] + ["#....."]
 
 
 class Canvas:
@@ -392,7 +576,7 @@ def hint16(cfg):
 	s = SCHEMES[cfg["colour"]]
 	box = (0, 8, 7, 15)
 	if cfg["badge"] == "none":
-		rows = GLYPH6[cfg["glyph"]] if cfg["size"] == "fill" else GLYPH5[cfg["glyph"]]
+		rows = glyph_rows(cfg, 6) if cfg["size"] == "fill" else glyph_rows(cfg, 5)
 		gm = _mask(rows, 0, 16 - len(rows))
 		if cfg["edge"] == "shadow" or cfg["depth"] == "lift":
 			for (x, y), c in gm.items():
@@ -446,9 +630,9 @@ def hint16(cfg):
 		for x in range(2, 5):
 			cv.put(x, oy + 1, T["paper"] if cfg["colour"] != "neutral" else WHITE, 0.22)
 	if big:
-		gm = _mask(GLYPH6[cfg["glyph"]], 1, oy + 1) if cfg["size"] == "fill" else _mask(GLYPH5[cfg["glyph"]], 2, oy + 1)
+		gm = _mask(glyph_rows(cfg, 6), 1, oy + 1) if cfg["size"] == "fill" else _mask(glyph_rows(cfg, 5), 2, oy + 1)
 	else:
-		gm = _mask(GLYPH5[cfg["glyph"]], 1, oy + 1)
+		gm = _mask(glyph_rows(cfg, 5), 1, oy + 1)
 	for (x, y), c in gm.items():
 		cv.put(x, y, s["glyph"], c)
 	return cv
@@ -711,16 +895,21 @@ class Build:
 		return "".join(o)
 
 
-def write_sheet(b, labels):
-	W = 1880
-	o = []
-	y = 40
-	o.append(txt(40, y + 14, "Afterglow · shortcut-arrow overlay · variants A1–A8", 30, "#ffffff", weight=600))
-	for line in [
+SHEET_INTRO = [
 		"ReactOS draws one overlay, shell32 group 30, composited at (0, 0) over the target icon: art in the bottom-left 8 × 8 at 16, 11 × 11 at 32 and 16 × 16 at 48 (stock has no 48 frame and",
 		"stretches the 32). Each variant below ships real 48, 32 and hinted 16 frames. Axes: GLYPH · BADGE · EDGE · COLOUR · DEPTH · SIZE; tags mix freely through arrows.py. Colours are Afterglow",
 		"tokens only. Icons: the M1 closed folder and set D's document, My Computer, hard disk, app tile (Command Prompt plate) and Recycle Bin. Grounds: the void desktop, the dusk sky and paper.",
-	]:
+]
+SHEET_FOOT = "Recommended: A8 (curved · squircle · tinted · neutral · gradient · fill); optional --depth lift at 48 and 32. Runner-up: A8 with --glyph straight (A1's arrow). Reasons and contrast in notes.md."
+
+
+def write_sheet(b, labels, title="Afterglow · shortcut-arrow overlay · variants A1–A8", intro=SHEET_INTRO, foot=SHEET_FOOT,
+		what="the variant sheet (A0 stock stand-in, A1–A8)"):
+	W = 1880
+	o = []
+	y = 40
+	o.append(txt(40, y + 14, title, 30, "#ffffff", weight=600))
+	for line in intro:
 		y += 20
 		o.append(txt(40, y + 14, line, 13, SUB))
 	y += 46
@@ -736,11 +925,14 @@ def write_sheet(b, labels):
 		fr, cv, cfg = b.fams[label]
 		o.append(rect(30, y, W - 60, 156, CELL, 8))
 		o.append(txt(44, y + 30, label, 22, "#ffffff", weight=700))
-		o.append(txt(92, y + 29, NAMES[label], 14, HD, weight=600))
+		long_ = len(label) > 3
+		o.append(txt(44 if long_ else 92, y + 47 if long_ else y + 29, NAMES[label], 13 if long_ else 14, HD, weight=600))
+		ty = y + (62 if long_ else 52)
 		if cfg:
-			for j, a in enumerate(ORDER):
-				o.append(txt(44, y + 52 + j * 15, "%s" % a.upper(), 10, DIM, weight=600))
-				o.append(txt(110, y + 52 + j * 15, cfg[a], 11, LAB))
+			shown = ORDER + [a for a in EXTRA if cfg.get(a, EXTRA[a]) != EXTRA[a]]
+			for j, a in enumerate(shown):
+				o.append(txt(44, ty + j * 12, "%s" % a.upper(), 10, DIM, weight=600))
+				o.append(txt(110, ty + j * 12, cfg[a] + ("°" if a in ("head", "bend") else ""), 11, LAB))
 		else:
 			for j, line in enumerate(["white box, black 1 px frame,", "black curved arrow (my drawing,", "not a ReactOS or Microsoft", "bitmap). 48 is the 32 stretched,", "as ReactOS does today."]):
 				o.append(txt(44, y + 52 + j * 15, line, 11, SUB))
@@ -771,7 +963,7 @@ def write_sheet(b, labels):
 		o.append(rect(cx, cy, cw, 160, CELL, 8))
 		o.append(txt(cx + 12, cy + 20, "%s · %s" % (label, NAMES[label]), 12, HD, weight=600))
 		o.append(b.panel(label, cx + 10, cy + 24, T["desktop"], cw - 20, stock=True))
-	y += 3 * 168 + 24
+	y += -(-len(labels) // cols) * 168 + 24
 	# desktop at Shell Icon Size 48, and Details view at 16
 	o.append(txt(40, y, "In use · the desktop at Shell Icon Size 48, and a Details view at 16 (100 % scale) with one selected row (50 % blend with the highlight, as ILD_BLEND50 draws it)", 15, HD, weight=600))
 	y += 12
@@ -805,29 +997,37 @@ def write_sheet(b, labels):
 			o.append(txt(dx + 30, ry + 12, name + " - Shortcut", 11, "#ffffff" if sel else "#1c1b20"))
 			o.append(txt(dx + 230, ry + 12, "Shortcut", 11, "#484554"))
 			o.append(txt(dx + 360, ry + 12, "1 KB", 11, "#484554"))
-	y += 3 * 236 + 20
-	o.append(txt(40, y, "Recommended: A8 (curved · squircle · tinted · neutral · gradient · fill); optional --depth lift at 48 and 32. Runner-up: A8 with --glyph straight (A1's arrow). Reasons and contrast in notes.md.", 13, SUB))
+	y += -(-len(labels) // cols) * 236 + 20
+	o.append(txt(40, y, foot, 13, SUB))
 	H = y + 30
-	return (head("the variant sheet (A0 stock stand-in, A1–A8)") +
+	return (head(what) +
 		'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d">\n<defs>%s%s%s</defs>\n%s\n%s\n</svg>\n' % (
 			W, H, W, H, SKY, CHECK, b.lib.block(), rect(0, 0, W, H, BG), "\n".join(o)))
 
 
-def write_strip(b, labels):
+def write_strip(b, labels, title="Shortcut overlays side by side · the M1 folder at 48 on the void desktop and paper · then the 16 px at 8× on both"):
 	W = 60 + len(labels) * 196
-	o = [txt(30, 34, "Shortcut overlays side by side · the M1 folder at 48 on the void desktop and paper · then the 16 px at 8× on both", 15, HD, weight=600)]
+	o = [txt(30, 34, title, 15, HD, weight=600)]
 	for i, label in enumerate(labels):
 		x = 30 + i * 196
-		o.append(rect(x, 50, 186, 250, CELL, 8))
-		o.append(txt(x + 93, 74, "%s · %s" % (label, NAMES[label]), 12, "#ffffff", "middle", 600))
-		o.append(rect(x + 10, 86, 80, 70, T["desktop"], 4) + rect(x + 96, 86, 80, 70, T["paper"], 4))
-		o.append(b.icon_with_arrow(label, "folder", 48, x + 26, 96) + b.icon_with_arrow(label, "folder", 48, x + 112, 96))
-		o.append(b.zoom16(label, "folder", T["desktop"], x + 7, 166, 7, crop=(0, 4, 12, 16)) + b.zoom16(label, "folder", T["paper"], x + 95, 166, 7, crop=(0, 4, 12, 16)))
-		o.append(txt(x + 93, 266, "16 px, lower-left 12 × 12 at 7×", 9, DIM, "middle"))
 		cfg = b.fams[label][2]
-		o.append(txt(x + 93, 284, ("%s · %s · %s" % (cfg["glyph"], cfg["badge"], cfg["edge"])) if cfg else "stock stand-in", 9, DIM, "middle"))
-		o.append(txt(x + 93, 296, ("%s · %s · %s" % (cfg["colour"], cfg["depth"], cfg["size"])) if cfg else "", 9, DIM, "middle"))
-	H = 316
+		o.append(rect(x, 50, 186, 372, CELL, 8))
+		o.append(txt(x + 93, 72, label, 14, "#ffffff", "middle", 700))
+		o.append(txt(x + 93, 88, NAMES[label], 10, SUB, "middle"))
+		o.append(rect(x + 10, 98, 80, 70, T["desktop"], 4) + rect(x + 96, 98, 80, 70, T["paper"], 4))
+		o.append(b.icon_with_arrow(label, "folder", 48, x + 26, 108) + b.icon_with_arrow(label, "folder", 48, x + 112, 108))
+		for gx, g in ((x + 10, T["desktop"]), (x + 96, T["paper"])):  # the 48 composite's lower-left 24 x 24 at 10/3 x, vector
+			o.append('<svg x="%d" y="176" width="80" height="80" viewBox="0 24 24 24" overflow="hidden">%s%s</svg>' % (
+				gx, rect(0, 24, 24, 24, g), b.icon_with_arrow(label, "folder", 48, 0, 0)))
+		o.append(txt(x + 93, 268, "48 px, lower-left 24 × 24 enlarged", 9, DIM, "middle"))
+		o.append(b.zoom16(label, "folder", T["desktop"], x + 7, 276, 7, crop=(0, 4, 12, 16)) + b.zoom16(label, "folder", T["paper"], x + 95, 276, 7, crop=(0, 4, 12, 16)))
+		o.append(txt(x + 93, 374, "16 px, lower-left 12 × 12 at 7×", 9, DIM, "middle"))
+		o.append(txt(x + 93, 390, ("%s · %s · %s" % (cfg["glyph"], cfg["badge"], cfg["edge"])) if cfg else "stock stand-in", 9, DIM, "middle"))
+		o.append(txt(x + 93, 402, ("%s · %s · %s" % (cfg["colour"], cfg["depth"], cfg["size"])) if cfg else "", 9, DIM, "middle"))
+		if cfg and any(cfg.get(a, EXTRA[a]) != EXTRA[a] for a in EXTRA):
+			o.append(txt(x + 93, 414, ("bend %s° · %s" % (cfg["bend"], cfg.get("benddir", "up-right"))) if "bend" in cfg or "benddir" in cfg else
+				"head %s° · %s shaft" % (cfg.get("head", "90"), cfg.get("shaft", "straight")), 9, HD, "middle"))
+	H = 432
 	return (head("comparison strip") + '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d">\n<defs>%s%s</defs>\n%s\n%s\n</svg>\n' % (
 		W, H, W, H, SKY, b.lib.block(), rect(0, 0, W, H, BG), "\n".join(o)))
 
@@ -872,9 +1072,9 @@ def over(c, a, g):
 	return mix(g, c, a)
 
 
-def contrast_rows():
+def contrast_rows(variants=None):
 	rows = []
-	for label, cfg in VARIANTS.items():
+	for label, cfg in (variants or VARIANTS).items():
 		s = SCHEMES[cfg["colour"]]
 		if cfg["badge"] == "none":
 			hc, ho = halo_colour(cfg)
@@ -899,10 +1099,10 @@ def contrast_rows():
 	return rows
 
 
-def print_contrast():
+def print_contrast(variants=None):
 	print("| Variant | Inside | " + " | ".join(g for g, _ in GROUND_C) + " |")
 	print("| --- | --- | " + " | ".join("---" for _ in GROUND_C) + " |")
-	for label, inner, cells in contrast_rows():
+	for label, inner, cells in contrast_rows(variants):
 		print("| %s | %s | %s |" % (label, inner, " | ".join(cells)))
 
 
@@ -928,32 +1128,123 @@ def build_all(outline=True):
 		shutil.rmtree(tmp)
 
 
+OBTUSE_INTRO = [
+	"The owner chose A4 (gold on navy) and asked for an arrow that is not 90° but more obtuse. The chip is unchanged: navy squircle, paper halo, slim lift, padded gold arrow.",
+	"The head opens from 90° to 105°, 120° and 135° with the barb span held (growing slightly), so the tip moves in and the head gets flatter; A4-120c adds a swoosh shaft. 48 and 32 are",
+	"vector; each 16 px head is drawn pixel by pixel in the 5 × 5 interior. Same icons and grounds as the main sheet. Contrast is the same for every angle (same colours): see notes.md.",
+]
+OBTUSE_FOOT = ("Recommended: A4-120 (head 120°, straight shaft). A4-105 is the safe step; A4-135 stops reading as an arrow at 16 px (a bar across a stick); "
+	"the swoosh (A4-120c) reads only at 48 and 32.")
+
+
+BENT_INTRO = [
+	"The owner meant A1, the paper coin, with a bend in the arrow: an elbow greater than 90°, so it is neither the stock right angle nor A1's straight line. Chip unchanged:",
+	"paper disc, dusk-navy arrow, tinted edge, slim lift. The shaft rises from the bottom-left, bends at 110°, 120°, 135° or 150° and ends in the standard solid head; A1-120u bends",
+	"the other way (right, then up) and A1-120r is a return hook. 48 and 32 are vector; each 16 px is drawn pixel by pixel in the 6 × 6 interior. Contrast equals A1's: see notes.md.",
+]
+BENT_FOOT = ("Recommended: A1-135 (bend 135°, up-right). At 16 px 150° reads as straight and 110° as the stock right-angle hook; 120° and 135° read as bent arrows. "
+	"Return (120r) reads as 'back', not 'go'.")
+
+
+def build_bent(outline=True):
+	tmp = tempfile.mkdtemp(prefix="arrows-")
+	try:
+		b = Build(tmp)
+		b.family("A0", None)
+		for label in ("A1", "A4", "A8"):
+			b.family(label, VARIANTS[label])
+		for label, cfg in BENT.items():
+			b.family(label, cfg)
+		pdir = os.path.join(HERE, "proofs")
+		os.makedirs(pdir, exist_ok=True)
+		jobs = [
+			(os.path.join(HERE, "sheet-bent.svg"), write_sheet(b, ["A1"] + list(BENT), "Afterglow · shortcut-arrow overlay · A1 paper coin with a bent arrow",
+				BENT_INTRO, BENT_FOOT, "the bent-arrow sheet (A1 with 110°, 120°, 135° and 150° elbows)"), 1),
+			(os.path.join(HERE, "strip-bent.svg"), write_strip(b, ["A0", "A1", "A4", "A8"] + list(BENT),
+				"Bent arrows on A1's paper coin, with A0 (stock stand-in), A1 (straight), A4 and A8 for reference · M1 folder at 48 · 16 px at 7×"), 1),
+		]
+		for label in BENT:
+			jobs.append((os.path.join(pdir, "proof-%s.svg" % label), write_proof(b, label), 2))
+		for path, text, z in jobs:
+			open(path, "w").write(text)
+			if outline and shutil.which("inkscape"):
+				outline_text(path)
+			render(path, path[:-4] + ".png", z)
+	finally:
+		shutil.rmtree(tmp)
+
+
+def build_obtuse(outline=True):
+	tmp = tempfile.mkdtemp(prefix="arrows-")
+	try:
+		b = Build(tmp)
+		b.family("A0", None)
+		for label in ("A8", "A4"):
+			b.family(label, VARIANTS[label])
+		for label, cfg in OBTUSE.items():
+			b.family(label, cfg)
+		pdir = os.path.join(HERE, "proofs")
+		os.makedirs(pdir, exist_ok=True)
+		sheet_labels = ["A4"] + list(OBTUSE)
+		jobs = [
+			(os.path.join(HERE, "sheet-obtuse.svg"), write_sheet(b, sheet_labels, "Afterglow · shortcut-arrow overlay · A4 with obtuse heads", OBTUSE_INTRO, OBTUSE_FOOT,
+				"the obtuse-head sheet (A4 at 90°, 105°, 120°, 135° and a swoosh)"), 1),
+			(os.path.join(HERE, "strip-obtuse.svg"), write_strip(b, ["A0", "A8"] + sheet_labels,
+				"A4 at 90° against the obtuse heads, with A0 (stock stand-in) and A8 for reference · M1 folder at 48 on void and paper · 16 px at 7×"), 1),
+		]
+		for label in OBTUSE:
+			jobs.append((os.path.join(pdir, "proof-%s.svg" % label), write_proof(b, label), 2))
+		for path, text, z in jobs:
+			open(path, "w").write(text)
+			if outline and shutil.which("inkscape"):
+				outline_text(path)
+			render(path, path[:-4] + ".png", z)
+	finally:
+		shutil.rmtree(tmp)
+
+
 def main():
 	ap = argparse.ArgumentParser(description="Afterglow shortcut-arrow overlay variants.")
-	for a in ORDER:
+	for a in ORDER + ["head", "shaft"]:
 		ap.add_argument("--" + a, choices=list(AXES[a]))
-	ap.add_argument("--variant", choices=list(VARIANTS))
+	ap.add_argument("--bend", type=int, metavar="ANGLE", help="elbow angle in degrees, 90 to 180 (180 = straight); 16 px uses the nearest hand-drawn map")
+	ap.add_argument("--bend-dir", dest="benddir", choices=list(AXES["benddir"]))
+	ap.add_argument("--variant", choices=list(ALL))
+	ap.add_argument("--obtuse", action="store_true", help="build only the obtuse-head round: variant-A4-*, sheet-obtuse, strip-obtuse")
+	ap.add_argument("--bent", action="store_true", help="build only the bent-arrow round: variant-A1-*, sheet-bent, strip-bent")
 	ap.add_argument("--out", help="write one family here instead of building everything")
 	ap.add_argument("--no-outline", action="store_true", help="keep sheet text as text (faster)")
 	ap.add_argument("--list", action="store_true")
 	ap.add_argument("--contrast", action="store_true", help="print the contrast table")
 	args = ap.parse_args()
 	if args.list:
-		for a in ORDER:
+		for a in ORDER + list(EXTRA):
 			print(a.upper())
 			for t, why in AXES[a].items():
 				print("  %-11s %s" % (t, why))
-		for k, v in VARIANTS.items():
+		for k, v in ALL.items():
 			print("%s  %s  (%s)" % (k, tags(v), NAMES[k]))
 		return
 	if args.contrast:
-		print_contrast()
+		print_contrast(ALL)
 		return
-	if args.out or args.variant or any(getattr(args, a) for a in ORDER):
+	if args.bent:
+		build_bent(not args.no_outline)
+		print("bent variants", len(BENT))
+		return
+	if args.obtuse:
+		build_obtuse(not args.no_outline)
+		print("obtuse variants", len(OBTUSE))
+		return
+	if args.out or args.variant or any(getattr(args, a) for a in ORDER + list(EXTRA)):
 		cfg = dict(VARIANTS["A1"])
-		cfg.update(VARIANTS.get(args.variant, {}))
-		cfg.update({a: getattr(args, a) for a in ORDER if getattr(args, a)})
-		out = args.out or os.path.join(os.getcwd(), "arrow-" + "-".join(cfg[a] for a in ORDER))
+		cfg.update(ALL.get(args.variant, {}))
+		cfg.update({a: getattr(args, a) for a in ORDER + list(EXTRA) if getattr(args, a)})
+		if args.bend:
+			if not 90 <= args.bend <= 180:
+				ap.error("--bend must be between 90 and 180")
+			cfg["bend"] = str(args.bend)
+		out = args.out or os.path.join(os.getcwd(), "arrow-" + "-".join(cfg.get(a, EXTRA.get(a)) for a in ORDER + list(EXTRA)))
 		write_family(cfg, out, args.variant or "custom")
 		print("wrote", out, "·", tags(cfg))
 		return
