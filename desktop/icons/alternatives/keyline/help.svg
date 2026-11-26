@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): help, Help, keyline (review only) (48 master)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><filter id="al-help-48-b1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter><linearGradient id="al-help-48-gffb55af7a53e" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb55a"/><stop offset="1" stop-color="#f7a53e"/></linearGradient><clipPath id="al-help-48-c1"><path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" clip-rule="evenodd"/></clipPath></defs>
+<ellipse cx="25" cy="43.4" rx="15.48" ry="1.5" fill="#0a1230" opacity="0.2" filter="url(#al-help-48-b1)"/><path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" fill="#ffd096" fill-rule="evenodd"/><g clip-path="url(#al-help-48-c1)"><path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" fill="url(#al-help-48-gffb55af7a53e)" fill-rule="evenodd" transform="translate(1 1)"/></g><g clip-path="url(#al-help-48-c1)"><path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" fill="none" stroke="#8c5e26" stroke-width="3" stroke-opacity="1"/></g><path d="M19 18 a5 5 0 1 1 8 4 c-2 1.5 -3 2.5 -3 5" fill="none" stroke="#583b1a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M21.5 33 a2.5 2.5 0 1 0 5 0 a2.5 2.5 0 1 0 -5 0 Z" fill="#583b1a" fill-rule="evenodd"/>
+</svg>

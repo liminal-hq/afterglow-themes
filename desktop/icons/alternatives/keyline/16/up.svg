@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): up, Up, keyline (review only) (16 px)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="al-up-16-c1"><path d="M22.505 6.329 C23.327 5.598 24.673 5.598 25.495 6.329 L40.655 19.804 C41.395 20.462 41.19 21 40.2 21 L32.8 21 C32.36 21 32 21.36 32 21.8 L32 31 C32 32.1 31.1 33 30 33 L18 33 C16.9 33 16 32.1 16 31 L16 21.8 C16 21.36 15.64 21 15.2 21 L7.8 21 C6.81 21 6.605 20.462 7.345 19.804 Z" clip-rule="evenodd"/></clipPath><clipPath id="al-up-16-c2"><path d="M6 40 C6 38.9 6.9 38 8 38 L40 38 C41.1 38 42 38.9 42 40 L42 41 C42 42.1 41.1 43 40 43 L8 43 C6.9 43 6 42.1 6 41 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M22.505 6.329 C23.327 5.598 24.673 5.598 25.495 6.329 L40.655 19.804 C41.395 20.462 41.19 21 40.2 21 L32.8 21 C32.36 21 32 21.36 32 21.8 L32 31 C32 32.1 31.1 33 30 33 L18 33 C16.9 33 16 32.1 16 31 L16 21.8 C16 21.36 15.64 21 15.2 21 L7.8 21 C6.81 21 6.605 20.462 7.345 19.804 Z" fill="#ffaa40" fill-rule="evenodd"/><g clip-path="url(#al-up-16-c1)"><path d="M22.505 6.329 C23.327 5.598 24.673 5.598 25.495 6.329 L40.655 19.804 C41.395 20.462 41.19 21 40.2 21 L32.8 21 C32.36 21 32 21.36 32 21.8 L32 31 C32 32.1 31.1 33 30 33 L18 33 C16.9 33 16 32.1 16 31 L16 21.8 C16 21.36 15.64 21 15.2 21 L7.8 21 C6.81 21 6.605 20.462 7.345 19.804 Z" fill="none" stroke="#8c5e26" stroke-width="9" stroke-opacity="1"/></g><path d="M6 40 C6 38.9 6.9 38 8 38 L40 38 C41.1 38 42 38.9 42 40 L42 41 C42 42.1 41.1 43 40 43 L8 43 C6.9 43 6 42.1 6 41 Z" fill="#e4e2ec" fill-rule="evenodd"/><g clip-path="url(#al-up-16-c2)"><path d="M6 40 C6 38.9 6.9 38 8 38 L40 38 C41.1 38 42 38.9 42 40 L42 41 C42 42.1 41.1 43 40 43 L8 43 C6.9 43 6 42.1 6 41 Z" fill="none" stroke="#66619b" stroke-width="9" stroke-opacity="1"/></g>
+</svg>

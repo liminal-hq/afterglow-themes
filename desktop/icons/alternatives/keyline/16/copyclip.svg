@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): copyclip, Copy, keyline (review only) (16 px)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="al-copyclip-16-c1"><path d="M17 8 C17 6.35 18.35 5 20 5 L36 5 C37.65 5 39 6.35 39 8 L39 29 C39 30.65 37.65 32 36 32 L20 32 C18.35 32 17 30.65 17 29 Z" clip-rule="evenodd"/></clipPath><clipPath id="al-copyclip-16-c2"><path d="M9 16 C9 14.35 10.35 13 12 13 L28 13 C29.65 13 31 14.35 31 16 L31 40 C31 41.65 29.65 43 28 43 L12 43 C10.35 43 9 41.65 9 40 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M17 8 C17 6.35 18.35 5 20 5 L36 5 C37.65 5 39 6.35 39 8 L39 29 C39 30.65 37.65 32 36 32 L20 32 C18.35 32 17 30.65 17 29 Z" fill="#e4e2ec" fill-rule="evenodd"/><g clip-path="url(#al-copyclip-16-c1)"><path d="M17 8 C17 6.35 18.35 5 20 5 L36 5 C37.65 5 39 6.35 39 8 L39 29 C39 30.65 37.65 32 36 32 L20 32 C18.35 32 17 30.65 17 29 Z" fill="none" stroke="#66619b" stroke-width="9" stroke-opacity="1"/></g><path d="M9 16 C9 14.35 10.35 13 12 13 L28 13 C29.65 13 31 14.35 31 16 L31 40 C31 41.65 29.65 43 28 43 L12 43 C10.35 43 9 41.65 9 40 Z" fill="#f2eff4" fill-rule="evenodd"/><g clip-path="url(#al-copyclip-16-c2)"><path d="M9 16 C9 14.35 10.35 13 12 13 L28 13 C29.65 13 31 14.35 31 16 L31 40 C31 41.65 29.65 43 28 43 L12 43 C10.35 43 9 41.65 9 40 Z" fill="none" stroke="#66619b" stroke-width="9" stroke-opacity="1"/></g><path d="M14 21 C14 20.45 14.45 20 15 20 L25 20 C25.55 20 26 20.45 26 21 L26 21 C26 21.55 25.55 22 25 22 L15 22 C14.45 22 14 21.55 14 21 Z" fill="#8f8da6" fill-rule="evenodd"/><path d="M14 26 C14 25.45 14.45 25 15 25 L25 25 C25.55 25 26 25.45 26 26 L26 26 C26 26.55 25.55 27 25 27 L15 27 C14.45 27 14 26.55 14 26 Z" fill="#8f8da6" fill-rule="evenodd"/><path d="M14 31 C14 30.45 14.45 30 15 30 L21 30 C21.55 30 22 30.45 22 31 L22 31 C22 31.55 21.55 32 21 32 L15 32 C14.45 32 14 31.55 14 31 Z" fill="#8f8da6" fill-rule="evenodd"/>
+</svg>

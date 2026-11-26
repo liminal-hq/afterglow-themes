@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): clock, Clock, keyline (review only) (16 px)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="al-clock-16-c1"><path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" clip-rule="evenodd"/></clipPath><clipPath id="al-clock-16-c2"><path d="M21 24 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" fill="#e4e2ec" fill-rule="evenodd"/><g clip-path="url(#al-clock-16-c1)"><path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" fill="none" stroke="#66619b" stroke-width="9" stroke-opacity="1"/></g><path d="M24 8.5 V11.5" fill="none" stroke="#8f8da6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M39.5 24 H36.5" fill="none" stroke="#8f8da6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 39.5 V36.5" fill="none" stroke="#8f8da6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 24 H11.5" fill="none" stroke="#8f8da6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 13 V24 H32.5" fill="none" stroke="#4a4580" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 24 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0 Z" fill="#ffaa40" fill-rule="evenodd"/><g clip-path="url(#al-clock-16-c2)"><path d="M21 24 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0 Z" fill="none" stroke="#8c5e26" stroke-width="9" stroke-opacity="1"/></g>
+</svg>
