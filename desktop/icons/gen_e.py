@@ -265,6 +265,12 @@ def drive(p, y=13):
 	p.face(RR(32.5, y + 13.5, 6.5, 4.5, 1.6), G["gold"], band=False)
 
 
+def device_drive(p, top, height=17):
+	"""The drive of the device icons: a body behind and the front face, with no slot (each device adds its own)."""
+	p.face(RR(7, top - 6, 34, 13, 3), G["back"])
+	p.face(RR(5, top, 38, height, 3), G["front"])
+
+
 def arrow_small(p, y=37):
 	p.face(poly([(17, y - 2, 1.2), (29, y - 2, 0.6), (29, y - 6.5, 1.2), (43, y, 1.8), (29, y + 6.5, 1.2), (29, y + 2, 0.6), (17, y + 2, 1.2)]), G["gold"])
 
@@ -301,7 +307,16 @@ for _k in M1_NAME:
 
 @icon("mycomputer", "bare", "body")
 def _(p):
-	monitor(p)
+	p.shadow(5, 43, 42, SHADOW["body"])
+	p.face(RR(29, 9, 14, 33, 3), G["back"])
+	for y in (14, 18.5):
+		p.fill(RR(32, y, 8, 2.2, 1.1), VOIDN[400])
+	p.face(RR(32.5, 34, 4.5, 3.2, 1.2), G["gold"], band=False)
+	p.face(RR(13, 31, 7, 6, 1.4), G["back"], band=False)
+	p.face(RR(7, 36, 19, 4.5, 2), G["back"])
+	p.face(RR(4, 9, 25, 23, 3.2), G["front"])
+	p.sky(RR(7.5, 12.5, 18, 16, 1.5))
+	p.fill("M%s %s a5.5 5.5 0 0 1 11 0 Z" % (_n(11), _n(28.5)), ORANGE[200])
 
 
 @icon("browser", "tile", "tile")
@@ -579,23 +594,30 @@ def _(p):
 	drive(p)
 
 
-@icon("cd", "bare", "lift")
+@icon("cd", "bare", "body")
 def _(p):
-	p.shadow(7, 41, 43, SHADOW["lift"])
-	p.face(ring(24, 24, 19, 3.2), G["front"])
-	p.fill(ring(24, 24, 9.5, 3.2), VOIDN[300])
-	p.line("M9.5 19 A15 15 0 0 1 19 9.5", ORANGE[300], 2.2)
-	p.line("M38.5 29 A15 15 0 0 1 29 38.5", INDIGO[300], 2.2)
+	p.shadow(6, 42, 42.5, SHADOW["body"])
+	device_drive(p, 12, 15)
+	p.fill(RR(9, 18, 24, 2.4, 1.2), VOIDN[400])
+	p.face(RR(33, 21.5, 6, 3.6, 1.4), G["gold"], band=False)
+	p.face(poly([(9, 27, 1), (39, 27, 1), (41, 41.5, 2), (7, 41.5, 2)]), G["back"])
+	disc = "M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(10), _n(34), 14, 5.6, 28, 14, 5.6, -28)
+	p.face(disc, G["front"], band=False)
+	p.fill("M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(19), _n(34), 5, 2, 10, 5, 2, -10), VOIDN[300])
+	p.fill("M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(22.4), _n(34), 1.6, 0.7, 3.2, 1.6, 0.7, -3.2), G["back"].edge)
+	p.line("M12.5 32.5 C14 30.5 18 29.4 22 29.1", ORANGE[300], 1.6)
 
 
 @icon("floppy", "bare", "body")
 def _(p):
-	p.shadow(7, 41, 41, SHADOW["body"])
-	p.face(poly([(7, 7, 3), (36, 7, 1.5), (41, 12, 1.5), (41, 41, 3), (7, 41, 3)]), G["violet"])
-	p.face(poly([(15, 7, 0.4), (32, 7, 0.4), (32, 19, 1.5), (15, 19, 1.5)]), G["back"], band=False)
-	p.fill(RR(25, 9.5, 4, 7, 1), INDIGO[600])
-	p.face(poly([(12.5, 41, 0.01), (12.5, 26, 2), (35.5, 26, 2), (35.5, 41, 0.01)]), G["paper"], band=False)
-	bars(p, 16, 30.5, [16, 11], 4.5, 2)
+	p.shadow(6, 42, 42.5, SHADOW["body"])
+	p.face(poly([(10, 4, 2.5), (33, 4, 1.2), (38, 9, 1.2), (38, 25, 0.01), (10, 25, 0.01)]), G["violet"])
+	p.face(poly([(14.5, 7, 1.5), (33.5, 7, 1.5), (33.5, 25, 0.01), (14.5, 25, 0.01)]), G["paper"], band=False)
+	bars(p, 18, 11.5, [12, 8], 4.5, 2)
+	device_drive(p, 23, 18)
+	p.fill(RR(8, 23, 32, 3.2, 1.4), INDIGO[600])
+	p.fill(RR(10, 33, 15, 2.6, 1.3), VOIDN[400])
+	p.face(RR(31.5, 32, 7, 4.5, 1.6), G["gold"], band=False)
 
 
 @icon("netdrive", "bare", "body")
@@ -913,11 +935,45 @@ H16["search"] = [
 	(["." * 16] + ["." + r + "." * 6 for r in LENS] + ["." * 16] * 6, False)]
 H16["hdd"] = [(grid(lambda x, y: "n" if 2 <= x <= 13 and 3 <= y <= 7 else "."), True), (grid(lambda x, y: "m" if 1 <= x <= 14 and 5 <= y <= 12 else "."), True),
 	detail([(3, 9, 5, "9"), (11, 8, 2, "2"), (11, 9, 2, "2")])]
-H16["mycomputer"] = [
+H16["monitor"] = [
 	(grid(lambda x, y: "n" if (6 <= x <= 9 and y == 11) or (4 <= x <= 11 and 12 <= y <= 13) else "."), True),
 	(grid(lambda x, y: "m" if 1 <= x <= 14 and 1 <= y <= 11 else "."), True),
 	(grid(lambda x, y: ("5" if y <= 4 else "6" if y <= 6 else "7") if 3 <= x <= 12 and 3 <= y <= 8 else "."), False),
 	detail([(7, 7, 2, "2"), (6, 8, 4, "2")])]
+
+
+# The hand-tuned 16 px frame of the My Computer device icon, in the same grid language as the layers above but drawn as one flat grid:
+# lowercase material base, uppercase its 16 px edge, digits and symbols flat details, . transparent
+GRID16 = {
+	"mycomputer": [
+	"................",
+	"..........NNNNN.",
+	"MMMMMMMMMMNnnnN.",
+	"M55555555MN99nN.",
+	"M66666666MNnnnN.",
+	"M66622666MN99nN.",
+	"M77222277MNnnnN.",
+	"MMMMMMMMMMNnnnN.",
+	"....NN....NnnnN.",
+	"..NNNNNN..NnGnN.",
+	"..........NnnnN.",
+	"..........NNNNN.",
+	"................",
+	"................",
+	"................",
+	"................",
+	],
+}
+
+
+def pixel_grid(rows):
+	colours = {}
+	for letter, name in {"g": "gold", "f": "goldl", "p": "paper", "m": "front", "n": "back", "d": "dusk", "v": "violet"}.items():
+		colours[letter], colours[letter.upper()] = G[name].base, G[name].px_edge()
+	colours.update({digit: colour for digit, colour in PXD.items() if digit != "e"})
+	colours.update({"-": VOIDN[300], "=": INDIGO[600], "~": HORIZON})
+	return "".join('<rect x="%d" y="%d" width="1" height="1" fill="%s"/>' % (x, y, colours[character])
+		for y, row in enumerate(rows) for x, character in enumerate(row) if character != ".")
 
 
 def bin16(full):
@@ -939,13 +995,15 @@ M1_H16 = {"folder": ("closed", None), "folderopen": ("open", None), "mydocs": ("
 
 
 def hinted(k):
+	if k in GRID16:
+		return pixel_grid(GRID16[k])
 	if k in M1_H16:
 		st, em = M1_H16[k]
 		return FG.hint16(M1, st, em)
 	return px_layers(H16[k])
 
 
-HINTED = ["folder", "folderopen", "mydocs", "mypictures", "mymusic", "myvideos", "desktop", "network", "doc", "documents", "warning", "error", "search", "hdd", "mycomputer", "recycle", "recyclefull"]
+HINTED = ["folder", "folderopen", "mydocs", "mypictures", "mymusic", "myvideos", "desktop", "network", "doc", "documents", "warning", "error", "search", "hdd", "mycomputer", "monitor", "recycle", "recyclefull"]
 
 # ---- inventory and groups (set D's) ----------------------------------------------------------------------------------------------------------
 GROUPS = [

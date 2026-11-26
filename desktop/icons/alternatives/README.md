@@ -1,16 +1,18 @@
 # Icon alternatives (review only)
 
-Nothing in this folder ships. These are alternatives to icons in the Afterglow set, kept for the owner to pick from per icon. They are not in `map.json`, not rendered by `render.py`, not in the release zip and not in the recorded sums. When a pick is made, it moves into the generators (`gen_e.py`, `gen_v2.py`) and the sums are updated there.
+## Chosen and shipped: the device redraws
+
+The owner chose the device redraws, without the keyline, for the five icons that showed the medium or a part instead of the device: CD drive, Floppy, Removable drive, RAM disk and My Computer. They show the drive front (or the monitor with its system unit), which reads as the thing the slot stands for, where the old art showed a bare disc, floppy, USB key, memory stick or monitor. They are now the masters in `gen_e.py` and `gen_v2.py` under the original ids, and their device and device-with-keyline review columns are gone from this folder and the sheet. The old art stays in the set under its own ids (`cd-disc`, `floppy-disk`, `usb-key`, `ram-module` and `monitor`), unmapped, for media and storage lists. The keyline variants of the five are the keyline of the shipped art, like the rest of the set.
+
+Nothing else in this folder ships. These are alternatives to icons in the Afterglow set, kept for the owner to pick from per icon. They are not in `map.json`, not rendered by `render.py`, not in the release zip and not in the recorded sums. When a pick is made, it moves into the generators (`gen_e.py`, `gen_v2.py`) and the sums are updated there.
 
 `alternatives.py` is the generator: `python3 alternatives.py` rewrites the masters here, and `python3 alternatives.py --review OUT_PNG` renders every frame at 16, 32 and 48 px and draws the review sheet, [`docs/images/afterglow-icons-alternatives.png`](../../../docs/images/afterglow-icons-alternatives.png).
 
-| Folder            | What                                                                                                                                                   |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `device/`         | Redraws of the five icons that show the medium or a part instead of the system item: CD drive, floppy drive, removable drive, RAM disk and My Computer |
-| `device-keyline/` | The same five redraws with the keyline                                                                                                                 |
-| `keyline/`        | Every icon in the set with the keyline                                                                                                                 |
+| Folder     | What                                   |
+| ---------- | -------------------------------------- |
+| `keyline/` | Every icon in the set with the keyline |
 
-Each folder holds the 48 px master `ID.svg`, the `32/` and `16/` profiles, and a hand-tuned `ID-16.svg` where the icon has one.
+The folder holds the 48 px master `ID.svg`, the `32/` and `16/` profiles, and a hand-tuned `ID-16.svg` where the icon has one.
 
 ## The keyline
 

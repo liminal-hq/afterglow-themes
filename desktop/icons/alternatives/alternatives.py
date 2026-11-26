@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-# Review-only alternatives to Afterglow icons: device redraws for icons that show the media instead of the device, and keyline variants
-# that reach 3:1 against both the classic cream window colour and the Dusk desktop colour. Nothing here ships until the owner picks.
+# Review-only alternatives to Afterglow icons: keyline variants that reach 3:1 against both the classic cream window colour and the Dusk
+# desktop colour. Nothing here ships until the owner picks. (The device redraws of the drive icons and My Computer were picked and ship.)
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 #
-#   python3 alternatives.py                  rewrite the masters in this folder (device/ and keyline/, each with 32/ and 16/ profiles and
+#   python3 alternatives.py                  rewrite the masters in this folder (keyline/, with 32/ and 16/ profiles and
 #                                            hinted ID-16.svg frames where the icon has one)
 #   python3 alternatives.py --review OUT_PNG render every frame at 16, 32 and 48 px and draw the review sheet: current against each
 #                                            alternative at 1x and 4x, on cream and on dusk, with the measured contrast (needs rsvg-convert)
 #
-# The device redraws use gen_e.py's own Pen, materials, shadows and shared drawings, so they are set E. The keyline variant of an icon is
+# The keyline variant of an icon is
 # the icon itself with every material edge (the clipped inner edge set E draws at 30 to 60 %) made opaque and retuned, in its own hue, to
 # a luminance of about 0.137: cream is about 0.62 and dusk about 0.006, and that band is the one that reaches 3:1 against both. Plated
 # icons also get that rim on the plate. A hinted 16 px frame gets the same retune on its outer ring of pixels.
@@ -35,16 +35,6 @@ ICONS = os.path.dirname(HERE)
 GROUNDS = (("cream", (212, 208, 200)), ("dusk", (9, 14, 42)))
 TARGET = 3.0
 KEY_LUMINANCE = 0.137
-
-# Icons whose art shows the medium or a part instead of the system item, and the device redraw offered for each
-DEVICE = {
-	"cd": ("CD drive", "the drive front with a disc on its open tray"),
-	"floppy": ("Floppy drive", "the drive front with a floppy half inserted"),
-	"removable": ("Removable drive", "the drive front with a memory card half inserted"),
-	"ramdisk": ("RAM disk", "a drive with a memory module standing in it"),
-	"mycomputer": ("My Computer", "the monitor with its system unit, not the monitor alone"),
-}
-
 
 def load_module(name, path):
 	spec = importlib.util.spec_from_file_location(name, path)
@@ -97,176 +87,6 @@ PLATE_KEY = retune(gen.HORIZON, PLATE_LUMINANCE)
 KEY_WIDTH = {48: 1.5, 32: 1.67, 24: 1.5, 16: 1.5}
 # At 16 px the plate's rim covers both of its edge pixels, so it takes a luminance that reaches 3:1 on both grounds by itself
 PLATE_KEY_16 = retune(gen.HORIZON, 0.15)
-
-
-# ---- the device redraws -------------------------------------------------------------------------------------------------------------------------
-def drive_body(pen, top, height=17):
-	"""Set E's drive: a body behind and the front face, with no slot (each device adds its own)."""
-	pen.face(RR(7, top - 6, 34, 13, 3), MATS["back"])
-	pen.face(RR(5, top, 38, height, 3), MATS["front"])
-
-
-def draw_cd_drive(pen):
-	pen.shadow(6, 42, 42.5, gen.SHADOW["body"])
-	drive_body(pen, 12, 15)
-	pen.fill(RR(9, 18, 24, 2.4, 1.2), gen.VOIDN[400])
-	pen.face(RR(33, 21.5, 6, 3.6, 1.4), MATS["gold"], band=False)
-	pen.face(poly([(9, 27, 1), (39, 27, 1), (41, 41.5, 2), (7, 41.5, 2)]), MATS["back"])
-	disc = "M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(10), _n(34), 14, 5.6, 28, 14, 5.6, -28)
-	pen.face(disc, MATS["front"], band=False)
-	pen.fill("M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(19), _n(34), 5, 2, 10, 5, 2, -10), gen.VOIDN[300])
-	pen.fill("M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(22.4), _n(34), 1.6, 0.7, 3.2, 1.6, 0.7, -3.2), MATS["back"].edge)
-	pen.line("M12.5 32.5 C14 30.5 18 29.4 22 29.1", gen.ORANGE[300], 1.6)
-
-
-def draw_floppy_drive(pen):
-	pen.shadow(6, 42, 42.5, gen.SHADOW["body"])
-	pen.face(poly([(10, 4, 2.5), (33, 4, 1.2), (38, 9, 1.2), (38, 25, 0.01), (10, 25, 0.01)]), MATS["violet"])
-	pen.face(poly([(14.5, 7, 1.5), (33.5, 7, 1.5), (33.5, 25, 0.01), (14.5, 25, 0.01)]), MATS["paper"], band=False)
-	gen.bars(pen, 18, 11.5, [12, 8], 4.5, 2)
-	drive_body(pen, 23, 18)
-	pen.fill(RR(8, 23, 32, 3.2, 1.4), gen.INDIGO[600])
-	pen.fill(RR(10, 33, 15, 2.6, 1.3), gen.VOIDN[400])
-	pen.face(RR(31.5, 32, 7, 4.5, 1.6), MATS["gold"], band=False)
-
-
-def draw_removable_drive(pen):
-	pen.shadow(6, 42, 42.5, gen.SHADOW["body"])
-	card = poly([(22, 5, 1.5), (33, 5, 1.5), (36, 8, 0.8), (36, 26, 0.01), (22, 26, 0.01)])
-	pen.face(card, MATS["violet"])
-	for index in range(4):
-		pen.fill(RR(24 + index * 2.6, 7.5, 1.4, 4, 0.5), gen.ORANGE[200])
-	pen.face(RR(24, 14, 10, 9, 1.4), MATS["paper"], band=False)
-	drive_body(pen, 23, 18)
-	pen.fill(RR(19, 23, 20, 3.2, 1.4), gen.INDIGO[600])
-	pen.fill(RR(10, 33, 15, 2.6, 1.3), gen.VOIDN[400])
-	pen.face(RR(31.5, 32, 7, 4.5, 1.6), MATS["gold"], band=False)
-
-
-def draw_ram_disk_drive(pen):
-	pen.shadow(6, 42, 42.5, gen.SHADOW["body"])
-	module = poly([(9, 5, 2), (39, 5, 2), (39, 25, 0.01), (9, 25, 0.01)])
-	pen.face(module, MATS["dusk"])
-	for index in range(3):
-		pen.face(RR(11.5 + index * 9.3, 8, 6.8, 9, 1.2), MATS["back"], band=False)
-	for index in range(11):
-		pen.fill(RR(11 + index * 2.6, 19.5, 1.4, 4, 0.5), gen.ORANGE[200])
-	drive_body(pen, 23, 18)
-	pen.fill(RR(8, 23, 32, 3.2, 1.4), gen.INDIGO[600])
-	pen.fill(RR(10, 33, 15, 2.6, 1.3), gen.VOIDN[400])
-	pen.face(RR(31.5, 32, 7, 4.5, 1.6), MATS["gold"], band=False)
-
-
-def draw_my_computer(pen):
-	pen.shadow(5, 43, 42, gen.SHADOW["body"])
-	pen.face(RR(29, 9, 14, 33, 3), MATS["back"])
-	for y in (14, 18.5):
-		pen.fill(RR(32, y, 8, 2.2, 1.1), gen.VOIDN[400])
-	pen.face(RR(32.5, 34, 4.5, 3.2, 1.2), MATS["gold"], band=False)
-	pen.face(RR(13, 31, 7, 6, 1.4), MATS["back"], band=False)
-	pen.face(RR(7, 36, 19, 4.5, 2), MATS["back"])
-	pen.face(RR(4, 9, 25, 23, 3.2), MATS["front"])
-	pen.sky(RR(7.5, 12.5, 18, 16, 1.5))
-	pen.fill("M%s %s a5.5 5.5 0 0 1 11 0 Z" % (_n(11), _n(28.5)), gen.ORANGE[200])
-
-
-DEVICE_DRAW = {"cd": draw_cd_drive, "floppy": draw_floppy_drive, "removable": draw_removable_drive, "ramdisk": draw_ram_disk_drive,
-	"mycomputer": draw_my_computer}
-
-# Hand-tuned 16 px frames of the device redraws, in hint16's grid language: lowercase material base, uppercase its 16 px edge, digits and
-# symbols flat details, . transparent
-DEVICE_16 = {
-	"cd": [
-		"................",
-		"................",
-		"...NNNNNNNNNN...",
-		"..NNnnnnnnnnNN..",
-		".MMMMMMMMMMMMMM.",
-		".Mm99999999mmmM.",
-		".MmmmmmmmmmGGmM.",
-		".MMMMMMMMMMMMMM.",
-		"..NNMMMMMMMMNN..",
-		"..NMmmmmmmmmMN..",
-		".NMmmm----mmmMN.",
-		".NMmm-mmmm-mmMN.",
-		".NMmmm----mmmMN.",
-		".NNMmmmmmmmmMNN.",
-		".NNNMMMMMMMMNNN.",
-		"................",
-	],
-	"floppy": [
-		"................",
-		"...VVVVVVVVV....",
-		"...VPPPPPPPVV...",
-		"...VPpppppPvV...",
-		"...VPp1111PvV...",
-		"...VPppppppPV...",
-		"...VPp111ppPV...",
-		"..NNNNNNNNNNNN..",
-		".MMMMMMMMMMMMMM.",
-		".M============M.",
-		".MmmmmmmmmmmmmM.",
-		".Mm9999mmmmGGmM.",
-		".MmmmmmmmmmGGmM.",
-		".MMMMMMMMMMMMMM.",
-		"................",
-		"................",
-	],
-	"removable": [
-		"................",
-		".......VVVVV....",
-		".......V2222V...",
-		".......VvvvvV...",
-		".......VPPPPV...",
-		".......VPppPV...",
-		".......VPPPPV...",
-		"..NNNNNNNNNNNN..",
-		".MMMMMMMMMMMMMM.",
-		".Mmmmmm=======M.",
-		".MmmmmmmmmmmmmM.",
-		".Mm9999mmmmGGmM.",
-		".MmmmmmmmmmGGmM.",
-		".MMMMMMMMMMMMMM.",
-		"................",
-		"................",
-	],
-	"ramdisk": [
-		"................",
-		"..DDDDDDDDDDDD..",
-		"..DNNdNNdNNddD..",
-		"..DNNdNNdNNddD..",
-		"..DddddddddddD..",
-		"..D2d2d2d2d2dD..",
-		"..DDDDDDDDDDDD..",
-		"..NNNNNNNNNNNN..",
-		".MMMMMMMMMMMMMM.",
-		".M============M.",
-		".MmmmmmmmmmmmmM.",
-		".Mm9999mmmmGGmM.",
-		".MmmmmmmmmmGGmM.",
-		".MMMMMMMMMMMMMM.",
-		"................",
-		"................",
-	],
-	"mycomputer": [
-		"................",
-		"..........NNNNN.",
-		"MMMMMMMMMMNnnnN.",
-		"M55555555MN99nN.",
-		"M66666666MNnnnN.",
-		"M66622666MN99nN.",
-		"M77222277MNnnnN.",
-		"MMMMMMMMMMNnnnN.",
-		"....NN....NnnnN.",
-		"..NNNNNN..NnGnN.",
-		"..........NnnnN.",
-		"..........NNNNN.",
-		"................",
-		"................",
-		"................",
-		"................",
-	],
-}
 
 
 # Hand-tuned 16 px frames for keyline variants whose scripted 16 px frame is too thin to carry a keyline
@@ -333,12 +153,6 @@ def build_current(icon_id, size, prefix):
 	return gen.build(icon_id, size, prefix)
 
 
-def build_device(icon_id, size, prefix):
-	pen = gen.Pen(prefix, size)
-	DEVICE_DRAW[icon_id](pen)
-	return "".join(pen.defs.values()), "".join(pen.out)
-
-
 EDGE_STROKE = re.compile(r'stroke="(#[0-9a-f]{6})" stroke-width="([0-9.]+)" stroke-opacity="([0-9.]+)"')
 UNDER_STROKE = re.compile(r'stroke="(#[0-9a-f]{6})" stroke-opacity="([0-9.]+)" stroke-width="([0-9.]+)"')
 
@@ -388,7 +202,7 @@ def keyline_pixels(rects):
 	return "".join(out)
 
 
-def device_pixels(icon_id, grids=DEVICE_16):
+def device_pixels(icon_id, grids):
 	colours = {}
 	for letter, name in {"g": "gold", "f": "goldl", "p": "paper", "m": "front", "n": "back", "d": "dusk", "v": "violet"}.items():
 		colours[letter], colours[letter.upper()] = MATS[name].base, MATS[name].px_edge()
@@ -406,12 +220,6 @@ def is_plated(icon_id):
 def variants():
 	"""(folder, id, title, build(size) -> (defs, body), hinted() -> rects or None) for every alternative."""
 	out = []
-	for icon_id in DEVICE:
-		out.append(("device", icon_id, "%s, device redraw (review only)" % gen.LABEL[icon_id],
-			lambda size, icon_id=icon_id: build_device(icon_id, size, "ad-%s-%d" % (icon_id, size)), lambda icon_id=icon_id: device_pixels(icon_id)))
-		out.append(("device-keyline", icon_id, "%s, device redraw with keyline (review only)" % gen.LABEL[icon_id],
-			lambda size, icon_id=icon_id: (lambda built: (built[0], keyline_body(built[1], size, False)))(build_device(icon_id, size, "ak-%s-%d" % (icon_id, size))),
-			lambda icon_id=icon_id: keyline_pixels(device_pixels(icon_id))))
 	for icon_id in gen.I:
 		if icon_id in KEYLINE_16:
 			hinted = lambda icon_id=icon_id: keyline_pixels(device_pixels(icon_id, KEYLINE_16))
@@ -508,20 +316,19 @@ def review(out_path):
 	for icon_id in gen.I:
 		sizes = frames(None, icon_id)
 		scores[icon_id] = sizes, {name: worst(sizes, ground) for name, ground in GROUNDS}
-	below = [icon_id for icon_id in gen.I if icon_id not in DEVICE and min(scores[icon_id][1].values()) < TARGET]
+	below = [icon_id for icon_id in gen.I if min(scores[icon_id][1].values()) < TARGET]
 	option_width, block_height, margin = 236, 182, 24
-	device_label = 170
 	pair_width = 2 * option_width + 150
-	width = max(margin * 2 + device_label + 4 * option_width, margin * 2 + 3 * pair_width)
+	width = margin * 2 + 3 * pair_width
 	keyline_rows = (len(below) + 2) // 3
-	height = 160 + 30 + len(DEVICE) * block_height + 40 + keyline_rows * block_height + 30
+	height = 160 + 30 + keyline_rows * block_height + 30
 	sheet = Image.new("RGB", (width, height), (12, 12, 16))
 	draw = ImageDraw.Draw(sheet)
 	draw.text((margin, 18), "Afterglow icon alternatives · review only, nothing here ships until picked", font=heading, fill=gold)
 	lines = [
 		"Each option: 48, 32 and 16 px at 1x, then the 16 px frame at 4x; on the classic cream window colour (top) and the Dusk desktop colour (bottom).",
 		"Number: WCAG 2 contrast of the main silhouette's edge against the ground, the worst of the 48, 32 and 16 px frames. 3:1 is the target for",
-		"graphical objects; green meets it. Device: a redraw that shows the drive or the computer, not the medium. Keyline: the same icon with its",
+		"graphical objects; green meets it. Keyline: the same icon with its",
 		"material edges made opaque and retuned in their own hue to the luminance band that reaches 3:1 on both grounds; plates get the rim too.",
 	]
 	for index, line in enumerate(lines):
@@ -537,23 +344,7 @@ def review(out_path):
 			draw.text((x + 184, top + 28), "%.1f:1" % value, font=font, fill=good if value >= TARGET else bad)
 
 	y = 140
-	draw.text((margin, y), "1 · Icons that show the medium or a part, not the system item: current, device redraw, device redraw with keyline, keyline", font=font, fill=gold)
-	y += 30
-	for icon_id in DEVICE:
-		draw.text((margin, y + 18), gen.LABEL[icon_id], font=font, fill=ink)
-		draw.text((margin, y + 36), icon_id, font=small, fill=dim)
-		words, line, line_y = DEVICE[icon_id][1].split(), "", y + 58
-		for word in words:
-			if len(line) + len(word) > 24:
-				draw.text((margin, line_y), line, font=small, fill=dim)
-				line, line_y = "", line_y + 14
-			line += word + " "
-		draw.text((margin, line_y), line, font=small, fill=dim)
-		for column, (name, folder) in enumerate((("current", None), ("device", "device"), ("device + keyline", "device-keyline"), ("keyline", "keyline"))):
-			option(margin + device_label + column * option_width, y, name, folder, icon_id, folder is not None)
-		y += block_height
-	y += 10
-	draw.text((margin, y), "2 · Every other icon below 3:1 on either ground: current and keyline (%d icons)" % len(below), font=font, fill=gold)
+	draw.text((margin, y), "Every icon below 3:1 on either ground: current and keyline (%d icons)" % len(below), font=font, fill=gold)
 	y += 30
 	for index, icon_id in enumerate(below):
 		x = margin + (index % 3) * pair_width
@@ -564,13 +355,13 @@ def review(out_path):
 		option(x + 140 + option_width, top, "keyline", "keyline", icon_id, True)
 	sheet.save(out_path, optimize=True)
 	report = {icon_id: scores[icon_id][1] for icon_id in gen.I}
-	return len(DEVICE) + len(below), len(below), report
+	return len(below), len(below), report
 
 
 def main():
 	if len(sys.argv) == 3 and sys.argv[1] == "--review":
 		rows, below, report = review(sys.argv[2])
-		print("review sheet", rows, "icons,", below, "below 3:1 besides the device redraws")
+		print("review sheet", rows, "icons,", below, "below 3:1")
 		for name, _ in GROUNDS:
 			ranked = sorted(report.items(), key=lambda item: item[1][name])
 			print(name, "worst:", ", ".join("%s %.2f" % (icon_id, values[name]) for icon_id, values in ranked[:12]))

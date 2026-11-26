@@ -298,6 +298,15 @@
 			}
 		},
 		{
+			"id": "cd-disc",
+			"label": "CD disc",
+			"group": "Drives and folders",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
 			"id": "charging0",
 			"label": "Charging, 0 of 5",
 			"group": "System tray",
@@ -688,6 +697,15 @@
 			}
 		},
 		{
+			"id": "floppy-disk",
+			"label": "Floppy disk",
+			"group": "Drives and folders",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
 			"id": "folder",
 			"label": "Folder",
 			"group": "Drives and folders",
@@ -1075,6 +1093,15 @@
 			}
 		},
 		{
+			"id": "monitor",
+			"label": "Monitor",
+			"group": "Desktop and shell",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
 			"id": "mouse",
 			"label": "Mouse",
 			"group": "Control Panel applets",
@@ -1441,6 +1468,15 @@
 				"group": 102,
 				"evidence": ["source", "binary"]
 			}
+		},
+		{
+			"id": "ram-module",
+			"label": "RAM module",
+			"group": "Drives and folders",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
 		},
 		{
 			"id": "ramdisk",
@@ -1851,6 +1887,15 @@
 				"cell": 28,
 				"evidence": ["source", "binary"]
 			}
+		},
+		{
+			"id": "usb-key",
+			"label": "USB key",
+			"group": "Drives and folders",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
 		},
 		{
 			"id": "usrmgr",

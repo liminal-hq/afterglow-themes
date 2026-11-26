@@ -57,9 +57,9 @@ function render() {
 	return out;
 }
 
-test('the set has 135 icons, 20 hinted 16 px redraws, a 32 and 16 px profile of every icon and a 24 px one of the 18 toolbar glyphs', () => {
-	assert.equal(ids.length, 135);
-	assert.equal(hinted.length, 20);
+test('the set has 140 icons, 21 hinted 16 px redraws, a 32 and 16 px profile of every icon and a 24 px one of the 18 toolbar glyphs', () => {
+	assert.equal(ids.length, 140);
+	assert.equal(hinted.length, 21);
 	for (const id of [
 		'mydocs',
 		'mypictures',
@@ -106,8 +106,8 @@ test('the set has 135 icons, 20 hinted 16 px redraws, a 32 and 16 px profile of 
 
 test('the masters match their recorded hashes and keep their licence header', () => {
 	const recorded = sums('SHA256SUMS.masters');
-	// 135 icons in three profiles, 18 toolbar glyphs at 24 px, 20 hinted redraws, 3 arrow frames, the sheet and 4 generators
-	assert.equal(Object.keys(recorded).length, 135 * 3 + 18 + 20 + 3 + 1 + 4);
+	// 140 icons in three profiles, 18 toolbar glyphs at 24 px, 21 hinted redraws, 3 arrow frames, the sheet and 4 generators
+	assert.equal(Object.keys(recorded).length, 140 * 3 + 18 + 21 + 3 + 1 + 4);
 	for (const [name, hash] of Object.entries(recorded)) {
 		assert.equal(sha256(readFileSync(join(icons, name))), hash, `${name} changed`);
 		if (name.endsWith('.svg') || name.endsWith('.py')) {
@@ -183,7 +183,17 @@ test('map.json names every icon once and the arrow, and records only verified re
 	}
 	assert.deepEqual(
 		map.icons.filter((i) => i.status === 'unmapped').map((i) => i.id),
-		['clock', 'shield', 'showdesk', 'trynet'],
+		[
+			'cd-disc',
+			'clock',
+			'floppy-disk',
+			'monitor',
+			'ram-module',
+			'shield',
+			'showdesk',
+			'trynet',
+			'usb-key',
+		],
 	);
 	// The folder ids the folder icon research verified in the 0.4.16 source and binary are unchanged
 	const shell32 = Object.fromEntries(
@@ -245,8 +255,8 @@ test(
 				}
 				assert.deepEqual(seen, SIZES, `${id} frames`);
 			}
-			assert.equal(readdirSync(join(out, 'ico')).length, 136);
-			assert.equal(readdirSync(join(out, 'png')).length, 136 * 3 + toolbar.length);
+			assert.equal(readdirSync(join(out, 'ico')).length, 141);
+			assert.equal(readdirSync(join(out, 'png')).length, 141 * 3 + toolbar.length);
 			// the 24 px toolbar frames: a one-frame .ico each, so the three-frame .ico stays as the shell patchers read it
 			assert.deepEqual(
 				readdirSync(join(out, 'ico24')).sort(),

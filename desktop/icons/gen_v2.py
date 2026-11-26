@@ -13,7 +13,7 @@ import math
 # Filled in by register(): the helpers and colours of gen_e.py, under the names set E uses.
 SHARED = ("FG", "M1", "MATS", "SKY", "SHADOW", "ORANGE", "RED", "PURPLE", "VOIDN", "INDIGO", "PAPER", "BRAND_GOLD", "PALE", "SKY1", "SKY4", "SKY7",
 	"HORIZON", "DARK", "LINE", "GLYPH", "GLYPH_D", "RR", "poly", "rot", "circ", "ring", "page", "bars", "globe", "gear", "drive", "window", "keys",
-	"arrow_small", "mix", "_n", "Pen", "plate")
+	"arrow_small", "mix", "_n", "Pen", "plate", "device_drive", "monitor")
 
 ICONS = []  # (id, kind, tier, draw, label, group)
 NEW_GROUP_AFTER = ("Programs", "Desktop and shell")  # the one new sheet group, and the group it follows
@@ -437,12 +437,68 @@ def draw_log_off(pen):
 # ---- drives -------------------------------------------------------------------------------------------------------------------------------------
 @icon("removable", "bare", "body", "Removable drive", "Drives and folders")
 def draw_removable_drive(pen):
-	pen.shadow(14, 34, 43, SHADOW["body"])
-	flash_stick(pen, 14, 6.5)
+	pen.shadow(6, 42, 42.5, SHADOW["body"])
+	card = poly([(22, 5, 1.5), (33, 5, 1.5), (36, 8, 0.8), (36, 26, 0.01), (22, 26, 0.01)])
+	pen.face(card, MATS["violet"])
+	for index in range(4):
+		pen.fill(RR(24 + index * 2.6, 7.5, 1.4, 4, 0.5), ORANGE[200])
+	pen.face(RR(24, 14, 10, 9, 1.4), MATS["paper"], band=False)
+	device_drive(pen, 23, 18)
+	pen.fill(RR(19, 23, 20, 3.2, 1.4), INDIGO[600])
+	pen.fill(RR(10, 33, 15, 2.6, 1.3), VOIDN[400])
+	pen.face(RR(31.5, 32, 7, 4.5, 1.6), MATS["gold"], band=False)
 
 
 @icon("ramdisk", "bare", "body", "RAM disk", "Drives and folders")
 def draw_ram_disk(pen):
+	pen.shadow(6, 42, 42.5, SHADOW["body"])
+	module = poly([(9, 5, 2), (39, 5, 2), (39, 25, 0.01), (9, 25, 0.01)])
+	pen.face(module, MATS["dusk"])
+	for index in range(3):
+		pen.face(RR(11.5 + index * 9.3, 8, 6.8, 9, 1.2), MATS["back"], band=False)
+	for index in range(11):
+		pen.fill(RR(11 + index * 2.6, 19.5, 1.4, 4, 0.5), ORANGE[200])
+	device_drive(pen, 23, 18)
+	pen.fill(RR(8, 23, 32, 3.2, 1.4), INDIGO[600])
+	pen.fill(RR(10, 33, 15, 2.6, 1.3), VOIDN[400])
+	pen.face(RR(31.5, 32, 7, 4.5, 1.6), MATS["gold"], band=False)
+
+
+# ---- the media on their own ---------------------------------------------------------------------------------------------------------------------
+# The drive icons (cd, floppy, removable, ramdisk) and My Computer show the device. The medium or part alone is kept here under its own id, for
+# media, storage and hardware lists.
+@icon("cd-disc", "bare", "lift", "CD disc", "Drives and folders")
+def draw_cd_disc(pen):
+	pen.shadow(7, 41, 43, SHADOW["lift"])
+	pen.face(ring(24, 24, 19, 3.2), MATS["front"])
+	pen.fill(ring(24, 24, 9.5, 3.2), VOIDN[300])
+	pen.line("M9.5 19 A15 15 0 0 1 19 9.5", ORANGE[300], 2.2)
+	pen.line("M38.5 29 A15 15 0 0 1 29 38.5", INDIGO[300], 2.2)
+
+
+@icon("floppy-disk", "bare", "body", "Floppy disk", "Drives and folders")
+def draw_floppy_disk(pen):
+	pen.shadow(7, 41, 41, SHADOW["body"])
+	pen.face(poly([(7, 7, 3), (36, 7, 1.5), (41, 12, 1.5), (41, 41, 3), (7, 41, 3)]), MATS["violet"])
+	pen.face(poly([(15, 7, 0.4), (32, 7, 0.4), (32, 19, 1.5), (15, 19, 1.5)]), MATS["back"], band=False)
+	pen.fill(RR(25, 9.5, 4, 7, 1), INDIGO[600])
+	pen.face(poly([(12.5, 41, 0.01), (12.5, 26, 2), (35.5, 26, 2), (35.5, 41, 0.01)]), MATS["paper"], band=False)
+	bars(pen, 16, 30.5, [16, 11], 4.5, 2)
+
+
+@icon("monitor", "bare", "body", "Monitor", "Desktop and shell")
+def draw_monitor(pen):
+	monitor(pen)
+
+
+@icon("usb-key", "bare", "body", "USB key", "Drives and folders")
+def draw_usb_key(pen):
+	pen.shadow(14, 34, 43, SHADOW["body"])
+	flash_stick(pen, 14, 6.5)
+
+
+@icon("ram-module", "bare", "body", "RAM module", "Drives and folders")
+def draw_ram_module(pen):
 	pen.shadow(5, 43, 36, SHADOW["body"])
 	pen.face(poly([(5, 13, 2.5), (43, 13, 2.5), (43, 35, 1), (26, 35, 0.5), (26, 33, 0.5), (22, 33, 0.5), (22, 35, 0.5), (5, 35, 1)]), MATS["dusk"])
 	for index in range(3):
