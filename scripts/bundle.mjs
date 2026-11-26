@@ -245,6 +245,14 @@ function buildReactosDesktop() {
 			copyFileSync(join(desktop, 'logon', file), join(logon, file));
 		}
 
+		// The boot logo: the SVG master and palette, the bitmaps and previews rendered from them and the hash lists. The patch into
+		// the kernel is not here; it happens in the reactos-liminal build.
+		const boot = join(stage, 'boot');
+		execFileSync('python3', [join(desktop, 'boot', 'render.py'), boot], { stdio: 'ignore' });
+		for (const file of ['boot-logo.svg', 'palette.json', 'SHA256SUMS', 'SHA256SUMS.masters']) {
+			copyFileSync(join(desktop, 'boot', file), join(boot, file));
+		}
+
 		mkdirSync(join(stage, 'docs'));
 		// desktop/SHA256SUMS names the two builds for the check script; here they sit in folders
 		const styleSums = ['style', 'style-scrollbars'].map(
@@ -265,6 +273,10 @@ function buildReactosDesktop() {
 			join(root, 'docs', 'images', 'afterglow-logon-banner.png'),
 			join(stage, 'docs', 'images', 'afterglow-logon-banner.png'),
 		);
+		copyFileSync(
+			join(root, 'docs', 'images', 'afterglow-boot-logo.png'),
+			join(stage, 'docs', 'images', 'afterglow-boot-logo.png'),
+		);
 		const readme = readFileSync(join(desktop, 'README.md'), 'utf8').replaceAll(
 			'](../docs/',
 			'](docs/',
@@ -275,6 +287,7 @@ function buildReactosDesktop() {
 			'reactos-desktop-colour-schemes.md',
 			'reactos-desktop-pointers.md',
 			'reactos-desktop-logon.md',
+			'reactos-desktop-boot.md',
 		]) {
 			const text = readFileSync(join(root, 'docs', doc), 'utf8').replaceAll(
 				'](../desktop/',

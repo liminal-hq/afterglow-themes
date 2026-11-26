@@ -1,0 +1,125 @@
+{
+	"about": "The 16 colours of the ReactOS 0.4.16 kernel boot screen: the palette of the logo bitmap, which the whole screen is shown through. rgb is the design colour, stored as it is in the bitmap palette (the same bytes the booted spike used). The VGA DAC truncates each channel to its top six bits (dac = value >> 2). shown is what a QEMU capture of the booted screen displayed, (dac << 2) | (3 if dac is odd else 0), checked against all 16 entries.",
+	"size": [414, 366],
+	"slot": 16504,
+	"progressBox": {
+		"x": 138,
+		"y": 328,
+		"width": 140,
+		"height": 38
+	},
+	"entries": [
+		{
+			"index": 0,
+			"role": "backdrop; the boot screen and the logon desktop",
+			"rgb": "#090e2a",
+			"dac": [2, 3, 10],
+			"shown": "#080f28"
+		},
+		{
+			"index": 1,
+			"role": "night band, outermost sky arc",
+			"rgb": "#0d1336",
+			"dac": [3, 4, 13],
+			"shown": "#0f1037"
+		},
+		{
+			"index": 2,
+			"role": "night; the near sheet of the horizon glow",
+			"rgb": "#121741",
+			"dac": [4, 5, 16],
+			"shown": "#101740"
+		},
+		{
+			"index": 3,
+			"role": "night band",
+			"rgb": "#1a2050",
+			"dac": [6, 8, 20],
+			"shown": "#182050"
+		},
+		{
+			"index": 4,
+			"role": "night band; the far sheet of the horizon glow",
+			"rgb": "#1f2554",
+			"dac": [7, 9, 21],
+			"shown": "#1f2757"
+		},
+		{
+			"index": 5,
+			"role": "dusk band",
+			"rgb": "#2a3164",
+			"dac": [10, 12, 25],
+			"shown": "#283067"
+		},
+		{
+			"index": 6,
+			"role": "dusk band",
+			"rgb": "#35366a",
+			"dac": [13, 13, 26],
+			"shown": "#373768"
+		},
+		{
+			"index": 7,
+			"role": "dusk band",
+			"rgb": "#42396c",
+			"dac": [16, 14, 27],
+			"shown": "#40386f"
+		},
+		{
+			"index": 8,
+			"role": "dusk to rose band",
+			"rgb": "#523d6c",
+			"dac": [20, 15, 27],
+			"shown": "#503f6f"
+		},
+		{
+			"index": 9,
+			"role": "rose band",
+			"rgb": "#643f68",
+			"dac": [25, 15, 26],
+			"shown": "#673f68"
+		},
+		{
+			"index": 10,
+			"role": "rose band, innermost sky arc",
+			"rgb": "#7a4562",
+			"dac": [30, 17, 24],
+			"shown": "#784760"
+		},
+		{
+			"index": 11,
+			"role": "deep gold; kept for the other boot screen bitmaps",
+			"rgb": "#b8893a",
+			"dac": [46, 34, 14],
+			"shown": "#b88838"
+		},
+		{
+			"index": 12,
+			"role": "gold; kept for the other boot screen bitmaps",
+			"rgb": "#e89930",
+			"dac": [58, 38, 12],
+			"shown": "#e89830"
+		},
+		{
+			"index": 13,
+			"role": "bright gold; the sun and the caption",
+			"rgb": "#ffaa40",
+			"dac": [63, 42, 16],
+			"shown": "#ffa840"
+		},
+		{
+			"index": 14,
+			"role": "pale gold; the sun's lit cap and the horizon line",
+			"rgb": "#ffd08e",
+			"dac": [63, 52, 35],
+			"shown": "#ffd08f"
+		},
+		{
+			"index": 15,
+			"role": "cream; the wordmark, the progress bar fill and the copyright text",
+			"rgb": "#fff3de",
+			"dac": [63, 60, 55],
+			"shown": "#fff0df"
+		}
+	]
+}

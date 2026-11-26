@@ -21,6 +21,10 @@
 
 `logon/banner-a.svg`, `logon/bar.svg` and the fallback `logon/banner-b.svg` are original Liminal HQ art, drawn as vectors with their text outlined from DejaVu Sans (the DejaVu font licence allows embedding outlines). No ReactOS bitmap or wordmark was copied, traced or recoloured. `logon/render.py` renders them to the 24-bit BMPs, recorded in `logon/SHA256SUMS`.
 
+## Boot logo
+
+`boot/boot-logo.svg` is original Liminal HQ art, drawn as a vector from the geometry of a spike that drew the same design in palette indices, with its text outlined from Noto Sans (Light and Medium; the font licence allows embedding outlines). No ReactOS bitmap or wordmark was copied, traced or recoloured. `boot/palette.json` is the 16-colour palette, each entry exact in six bits. `boot/render.py` renders the bitmaps, recorded in `boot/SHA256SUMS`.
+
 ## Palette
 
 The colours are in the `SCHEMES` table in `style/agdraw.py`, one entry per colour scheme, on named slots. They come from four places:
