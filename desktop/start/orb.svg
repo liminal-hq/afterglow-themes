@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Afterglow Start orb: a navy dusk disc with a half-set gold sun on its horizon
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+
+Master at 8x (200 x 160) of the 25 x 20 bitmap 143 in the ReactOS explorer.exe. Explorer shows only the left 20 x 20 square of it,
+so the disc (centre 10,10, radius 8.6 in bitmap pixels) keeps a transparent margin of at least 1 px inside that square and the
+columns 20 to 24 stay clear. Light falls from the upper left: the sun's lit cap sits up and left, and the rim is a thin navy edge
+in the tile navy, with no black line. Every colour is an Afterglow desktop token (see desktop/boot/palette.json).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="160" viewBox="0 0 200 160">
+<title>Afterglow Start orb</title>
+<defs>
+<linearGradient id="sky" x1="0" y1="11.2" x2="0" y2="91.711" gradientUnits="userSpaceOnUse"><stop offset="0.0000" stop-color="#1f2554"/><stop offset="0.1667" stop-color="#2a3164"/><stop offset="0.3333" stop-color="#35366a"/><stop offset="0.5000" stop-color="#42396c"/><stop offset="0.6667" stop-color="#523d6c"/><stop offset="0.8333" stop-color="#643f68"/><stop offset="1.0000" stop-color="#7a4562"/></linearGradient>
+<linearGradient id="deep" x1="0" y1="91.711" x2="0" y2="153.631" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1a2050"/><stop offset="1" stop-color="#090e2a"/></linearGradient>
+<clipPath id="disc"><circle cx="80" cy="80" r="68.8"/></clipPath>
+<clipPath id="above"><rect x="0" y="0" width="200" height="91.711"/></clipPath>
+</defs>
+<g clip-path="url(#disc)">
+<rect x="0" y="11.2" width="200" height="80.511" fill="url(#sky)"/>
+<rect x="0" y="91.711" width="200" height="68.289" fill="url(#deep)"/>
+<g clip-path="url(#above)"><circle cx="80" cy="91.711" r="33.668" fill="#ffaa40"/><ellipse cx="76.633" cy="73.193" rx="15.151" ry="10.1" fill="#ffd08e"/></g>
+<rect x="0" y="88.051" width="200" height="7.319" fill="#ffd08e"/>
+<rect x="0" y="107.813" width="200" height="5.855" fill="#4a4580"/>
+</g>
+<circle cx="80" cy="80" r="64.8" fill="none" stroke="#0a1230" stroke-width="8"/>
+</svg>

@@ -13,6 +13,9 @@
 # Also renders the boot logo (desktop/boot/render.py, needs rsvg-convert and Pillow), compares its two bitmaps with desktop/boot/SHA256SUMS
 # and its master and palette with desktop/boot/SHA256SUMS.masters, and checks the docs preview PNG by pixels.
 #
+# Also renders the Start orb and the Start menu banner (desktop/start/render.py, needs rsvg-convert and Pillow), compares the two DIBs with
+# desktop/start/SHA256SUMS and the SVG masters with desktop/start/SHA256SUMS.masters, and checks the docs preview PNG by pixels.
+#
 # Builds desktop/style twice into scratch folders (the default build, with classic scroll bars, and the --scrollbars build with the
 # Afterglow ones), then compares afterglow.msstyles and afterglow-scrollbars.msstyles with desktop/SHA256SUMS
 # (the build is reproducible: same sources, same bytes) and each generated .reg file with the one
@@ -111,6 +114,32 @@ else
 	echo "the logon preview docs/images/afterglow-logon-banner.png is out of date: copy afterglow-logon-preview.png from desktop/logon/render.py's output over it"
 	status=1
 fi
+# The Start orb and the Start menu banner: the SVG masters are hashed as they are, and the 25 x 20 orb and 21 x 233 banner DIBs are rendered fresh and hashed.
+if (cd desktop/start && sha256sum --check --quiet SHA256SUMS.masters); then
+	echo "the Start masters in desktop/start match desktop/start/SHA256SUMS.masters"
+else
+	echo "a Start master in desktop/start changed: if that is intended, run (cd desktop/start && sha256sum banner.svg orb.svg > SHA256SUMS.masters) and render the DIBs again"
+	status=1
+fi
+python3 desktop/start/render.py "$out/start"
+if (cd "$out/start" && sha256sum --check --quiet "$root/desktop/start/SHA256SUMS"); then
+	echo "the Start orb and banner DIBs match desktop/start/SHA256SUMS"
+else
+	echo "the Start orb or banner DIB does not match desktop/start/SHA256SUMS: a master or the renderer changed, so look at $out/start, then record the new hashes with (cd OUT_DIR && sha256sum start-banner.dib start-orb.dib > desktop/start/SHA256SUMS)"
+	status=1
+fi
+if python3 - "$out/start/afterglow-start-preview.png" docs/images/afterglow-start.png <<'PY'
+import sys
+from PIL import Image, ImageChops
+fresh, committed = (Image.open(path).convert("RGB") for path in sys.argv[1:3])
+sys.exit(0 if fresh.size == committed.size and ImageChops.difference(fresh, committed).getbbox() is None else 1)
+PY
+then
+	echo "the Start preview docs/images/afterglow-start.png matches the renderer"
+else
+	echo "the Start preview docs/images/afterglow-start.png is out of date: copy afterglow-start-preview.png from desktop/start/render.py's output over it"
+	status=1
+fi
 if [ -n "${USER32:-}" ]; then
 	if python3 desktop/pointers/patch-user32.py "$USER32" "$out/pointers" "$out/user32-afterglow.dll" >/dev/null; then
 		if (cd "$out" && sha256sum --check --quiet "$root/desktop/pointers/SHA256SUMS.user32"); then
@@ -182,5 +211,5 @@ else
 	status=1
 fi
 
-[ "$status" -eq 0 ] && echo "Desktop style, pointers, logon, boot and icon art are reproducible."
+[ "$status" -eq 0 ] && echo "Desktop style, pointers, logon, boot, Start and icon art are reproducible."
 exit "$status"
