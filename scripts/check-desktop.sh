@@ -152,5 +152,35 @@ else
 	status=1
 fi
 
-[ "$status" -eq 0 ] && echo "Desktop style, pointers, logon and boot art are reproducible."
+# The icon set: gen_e.py redraws every SVG master and the contact sheet, and arrows.py the three shortcut arrow masters (all compared
+# byte for byte, and with SHA256SUMS.masters), then render.py draws the 74 .ico files, which are compared with SHA256SUMS. The .ico bytes
+# were identical with rsvg-convert 2.58 and 2.63.
+mkdir -p "$out/icons-gen"
+python3 desktop/icons/gen_e.py "$out/icons-gen" >/dev/null
+python3 -B desktop/icons/arrows.py --variant A1 --out "$out/icons-gen/arrow" >/dev/null
+arrow_ok=1
+for f in arrow-48.svg arrow-32.svg arrow-16-hinted.svg; do
+	cmp -s "$out/icons-gen/arrow/$f" "desktop/icons/arrow/$f" || arrow_ok=0
+done
+if diff -r "$out/icons-gen/icons" desktop/icons/svg >/dev/null && cmp -s "$out/icons-gen/sheet.svg" desktop/icons/sheet.svg && [ "$arrow_ok" = 1 ]; then
+	echo "the icon masters in desktop/icons/svg, sheet.svg and arrow match the generators"
+else
+	echo "the icon masters in desktop/icons are out of date: run desktop/icons/gen_e.py OUT_DIR, copy OUT_DIR/icons over desktop/icons/svg and OUT_DIR/sheet.svg over desktop/icons/sheet.svg, and run arrows.py --variant A1 --out DIR for the three arrow masters"
+	status=1
+fi
+if (cd desktop/icons && sha256sum --check --quiet SHA256SUMS.masters); then
+	echo "the icon masters match desktop/icons/SHA256SUMS.masters"
+else
+	echo "an icon master changed: record the new hashes in desktop/icons/SHA256SUMS.masters (see desktop/README.md)"
+	status=1
+fi
+python3 desktop/icons/render.py "$out/icons"
+if (cd "$out/icons" && sha256sum --check --quiet "$root/desktop/icons/SHA256SUMS"); then
+	echo "the 74 Afterglow .ico files match desktop/icons/SHA256SUMS"
+else
+	echo "the .ico files do not match desktop/icons/SHA256SUMS: a master or the renderer changed, so look at $out/icons, then record the new hashes with (cd OUT_DIR && sha256sum ico/*.ico > desktop/icons/SHA256SUMS)"
+	status=1
+fi
+
+[ "$status" -eq 0 ] && echo "Desktop style, pointers, logon, boot and icon art are reproducible."
 exit "$status"

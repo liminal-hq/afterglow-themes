@@ -253,6 +253,17 @@ function buildReactosDesktop() {
 			copyFileSync(join(desktop, 'boot', file), join(boot, file));
 		}
 
+		// The icon set and the shortcut arrow: the .ico and PNG renders drawn here, the SVG masters they come from, and the id map
+		const icons = join(stage, 'icons');
+		execFileSync('python3', [join(desktop, 'icons', 'render.py'), icons], { stdio: 'ignore' });
+		rmSync(join(icons, 'afterglow-icons-sheet.png'));
+		rmSync(join(icons, 'afterglow-arrow-preview.png'));
+		cpSync(join(desktop, 'icons', 'svg'), join(icons, 'svg'), { recursive: true });
+		cpSync(join(desktop, 'icons', 'arrow'), join(icons, 'arrow'), { recursive: true });
+		for (const file of ['map.json', 'SHA256SUMS', 'SHA256SUMS.masters']) {
+			copyFileSync(join(desktop, 'icons', file), join(icons, file));
+		}
+
 		mkdirSync(join(stage, 'docs'));
 		// desktop/SHA256SUMS names the two builds for the check script; here they sit in folders
 		const styleSums = ['style', 'style-scrollbars'].map(
@@ -277,6 +288,9 @@ function buildReactosDesktop() {
 			join(root, 'docs', 'images', 'afterglow-boot-logo.png'),
 			join(stage, 'docs', 'images', 'afterglow-boot-logo.png'),
 		);
+		for (const image of ['afterglow-icons.png', 'afterglow-arrow.png']) {
+			copyFileSync(join(root, 'docs', 'images', image), join(stage, 'docs', 'images', image));
+		}
 		const readme = readFileSync(join(desktop, 'README.md'), 'utf8').replaceAll(
 			'](../docs/',
 			'](docs/',
@@ -288,6 +302,7 @@ function buildReactosDesktop() {
 			'reactos-desktop-pointers.md',
 			'reactos-desktop-logon.md',
 			'reactos-desktop-boot.md',
+			'reactos-desktop-icons.md',
 		]) {
 			const text = readFileSync(join(root, 'docs', doc), 'utf8').replaceAll(
 				'](../desktop/',

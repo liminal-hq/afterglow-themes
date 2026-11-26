@@ -116,6 +116,10 @@ The logo on the ReactOS kernel boot screen, drawn as a vector master and rendere
 
 ![The Afterglow boot logo at twice its size.](docs/images/afterglow-boot-logo.png)
 
+## Desktop icons
+
+A set of 73 icons and a shortcut arrow for the ReactOS desktop (shell objects, Control Panel applets, drives, file types, dialogs and the Start menu), drawn as vector masters in the language of the Afterglow folder and rendered by script to 16, 32 and 48 px as one `.ico` per icon, with a map from each icon id to the ReactOS icon it replaces. See [docs/reactos-desktop-icons.md](docs/reactos-desktop-icons.md).
+
 ## Install
 
 ### OpenCode
@@ -271,7 +275,7 @@ CI runs the format check, the licence-header check, the theme build and validati
 
 ## Releases
 
-Releases are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. The release workflow runs the full validation, then attaches the three OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the Forgejo themes zip, the TextMate themes zip, a Firefox `.xpi` per theme, the Chrome and Edge themes zip, the wallpapers zip (`afterglow-wallpapers-vX.Y.Z.zip`), the ReactOS desktop zip (`afterglow-reactos-desktop-vX.Y.Z.zip`: both styles, the eight colour schemes, the pointers, the logon banner and the boot logo art, with no patched binary) and a `SHA256SUMS` file to a GitHub release with generated notes.
+Releases are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. The release workflow runs the full validation, then attaches the three OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the Forgejo themes zip, the TextMate themes zip, a Firefox `.xpi` per theme, the Chrome and Edge themes zip, the wallpapers zip (`afterglow-wallpapers-vX.Y.Z.zip`), the ReactOS desktop zip (`afterglow-reactos-desktop-vX.Y.Z.zip`: both styles, the eight colour schemes, the pointers, the logon banner, the boot logo, the icon set and the shortcut arrow, with no patched binary) and a `SHA256SUMS` file to a GitHub release with generated notes.
 
 ## Contributing
 

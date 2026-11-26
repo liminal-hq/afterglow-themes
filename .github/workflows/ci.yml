@@ -128,6 +128,10 @@ jobs:
       - name: Test the boot renderer
         id: boot
         run: node --test scripts/render-boot.test.mjs
+      # The icon renderer tests skip in the plain unit test run, which has no rsvg-convert; here they run for real.
+      - name: Test the icon renderer
+        id: icons
+        run: node --test scripts/render-icons.test.mjs
 
       - name: Job summary
         if: always()
@@ -138,6 +142,7 @@ jobs:
             echo "- Command: \`bun run check:desktop\`"
             echo "- Logon renderer tests: \`${{ steps.logon.outcome }}\`"
             echo "- Boot renderer tests: \`${{ steps.boot.outcome }}\`"
+            echo "- Icon renderer tests: \`${{ steps.icons.outcome }}\`"
           } >> "${GITHUB_STEP_SUMMARY}"
 
   bundle:

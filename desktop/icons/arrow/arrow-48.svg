@@ -1,0 +1,10 @@
+<!--
+Afterglow shortcut-arrow overlay: A1 (straight · disc · tinted · neutral · lift · fill), 48 px frame
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><filter id="A1-48-b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0.85"/></filter></defs>
+<path d="M0 39.5 a7.5 7.5 0 1 0 15 0 a7.5 7.5 0 1 0 -15 0 Z" fill="#0a1230" opacity="0.38" transform="translate(0.7 1.1)" filter="url(#A1-48-b)"/><path d="M0 39.5 a7.5 7.5 0 1 0 15 0 a7.5 7.5 0 1 0 -15 0 Z" fill="#fbfaf6"/><path d="M0.5 39.5 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 Z" fill="none" stroke="#5f5d78" stroke-opacity="0.75" stroke-width="1"/><g><path d="M3.636 43.364 L9.348 37.652" fill="none" stroke="#1f2554" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.324 35.468 L11.532 35.468 L11.532 40.676 Z" fill="#1f2554" stroke="#1f2554" stroke-width="1.02" stroke-linejoin="round"/></g>
+</svg>

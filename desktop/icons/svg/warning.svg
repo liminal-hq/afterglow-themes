@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): warning, Warning (48 master profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><filter id="e-warning-48-b1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter><linearGradient id="e-warning-48-gffb55af7a53e" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb55a"/><stop offset="1" stop-color="#f7a53e"/></linearGradient><clipPath id="e-warning-48-c1"><path d="M22.318 7.069 C23.243 5.381 24.757 5.381 25.682 7.069 L42.318 37.431 C43.243 39.119 42.425 40.5 40.5 40.5 L7.5 40.5 C5.575 40.5 4.757 39.119 5.682 37.431 Z" clip-rule="evenodd"/></clipPath></defs>
+<ellipse cx="25" cy="41.4" rx="16.34" ry="1.5" fill="#0a1230" opacity="0.2" filter="url(#e-warning-48-b1)"/><path d="M22.318 7.069 C23.243 5.381 24.757 5.381 25.682 7.069 L42.318 37.431 C43.243 39.119 42.425 40.5 40.5 40.5 L7.5 40.5 C5.575 40.5 4.757 39.119 5.682 37.431 Z" fill="#ffd096" fill-rule="evenodd"/><g clip-path="url(#e-warning-48-c1)"><path d="M22.318 7.069 C23.243 5.381 24.757 5.381 25.682 7.069 L42.318 37.431 C43.243 39.119 42.425 40.5 40.5 40.5 L7.5 40.5 C5.575 40.5 4.757 39.119 5.682 37.431 Z" fill="url(#e-warning-48-gffb55af7a53e)" fill-rule="evenodd" transform="translate(1 1)"/></g><g clip-path="url(#e-warning-48-c1)"><path d="M22.318 7.069 C23.243 5.381 24.757 5.381 25.682 7.069 L42.318 37.431 C43.243 39.119 42.425 40.5 40.5 40.5 L7.5 40.5 C5.575 40.5 4.757 39.119 5.682 37.431 Z" fill="none" stroke="#7d5422" stroke-width="2" stroke-opacity="0.3"/></g><path d="M22 17 C22 15.9 22.9 15 24 15 L24 15 C25.1 15 26 15.9 26 17 L26 27 C26 28.1 25.1 29 24 29 L24 29 C22.9 29 22 28.1 22 27 Z" fill="#583b1a" fill-rule="evenodd"/><path d="M21.6 34.2 a2.4 2.4 0 1 0 4.8 0 a2.4 2.4 0 1 0 -4.8 0 Z" fill="#583b1a" fill-rule="evenodd"/>
+</svg>

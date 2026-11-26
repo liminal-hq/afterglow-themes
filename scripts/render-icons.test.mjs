@@ -1,0 +1,289 @@
+// Tests for the Afterglow icon set: masters, hashes, the id map, sizes, frames and repeatable bytes
+//
+// (c) Copyright 2026 Liminal HQ, Scott Morris
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
+import assert from 'node:assert/strict';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
+
+const icons = join(fileURLToPath(new URL('..', import.meta.url)), 'desktop', 'icons');
+const svgDir = join(icons, 'svg');
+const arrowDir = join(icons, 'arrow');
+const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
+const SIZES = [16, 32, 48];
+
+// The renderer needs rsvg-convert and Python with Pillow; the Desktop style job has them, a plain test run may not
+const haveTools =
+	spawnSync('rsvg-convert', ['--version'], { stdio: 'ignore' }).status === 0 &&
+	spawnSync('python3', ['-c', 'import PIL'], { stdio: 'ignore' }).status === 0;
+const needTools = haveTools
+	? {}
+	: { skip: 'rsvg-convert and python3 with Pillow are not installed' };
+
+// The icon ids are the 48 px masters; the hinted redraws end in -16
+const ids = readdirSync(svgDir)
+	.filter((f) => f.endsWith('.svg') && !f.endsWith('-16.svg'))
+	.map((f) => f.slice(0, -4))
+	.sort();
+const hinted = readdirSync(svgDir)
+	.filter((f) => f.endsWith('-16.svg'))
+	.map((f) => f.slice(0, -7))
+	.sort();
+
+const sums = (file) =>
+	Object.fromEntries(
+		readFileSync(join(icons, file), 'utf8')
+			.trim()
+			.split('\n')
+			.map((line) => {
+				const [hash, name] = line.split(/\s+/);
+				return [name, hash];
+			}),
+	);
+
+function render() {
+	const out = mkdtempSync(join(tmpdir(), 'afterglow-icons-'));
+	execFileSync('python3', [join(icons, 'render.py'), out], { stdio: 'ignore' });
+	return out;
+}
+
+test('the set has 73 icons, 17 hinted 16 px redraws and a 32 and 16 px profile of every icon, and no 24 px one', () => {
+	assert.equal(ids.length, 73);
+	assert.equal(hinted.length, 17);
+	for (const id of ['mydocs', 'mypictures', 'mymusic', 'myvideos', 'desktop', 'network']) {
+		assert.ok(hinted.includes(id), `${id} has a hinted redraw`);
+	}
+	assert.equal(existsSync(join(svgDir, '24')), false);
+	for (const sub of ['32', '16']) {
+		const files = readdirSync(join(svgDir, sub)).map((f) => f.slice(0, -4));
+		assert.deepEqual(files.sort(), ids, `svg/${sub}`);
+	}
+	assert.deepEqual(readdirSync(arrowDir).sort(), [
+		'arrow-16-hinted.svg',
+		'arrow-32.svg',
+		'arrow-48.svg',
+	]);
+});
+
+test('the masters match their recorded hashes and keep their licence header', () => {
+	const recorded = sums('SHA256SUMS.masters');
+	// 73 icons in three profiles, 17 hinted redraws, 3 arrow frames, the sheet and 3 generators
+	assert.equal(Object.keys(recorded).length, 73 * 3 + 17 + 3 + 1 + 3);
+	for (const [name, hash] of Object.entries(recorded)) {
+		assert.equal(sha256(readFileSync(join(icons, name))), hash, `${name} changed`);
+		if (name.endsWith('.svg') || name.endsWith('.py')) {
+			const text = readFileSync(join(icons, name), 'utf8');
+			assert.match(text, /\(c\) Copyright 2026 Liminal HQ, Scott Morris/, name);
+			assert.match(text, /SPDX-License-Identifier: Apache-2\.0 OR MIT/, name);
+		}
+	}
+});
+
+test('every master draws on a square grid of its own size', () => {
+	for (const id of ids) {
+		for (const sub of ['', '32/', '16/']) {
+			const svg = readFileSync(join(svgDir, `${sub}${id}.svg`), 'utf8');
+			assert.ok(svg.includes('viewBox="0 0 48 48" width="48" height="48"'), `${sub}${id}`);
+		}
+	}
+	for (const id of hinted) {
+		const svg = readFileSync(join(svgDir, `${id}-16.svg`), 'utf8');
+		assert.ok(svg.includes('viewBox="0 0 16 16" width="16" height="16"'), `${id}-16`);
+	}
+	for (const [name, size] of [
+		['arrow-48', 48],
+		['arrow-32', 32],
+		['arrow-16-hinted', 16],
+	]) {
+		const svg = readFileSync(join(arrowDir, `${name}.svg`), 'utf8');
+		assert.ok(svg.includes(`viewBox="0 0 ${size} ${size}" width="${size}" height="${size}"`), name);
+	}
+});
+
+test('map.json names every icon once and the arrow, and records only the verified resource ids', () => {
+	const map = JSON.parse(readFileSync(join(icons, 'map.json'), 'utf8'));
+	assert.deepEqual(map.icons.map((i) => i.id).sort(), [...ids, 'arrow'].sort());
+	for (const icon of map.icons) {
+		assert.ok(['named', 'unmapped'].includes(icon.status), icon.id);
+		if (icon.resource !== null) {
+			assert.equal(icon.resource.module, 'shell32.dll', icon.id);
+			assert.ok(icon.resource.evidence.length > 0, icon.id);
+		}
+		if (icon.status === 'named') {
+			assert.ok(icon.replaces && map.kinds[icon.kind], icon.id);
+		} else {
+			assert.equal(icon.replaces, null, icon.id);
+			assert.equal(icon.kind, null, icon.id);
+			assert.equal(icon.resource, null, icon.id);
+		}
+	}
+	assert.equal(map.icons.filter((i) => i.status === 'named').length, 55);
+	// The group ids the folder icon research verified in the 0.4.16 source and binary, and no others
+	const verified = Object.fromEntries(
+		map.icons.filter((i) => i.resource).map((i) => [i.id, i.resource.group]),
+	);
+	assert.deepEqual(verified, {
+		arrow: 30,
+		desktop: 35,
+		folder: 4,
+		folderopen: 5,
+		mycomputer: 16,
+		mydocs: 235,
+		mymusic: 237,
+		mypictures: 236,
+		myvideos: 238,
+		network: 18,
+		recycle: 32,
+		recyclefull: 33,
+	});
+});
+
+test(
+	'the render makes one .ico per icon and the arrow with 16, 32 and 48 px frames of 32-bit alpha, and a PNG per frame',
+	needTools,
+	() => {
+		const out = render();
+		try {
+			for (const id of [...ids, 'arrow']) {
+				for (const size of SIZES) {
+					const png = readFileSync(join(out, 'png', `${id}-${size}.png`));
+					assert.equal(png.readUInt32BE(16), size, `${id}-${size}.png width`);
+					assert.equal(png.readUInt32BE(20), size, `${id}-${size}.png height`);
+				}
+				const ico = readFileSync(join(out, 'ico', `${id}.ico`));
+				assert.deepEqual(
+					[ico.readUInt16LE(0), ico.readUInt16LE(2), ico.readUInt16LE(4)],
+					[0, 1, 3],
+				);
+				const seen = [];
+				for (let i = 0; i < 3; i++) {
+					const entry = 6 + i * 16;
+					const [width, height] = [ico[entry], ico[entry + 1]];
+					assert.equal(width, height, id);
+					assert.equal(ico.readUInt16LE(entry + 6), 32, `${id} bit count`);
+					const offset = ico.readUInt32LE(entry + 12);
+					assert.equal(ico.readUInt32LE(offset), 40, `${id} DIB header`);
+					assert.equal(ico.readInt32LE(offset + 4), width, `${id} DIB width`);
+					assert.equal(ico.readInt32LE(offset + 8), height * 2, `${id} DIB height`);
+					assert.equal(ico.readUInt16LE(offset + 14), 32, `${id} DIB bit count`);
+					// BGRA rows: some pixel is see-through and some is opaque
+					const alpha = [];
+					for (let p = 3; p < width * height * 4; p += 4) alpha.push(ico[offset + 40 + p]);
+					assert.ok(alpha.includes(0) && alpha.includes(255), `${id} ${width} px alpha`);
+					seen.push(width);
+				}
+				assert.deepEqual(seen, SIZES, `${id} frames`);
+			}
+			assert.equal(readdirSync(join(out, 'ico')).length, 74);
+			assert.equal(readdirSync(join(out, 'png')).length, 74 * 3);
+			assert.ok(existsSync(join(out, 'afterglow-icons-sheet.png')));
+			assert.ok(existsSync(join(out, 'afterglow-arrow-preview.png')));
+		} finally {
+			rmSync(out, { recursive: true, force: true });
+		}
+	},
+);
+
+test(
+	'16 px frames come from the hinted redraw where there is one, 32 px from the 32 profile, and the arrow from its own masters',
+	needTools,
+	() => {
+		const out = render();
+		try {
+			const draw = (path, size) =>
+				sha256(
+					execFileSync('rsvg-convert', [
+						'--format',
+						'png',
+						'--width',
+						String(size),
+						'--height',
+						String(size),
+						join(svgDir, path),
+					]),
+				);
+			for (const id of ids) {
+				const sixteen = hinted.includes(id) ? `${id}-16.svg` : `16/${id}.svg`;
+				assert.equal(
+					sha256(readFileSync(join(out, 'png', `${id}-16.png`))),
+					draw(sixteen, 16),
+					`${id} 16`,
+				);
+				assert.equal(
+					sha256(readFileSync(join(out, 'png', `${id}-32.png`))),
+					draw(`32/${id}.svg`, 32),
+					`${id} 32`,
+				);
+			}
+			for (const [size, name] of [
+				[16, 'arrow-16-hinted'],
+				[32, 'arrow-32'],
+				[48, 'arrow-48'],
+			]) {
+				assert.equal(
+					sha256(readFileSync(join(out, 'png', `arrow-${size}.png`))),
+					draw(`../arrow/${name}.svg`, size),
+					`arrow ${size}`,
+				);
+			}
+		} finally {
+			rmSync(out, { recursive: true, force: true });
+		}
+	},
+);
+
+test(
+	'the arrow draws only inside the stock overlay box at the bottom left, so the rest of the icon stays clear',
+	needTools,
+	() => {
+		const out = render();
+		try {
+			// The stock boxes: 16 x 16 on 48, 11 x 11 on 32 and 8 x 8 on 16
+			const box = { 48: 16, 32: 11, 16: 8 };
+			const ico = readFileSync(join(out, 'ico', 'arrow.ico'));
+			for (let i = 0; i < 3; i++) {
+				const entry = 6 + i * 16;
+				const size = ico[entry];
+				const offset = ico.readUInt32LE(entry + 12) + 40;
+				// rows are bottom-up: file row 0 is the bottom of the image
+				for (let row = 0; row < size; row++) {
+					for (let x = 0; x < size; x++) {
+						if (x < box[size] && row < box[size]) continue;
+						// the baked shadow's blur leaves a tail under 3 % alpha at the box edge; none of it is drawn at 16
+						assert.ok(
+							ico[offset + (row * size + x) * 4 + 3] <= (size === 16 ? 0 : 8),
+							`${size} px pixel ${x},${row}`,
+						);
+					}
+				}
+			}
+		} finally {
+			rmSync(out, { recursive: true, force: true });
+		}
+	},
+);
+
+test('two renders give the same .ico bytes, and they match the recorded hashes', needTools, () => {
+	const [a, b] = [render(), render()];
+	try {
+		const recorded = sums('SHA256SUMS');
+		assert.deepEqual(
+			Object.keys(recorded).sort(),
+			[...ids, 'arrow'].map((id) => `ico/${id}.ico`).sort(),
+		);
+		for (const id of [...ids, 'arrow']) {
+			const first = readFileSync(join(a, 'ico', `${id}.ico`));
+			assert.deepEqual(first, readFileSync(join(b, 'ico', `${id}.ico`)), `${id} differs`);
+			assert.equal(sha256(first), recorded[`ico/${id}.ico`], `${id}.ico hash`);
+		}
+	} finally {
+		rmSync(a, { recursive: true, force: true });
+		rmSync(b, { recursive: true, force: true });
+	}
+});
