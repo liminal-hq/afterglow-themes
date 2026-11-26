@@ -253,6 +253,14 @@ function buildReactosDesktop() {
 			copyFileSync(join(desktop, 'boot', file), join(boot, file));
 		}
 
+		// The Start orb and menu banner: the SVG masters, the two resource-ready DIBs and PNG previews rendered from them and the hash
+		// lists. The patch into explorer.exe is not here; it happens in the reactos-liminal build.
+		const startArt = join(stage, 'start');
+		execFileSync('python3', [join(desktop, 'start', 'render.py'), startArt], { stdio: 'ignore' });
+		for (const file of ['orb.svg', 'banner.svg', 'SHA256SUMS', 'SHA256SUMS.masters']) {
+			copyFileSync(join(desktop, 'start', file), join(startArt, file));
+		}
+
 		// The icon set and the shortcut arrow: the .ico and PNG renders drawn here, the SVG masters they come from, and the id map
 		const icons = join(stage, 'icons');
 		execFileSync('python3', [join(desktop, 'icons', 'render.py'), icons], { stdio: 'ignore' });
@@ -288,6 +296,10 @@ function buildReactosDesktop() {
 			join(root, 'docs', 'images', 'afterglow-boot-logo.png'),
 			join(stage, 'docs', 'images', 'afterglow-boot-logo.png'),
 		);
+		copyFileSync(
+			join(root, 'docs', 'images', 'afterglow-start.png'),
+			join(stage, 'docs', 'images', 'afterglow-start.png'),
+		);
 		for (const image of ['afterglow-icons.png', 'afterglow-arrow.png']) {
 			copyFileSync(join(root, 'docs', 'images', image), join(stage, 'docs', 'images', image));
 		}
@@ -302,6 +314,7 @@ function buildReactosDesktop() {
 			'reactos-desktop-pointers.md',
 			'reactos-desktop-logon.md',
 			'reactos-desktop-boot.md',
+			'reactos-desktop-start.md',
 			'reactos-desktop-icons.md',
 		]) {
 			const text = readFileSync(join(root, 'docs', doc), 'utf8').replaceAll(

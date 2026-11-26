@@ -25,6 +25,10 @@
 
 `boot/boot-logo.svg` is original Liminal HQ art, drawn as a vector from the geometry of a spike that drew the same design in palette indices, with its text outlined from Noto Sans (Light and Medium; the font licence allows embedding outlines). No ReactOS bitmap or wordmark was copied, traced or recoloured. `boot/palette.json` is the 16-colour palette, each entry exact in six bits. `boot/render.py` renders the bitmaps, recorded in `boot/SHA256SUMS`.
 
+## Start orb and menu banner
+
+`start/orb.svg` and `start/banner.svg` are original Liminal HQ art, drawn as vectors from the geometry of a spike that drew the same dusk badge and strip in pixels, with the banner's wordmark outlined from Noto Sans Light (the font licence allows embedding outlines). No ReactOS bitmap or wordmark was copied, traced or recoloured. `start/render.py` renders them to the two DIBs, recorded in `start/SHA256SUMS`.
+
 ## Palette
 
 The colours are in the `SCHEMES` table in `style/agdraw.py`, one entry per colour scheme, on named slots. They come from four places:
