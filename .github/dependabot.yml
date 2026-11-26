@@ -1,10 +1,13 @@
+# Version-update pull requests are switched off (a limit of 0). Updates are rolled up by hand into
+# one pull request. To turn Dependabot's pull requests back on, raise `open-pull-requests-limit`
+# on each ecosystem (for example to 5).
 version: 2
 updates:
   - package-ecosystem: 'bun'
     directory: '/'
     schedule:
       interval: 'weekly'
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0
     labels:
       - 'build'
     cooldown:
@@ -14,7 +17,7 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0
     labels:
       - 'ci'
     cooldown:
