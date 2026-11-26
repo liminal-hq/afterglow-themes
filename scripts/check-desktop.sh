@@ -8,6 +8,8 @@
 # desktop/pointers/SHA256SUMS. With USER32=PATH (a ReactOS 0.4.16 i386 user32.dll, your own copy), it also patches a scratch copy and
 # checks the result against the patched hash in desktop/pointers/SHA256SUMS.user32.
 #
+# Also redraws the console colour preview from desktop/style/agconsole.py and compares it by pixels with docs/images/afterglow-console-palettes.png.
+#
 # Also renders the logon banner and bar (desktop/logon/render.py, needs rsvg-convert and Pillow), compares the two BMPs with
 # desktop/logon/SHA256SUMS and the SVG masters with desktop/logon/SHA256SUMS.masters, and checks the docs preview PNG by pixels.
 # Also renders the boot logo (desktop/boot/render.py, needs rsvg-convert and Pillow), compares its two bitmaps with desktop/boot/SHA256SUMS
@@ -48,6 +50,10 @@ for f in desktop/schemes/*.reg; do
 		status=1
 	fi
 done
+if ! cmp -s desktop/install/afterglow-original.reg "$out/install/afterglow-original.reg"; then
+	echo "drift: desktop/install/afterglow-original.reg differs from what desktop/style generates"
+	status=1
+fi
 for f in "$out"/schemes/*.reg; do
 	[ -f "desktop/schemes/$(basename "$f")" ] || { echo "missing: desktop/schemes/$(basename "$f")"; status=1; }
 done
@@ -85,6 +91,21 @@ then
 	echo "the pointer preview docs/images/afterglow-pointers.png matches the generator"
 else
 	echo "the pointer preview docs/images/afterglow-pointers.png is out of date: run desktop/pointers/render-preview.py docs/images/afterglow-pointers.png"
+	status=1
+fi
+
+# The console colour preview: the 16 colours of every scheme as swatches with a sample prompt (compared by pixels; its text is Pillow's bundled font).
+python3 desktop/style/render-console.py "$out/console-palettes.png"
+if python3 - "$out/console-palettes.png" docs/images/afterglow-console-palettes.png <<'PY'
+import sys
+from PIL import Image, ImageChops
+fresh, committed = (Image.open(path).convert("RGB") for path in sys.argv[1:3])
+sys.exit(0 if fresh.size == committed.size and ImageChops.difference(fresh, committed).getbbox() is None else 1)
+PY
+then
+	echo "the console colour preview docs/images/afterglow-console-palettes.png matches the renderer"
+else
+	echo "the console colour preview docs/images/afterglow-console-palettes.png is out of date: run desktop/style/render-console.py docs/images/afterglow-console-palettes.png"
 	status=1
 fi
 
