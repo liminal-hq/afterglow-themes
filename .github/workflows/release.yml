@@ -130,19 +130,20 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download release assets
-        uses: actions/download-artifact@v8
-        with:
-          name: release-assets
-          path: release-assets
-
-      # The notes come from the commit the release is built from, the one the tag points at.
+      # The notes come from the commit the release is built from, the one the tag points at. The checkout
+      # comes first because it cleans the workspace, which would delete the downloaded assets.
       - name: Check out the release notes
         uses: actions/checkout@v7
         with:
           ref: ${{ github.sha }}
           sparse-checkout: docs/releases
           persist-credentials: false
+
+      - name: Download release assets
+        uses: actions/download-artifact@v8
+        with:
+          name: release-assets
+          path: release-assets
 
       - name: Find hand-written release notes
         id: notes
