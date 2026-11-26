@@ -13,7 +13,7 @@ import math
 # Filled in by register(): the helpers and colours of gen_e.py, under the names set E uses.
 SHARED = ("FG", "M1", "MATS", "SKY", "SHADOW", "ORANGE", "RED", "PURPLE", "VOIDN", "INDIGO", "PAPER", "BRAND_GOLD", "PALE", "SKY1", "SKY4", "SKY7",
 	"HORIZON", "DARK", "LINE", "GLYPH", "GLYPH_D", "RR", "poly", "rot", "circ", "ring", "page", "bars", "globe", "gear", "drive", "window", "keys",
-	"arrow_small", "mix", "_n", "Pen", "plate", "device_drive", "monitor")
+	"arrow_small", "mix", "_n", "Pen", "plate", "monitor", "ellipse_d")
 
 ICONS = []  # (id, kind, tier, draw, label, group)
 NEW_GROUP_AFTER = ("Programs", "Desktop and shell")  # the one new sheet group, and the group it follows
@@ -437,31 +437,40 @@ def draw_log_off(pen):
 # ---- drives -------------------------------------------------------------------------------------------------------------------------------------
 @icon("removable", "bare", "body", "Removable drive", "Drives and folders")
 def draw_removable_drive(pen):
-	pen.shadow(6, 42, 42.5, SHADOW["body"])
-	card = poly([(22, 5, 1.5), (33, 5, 1.5), (36, 8, 0.8), (36, 26, 0.01), (22, 26, 0.01)])
-	pen.face(card, MATS["violet"])
-	for index in range(4):
-		pen.fill(RR(24 + index * 2.6, 7.5, 1.4, 4, 0.5), ORANGE[200])
-	pen.face(RR(24, 14, 10, 9, 1.4), MATS["paper"], band=False)
-	device_drive(pen, 23, 18)
-	pen.fill(RR(19, 23, 20, 3.2, 1.4), INDIGO[600])
-	pen.fill(RR(10, 33, 15, 2.6, 1.3), VOIDN[400])
-	pen.face(RR(31.5, 32, 7, 4.5, 1.6), MATS["gold"], band=False)
+	# A USB flash drive laid on the diagonal, plug up and to the right: a gold body with a light label panel, a lit activity light and a
+	# key ring hole, and the steel USB plug with its two windows. On the slant and in gold it is not the upright USB key media icon, and
+	# nothing about it is a drive box.
+	pen.shadow(4, 34, 43.5, SHADOW["body"])
+
+	def slant(points, corner):
+		# drawn upright about (24, 24), then turned 45 degrees and moved so the whole stick sits in the live area
+		return poly([(x - 1.6, y + 0.8) for x, y in rot(points, 45)], corner)
+
+	pen.face(slant([(18.5, 0), (29.5, 0), (29.5, 14), (18.5, 14)], 1.2), MATS["back"])
+	for hole_x in (20.8, 24.8):
+		pen.fill(slant([(hole_x, 2.5), (hole_x + 2.4, 2.5), (hole_x + 2.4, 5.5), (hole_x, 5.5)], 0.4), VOIDN[500])
+	pen.fill(slant([(20, 9), (28, 9), (28, 13.5), (20, 13.5)], 0.6), VOIDN[400])
+	pen.face(slant([(15, 12), (33, 12), (33, 44), (15, 44)], 5), MATS["gold"])
+	pen.fill(slant([(19, 17), (29, 17), (29, 33), (19, 33)], 2.2), MATS["goldl"].base)
+	pen.fill(slant([(22.2, 19.5), (25.8, 19.5), (25.8, 23.5), (22.2, 23.5)], 1.8), PAPER[900])
+	pen.fill(slant([(21.8, 37.2), (26.2, 37.2), (26.2, 41.2), (21.8, 41.2)], 2.2), ORANGE[500])
 
 
 @icon("ramdisk", "bare", "body", "RAM disk", "Drives and folders")
 def draw_ram_disk(pen):
-	pen.shadow(6, 42, 42.5, SHADOW["body"])
-	module = poly([(9, 5, 2), (39, 5, 2), (39, 25, 0.01), (9, 25, 0.01)])
-	pen.face(module, MATS["dusk"])
-	for index in range(3):
-		pen.face(RR(11.5 + index * 9.3, 8, 6.8, 9, 1.2), MATS["back"], band=False)
-	for index in range(11):
-		pen.fill(RR(11 + index * 2.6, 19.5, 1.4, 4, 0.5), ORANGE[200])
-	device_drive(pen, 23, 18)
-	pen.fill(RR(8, 23, 32, 3.2, 1.4), INDIGO[600])
-	pen.fill(RR(10, 33, 15, 2.6, 1.3), VOIDN[400])
-	pen.face(RR(31.5, 32, 7, 4.5, 1.6), MATS["gold"], band=False)
+	# A memory chip used as a drive: a black chip package with its legs, seen from a little above, and a gold disk platter with a lit
+	# sector printed on its lid. The chip says memory and the platter says disk; one chip, not a module, so it is not the RAM module icon.
+	pen.shadow(6, 42, 42, SHADOW["body"])
+	for index in range(7):
+		pen.face(RR(10 + index * 4.4, 7.5, 2.6, 6, 0.8), MATS["back"], band=False)
+	for index in range(7):
+		pen.face(RR(10 + index * 4.4, 32, 2.6, 9, 0.8), MATS["back"], band=False)
+	pen.face(RR(6, 11, 36, 25, 3.5), MATS["dusk"])
+	pen.fill(RR(6.6, 30.5, 34.8, 5, 3), mix(MATS["dusk"].base, MATS["dusk"].edge, 0.45))
+	pen.fill(circ(10.8, 15.6, 1.5), HORIZON)
+	pen.face(ellipse_d(24, 21.5, 9.5, 7.2), MATS["gold"])
+	pen.fill("M24 21.5 L24 14.3 A9.5 7.2 0 0 1 33.5 21.5 Z", PALE)
+	pen.fill(ellipse_d(24, 21.5, 2.4, 1.8), MATS["dusk"].base)
 
 
 # ---- the media on their own ---------------------------------------------------------------------------------------------------------------------

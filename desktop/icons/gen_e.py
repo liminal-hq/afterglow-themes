@@ -94,6 +94,10 @@ def circ(cx, cy, r):
 	return "M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(cx - r), _n(cy), _n(r), _n(r), _n(2 * r), _n(r), _n(r), _n(-2 * r))
 
 
+def ellipse_d(cx, cy, rx, ry):
+	return "M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(cx - rx), _n(cy), _n(rx), _n(ry), _n(2 * rx), _n(rx), _n(ry), _n(-2 * rx))
+
+
 def ring(cx, cy, ro, ri):
 	return circ(cx, cy, ro) + " " + circ(cx, cy, ri)
 
@@ -263,12 +267,6 @@ def drive(p, y=13):
 	p.face(RR(5, y + 6, 38, 17, 3), G["front"])
 	p.fill(RR(10, y + 14.5, 14, 2.6, 1.3), VOIDN[400])
 	p.face(RR(32.5, y + 13.5, 6.5, 4.5, 1.6), G["gold"], band=False)
-
-
-def device_drive(p, top, height=17):
-	"""The drive of the device icons: a body behind and the front face, with no slot (each device adds its own)."""
-	p.face(RR(7, top - 6, 34, 13, 3), G["back"])
-	p.face(RR(5, top, 38, height, 3), G["front"])
 
 
 def arrow_small(p, y=37):
@@ -596,28 +594,42 @@ def _(p):
 
 @icon("cd", "bare", "body")
 def _(p):
+	# A slim 5.25 in optical drive seen from a little above: its faceplate (tray mouth, light and eject button) at the top, and its black
+	# tray run out toward the viewer with a silver disc seated on it. The disc on the open tray is what says optical, not hard disk.
 	p.shadow(6, 42, 42.5, SHADOW["body"])
-	device_drive(p, 12, 15)
-	p.fill(RR(9, 18, 24, 2.4, 1.2), VOIDN[400])
-	p.face(RR(33, 21.5, 6, 3.6, 1.4), G["gold"], band=False)
-	p.face(poly([(9, 27, 1), (39, 27, 1), (41, 41.5, 2), (7, 41.5, 2)]), G["back"])
-	disc = "M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(10), _n(34), 14, 5.6, 28, 14, 5.6, -28)
-	p.face(disc, G["front"], band=False)
-	p.fill("M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(19), _n(34), 5, 2, 10, 5, 2, -10), VOIDN[300])
-	p.fill("M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(22.4), _n(34), 1.6, 0.7, 3.2, 1.6, 0.7, -3.2), G["back"].edge)
-	p.line("M12.5 32.5 C14 30.5 18 29.4 22 29.1", ORANGE[300], 1.6)
+	p.face(RR(8, 5, 32, 9, 3), G["back"])
+	p.face(RR(5, 9, 38, 12, 3), G["front"])
+	p.fill(RR(31, 12.2, 3.2, 2.2, 1), ORANGE[200])
+	p.face(RR(35, 11.8, 5, 3, 1.1), G["back"], band=False)
+	p.fill(RR(8, 16.5, 32, 3.4, 1.5), DARK)
+	tray = poly([(9.5, 18, 1), (38.5, 18, 1), (43, 38, 2.5), (43, 42, 2.5), (5, 42, 2.5), (5, 38, 2.5)])
+	p.face(tray, G["dusk"])
+	p.fill(poly([(5.4, 38.2, 2), (42.6, 38.2, 2), (42.6, 41.6, 2.2), (5.4, 41.6, 2.2)], 1.5), mix(G["dusk"].base, G["dusk"].edge, 0.45))
+	p.face(ellipse_d(24, 29, 15.5, 8.4), G["front"], band=False)
+	p.fill(ellipse_d(24, 29, 5.2, 2.8), VOIDN[300])
+	p.fill(ellipse_d(24, 29, 1.9, 1), SKY1)
+	p.line("M11.6 26.4 C13.6 23.6 17.6 22 22 21.7", ORANGE[300], 1.8)
+	p.line("M36.4 31.6 C34.4 34.4 30.4 36 26 36.3", INDIGO[300], 1.8)
 
 
 @icon("floppy", "bare", "body")
 def _(p):
+	# A 3.5 in floppy drive seen from a little above: the narrow faceplate with its slot, light and eject button, and a floppy disk
+	# going into the slot, shutter end first: the disk is in front of the faceplate and its leading edge is lost in the slot.
 	p.shadow(6, 42, 42.5, SHADOW["body"])
-	p.face(poly([(10, 4, 2.5), (33, 4, 1.2), (38, 9, 1.2), (38, 25, 0.01), (10, 25, 0.01)]), G["violet"])
-	p.face(poly([(14.5, 7, 1.5), (33.5, 7, 1.5), (33.5, 25, 0.01), (14.5, 25, 0.01)]), G["paper"], band=False)
-	bars(p, 18, 11.5, [12, 8], 4.5, 2)
-	device_drive(p, 23, 18)
-	p.fill(RR(8, 23, 32, 3.2, 1.4), INDIGO[600])
-	p.fill(RR(10, 33, 15, 2.6, 1.3), VOIDN[400])
-	p.face(RR(31.5, 32, 7, 4.5, 1.6), G["gold"], band=False)
+	p.face(RR(7, 7, 34, 10, 3), G["back"])
+	p.face(RR(5, 11, 38, 19, 3), G["front"])
+	p.fill(RR(8, 16, 26, 4, 1.4), DARK)
+	p.fill(RR(36, 15.6, 3.6, 2.2, 1), ORANGE[200])
+	p.face(RR(35, 21.5, 5.5, 3.6, 1.2), G["back"], band=False)
+	disk = poly([(10, 18, 0.6), (32, 18, 0.6), (35.5, 42, 2.5), (6.5, 42, 2.5)])
+	p.face(disk, G["violet"])
+	p.face(poly([(15, 18, 0.3), (26, 18, 0.3), (26.6, 25.5, 1.2), (14.3, 25.5, 1.2)]), G["back"], band=False)
+	p.fill(poly([(21.6, 18.6, 0.4), (24.4, 18.6, 0.4), (24.6, 23.6, 0.6), (21.6, 23.6, 0.6)], 0.4), INDIGO[600])
+	p.face(poly([(11.2, 30, 1.5), (30.3, 30, 1.5), (31.6, 42, 0.01), (9.9, 42, 0.01)]), G["paper"], band=False)
+	p.fill(RR(13.4, 33.4, 15, 2, 1), LINE)
+	p.fill(RR(13.2, 37.2, 10, 2, 1), LINE)
+	p.fill(RR(8, 16, 26, 2.2, 1.1), DARK)
 
 
 @icon("netdrive", "bare", "body")
@@ -942,9 +954,81 @@ H16["monitor"] = [
 	detail([(7, 7, 2, "2"), (6, 8, 4, "2")])]
 
 
-# The hand-tuned 16 px frame of the My Computer device icon, in the same grid language as the layers above but drawn as one flat grid:
-# lowercase material base, uppercase its 16 px edge, digits and symbols flat details, . transparent
+# The hand-tuned 16 px frames of the device icons (the drives and My Computer), in the same grid language as the layers above but drawn as
+# one flat grid: lowercase material base, uppercase its 16 px edge, digits and symbols flat details, . transparent
 GRID16 = {
+	"cd": [
+	"................",
+	"................",
+	"...NNNNNNNNNN...",
+	".MMMMMMMMMMMMMM.",
+	".Mmmmmmmmm2mNNM.",
+	".M888888888888M.",
+	"..DddddddddddD..",
+	"..DddMMMMMMddD..",
+	".DdMMm^^mmmMMdD.",
+	".DMm^mm--mmmmMD.",
+	".DMmmm-55-mmmMD.",
+	".DMmmmm--mmm%MD.",
+	".DdMMmmmm%%MMdD.",
+	".DdddMMMMMMdddD.",
+	".DDDDDDDDDDDDDD.",
+	"................",
+	],
+	"floppy": [
+	"................",
+	"...NNNNNNNNNN...",
+	".MMMMMMMMMMMMMM.",
+	".Mmmmmmmmmmm2mM.",
+	".M8888888888mmM.",
+	".M8VvNNNNvV8mmM.",
+	".MmVvNn#NvVmmmM.",
+	".MmVvNNNNvVmNNM.",
+	".MmVvvvvvvVmNNM.",
+	".MVvvvvvvvvVMMM.",
+	"..VvPPPPPPvV....",
+	"..VvP1111PvV....",
+	"..VvPppppPvV....",
+	"..VvP111pPvV....",
+	"..VVPPPPPPVV....",
+	"................",
+	],
+	"removable": [
+	"................",
+	"...........NN...",
+	"..........NnnN..",
+	".........N#n#N..",
+	"........NnnnnN..",
+	".......GNnnnN...",
+	"......GgGNnN....",
+	".....Ggff4GN....",
+	"....GgfffgG.....",
+	"...GgfffggG.....",
+	"..GgggggggG.....",
+	".GggggggG.......",
+	".Gg^gggG........",
+	".GgggGG.........",
+	"..GGG...........",
+	"................",
+	],
+	"ramdisk": [
+	"................",
+	"..-.-.-.-.-.-...",
+	".1111111111111..",
+	".1ddddGGGddddD..",
+	".1dddGgggGdddD..",
+	".1ddGgggffGddD..",
+	".1ddGgg-ffGddD..",
+	".1ddGgggggGddD..",
+	".1dddGgggGdddD..",
+	".1ddddGGGddddD..",
+	".1dddddddddddD..",
+	".DDDDDDDDDDDDD..",
+	"..-.-.-.-.-.-...",
+	"..-.-.-.-.-.-...",
+	"................",
+	"................",
+	],
 	"mycomputer": [
 	"................",
 	"..........NNNNN.",
@@ -971,7 +1055,7 @@ def pixel_grid(rows):
 	for letter, name in {"g": "gold", "f": "goldl", "p": "paper", "m": "front", "n": "back", "d": "dusk", "v": "violet"}.items():
 		colours[letter], colours[letter.upper()] = G[name].base, G[name].px_edge()
 	colours.update({digit: colour for digit, colour in PXD.items() if digit != "e"})
-	colours.update({"-": VOIDN[300], "=": INDIGO[600], "~": HORIZON})
+	colours.update({"-": VOIDN[300], "#": INDIGO[600], "%": INDIGO[300], "^": ORANGE[400], "~": HORIZON})
 	return "".join('<rect x="%d" y="%d" width="1" height="1" fill="%s"/>' % (x, y, colours[character])
 		for y, row in enumerate(rows) for x, character in enumerate(row) if character != ".")
 
@@ -1003,7 +1087,8 @@ def hinted(k):
 	return px_layers(H16[k])
 
 
-HINTED = ["folder", "folderopen", "mydocs", "mypictures", "mymusic", "myvideos", "desktop", "network", "doc", "documents", "warning", "error", "search", "hdd", "mycomputer", "monitor", "recycle", "recyclefull"]
+HINTED = ["folder", "folderopen", "mydocs", "mypictures", "mymusic", "myvideos", "desktop", "network", "doc", "documents", "warning", "error", "search", "hdd", "cd", "floppy", "removable", "ramdisk", "mycomputer", "monitor", "recycle",
+	"recyclefull"]
 
 # ---- inventory and groups (set D's) ----------------------------------------------------------------------------------------------------------
 GROUPS = [
