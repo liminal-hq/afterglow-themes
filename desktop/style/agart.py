@@ -691,19 +691,22 @@ def flash_button():
 
 
 def tray_background():
-	"""The notification area: the taskbar's own rows, so the fill, hairline, lift and fall continue across it, with a dusk-blue stroke
-	down its left edge only, curving round the top-left and bottom-left corners. Outside the curve is the key colour, so the taskbar
-	shows through; there is no stroke along the top, bottom or right."""
-	W = 12
+	"""The notification area: the taskbar's own rows, so the fill, lift and fall continue across it, with a dusk-blue stroke down its
+	left edge only, curving round the top-left and bottom-left corners. The taskbar's two top rows (the hairline and the night line
+	under it) run unbroken across the whole width; the stroke and its curve start on the first row below them. Outside the curve is the
+	key colour, so the taskbar shows through; there is no stroke along the top, bottom or right."""
+	W, RADIUS, LINE_ROWS = 12, 4, 2
 	column = taskbar_background()[:, -1]
-	H = len(column)
-	a, m = shape(W, H, 4, None, None, corners="tl bl", rows=list(column))
+	H = len(column) - LINE_ROWS
+	body, m = shape(W, H, RADIUS, None, None, corners="tl bl", rows=list(column[LINE_ROWS:]))
 	e = inner_edge(m)
 	e[:, W - 1] = False
-	e[0, :] &= np.arange(W) < 5
-	e[H - 1, :] &= np.arange(W) < 5
-	a[e] = DUSK[1]
-	return a
+	e[0, :] &= np.arange(W) < RADIUS + 1
+	e[H - 1, :] &= np.arange(W) < RADIUS + 1
+	body[e] = DUSK[1]
+	lines = np.zeros((LINE_ROWS, W, 3))
+	lines[:, :] = column[:LINE_ROWS, None, :]
+	return np.concatenate([lines, body], axis=0)
 
 
 def show_desktop():
