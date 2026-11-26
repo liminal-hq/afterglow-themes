@@ -300,7 +300,13 @@ function buildReactosDesktop() {
 			join(root, 'docs', 'images', 'afterglow-start.png'),
 			join(stage, 'docs', 'images', 'afterglow-start.png'),
 		);
-		for (const image of ['afterglow-icons.png', 'afterglow-arrow.png']) {
+		for (const image of [
+			'afterglow-icons.png',
+			'afterglow-arrow.png',
+			'afterglow-console-palettes.png',
+			'afterglow-console-before-after.png',
+			'afterglow-selection-menu.png',
+		]) {
 			copyFileSync(join(root, 'docs', 'images', image), join(stage, 'docs', 'images', image));
 		}
 		const readme = readFileSync(join(desktop, 'README.md'), 'utf8').replaceAll(
