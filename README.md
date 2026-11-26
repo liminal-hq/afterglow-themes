@@ -104,6 +104,12 @@ A matching set of 14 mouse pointers for ReactOS, drawn procedurally in navy with
 
 _The Afterglow pointers at 4× and at true size, on the dark desktop and on cream._
 
+## ReactOS boot logo
+
+The logo on the ReactOS kernel boot screen, drawn as a vector master and rendered to the exact 414 × 366 16-colour bitmap the kernel resource needs, in both uncompressed and RLE4 form (11,272 bytes in a 16,504-byte slot). It is Afterglow art with no ReactOS logo, and the release zip carries the master, the palette and the bitmaps. See [docs/reactos-desktop-boot.md](docs/reactos-desktop-boot.md).
+
+![The Afterglow boot logo at twice its size.](docs/images/afterglow-boot-logo.png)
+
 ## Install
 
 ### OpenCode
@@ -259,7 +265,7 @@ CI runs the format check, the licence-header check, the theme build and validati
 
 ## Releases
 
-Releases are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. The release workflow runs the full validation, then attaches the three OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the Forgejo themes zip, the TextMate themes zip, a Firefox `.xpi` per theme, the Chrome and Edge themes zip, the wallpapers zip (`afterglow-wallpapers-vX.Y.Z.zip`), the ReactOS desktop zip (`afterglow-reactos-desktop-vX.Y.Z.zip`: both styles, the eight colour schemes and the pointers, with no patched binary) and a `SHA256SUMS` file to a GitHub release with generated notes.
+Releases are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. The release workflow runs the full validation, then attaches the three OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the Forgejo themes zip, the TextMate themes zip, a Firefox `.xpi` per theme, the Chrome and Edge themes zip, the wallpapers zip (`afterglow-wallpapers-vX.Y.Z.zip`), the ReactOS desktop zip (`afterglow-reactos-desktop-vX.Y.Z.zip`: both styles, the eight colour schemes, the pointers and the boot logo art, with no patched binary) and a `SHA256SUMS` file to a GitHub release with generated notes.
 
 ## Contributing
 

@@ -120,6 +120,11 @@ jobs:
         id: desktop
         run: bun run check:desktop
 
+      # The boot renderer tests skip in the plain unit test run, which has no rsvg-convert; here they run for real.
+      - name: Test the boot renderer
+        id: boot
+        run: node --test scripts/render-boot.test.mjs
+
       - name: Job summary
         if: always()
         run: |
@@ -127,6 +132,7 @@ jobs:
             echo "## Desktop style"
             echo "- Result: \`${{ steps.desktop.outcome }}\`"
             echo "- Command: \`bun run check:desktop\`"
+            echo "- Boot renderer tests: \`${{ steps.boot.outcome }}\`"
           } >> "${GITHUB_STEP_SUMMARY}"
 
   bundle:

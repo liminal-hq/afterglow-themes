@@ -1,0 +1,28 @@
+{
+	"about": "The 16 colours of the ReactOS 0.4.16 kernel boot screen: the palette of the logo bitmap, which the whole screen is shown through. rgb is the 8-bit value stored in the bitmap, with its low two bits clear so it survives the VGA DAC unchanged; dac is the six-bit value the DAC keeps; display is that value expanded back to eight bits the usual way, (dac << 2) | (dac >> 4).",
+	"size": [414, 366],
+	"slot": 16504,
+	"progressBox": { "x": 138, "y": 328, "width": 140, "height": 38 },
+	"entries": [
+		{ "index": 0, "role": "backdrop; the boot screen and the logon desktop", "rgb": "#080c28" },
+		{ "index": 1, "role": "night band, outermost sky arc", "rgb": "#0c1034" },
+		{ "index": 2, "role": "night; the near sheet of the horizon glow", "rgb": "#101440" },
+		{ "index": 3, "role": "night band", "rgb": "#182050" },
+		{ "index": 4, "role": "night band; the far sheet of the horizon glow", "rgb": "#1c2454" },
+		{ "index": 5, "role": "dusk band", "rgb": "#283064" },
+		{ "index": 6, "role": "dusk band", "rgb": "#343468" },
+		{ "index": 7, "role": "dusk band", "rgb": "#40386c" },
+		{ "index": 8, "role": "dusk to rose band", "rgb": "#503c6c" },
+		{ "index": 9, "role": "rose band", "rgb": "#643c68" },
+		{ "index": 10, "role": "rose band, innermost sky arc", "rgb": "#784460" },
+		{ "index": 11, "role": "deep gold; kept for the other boot screen bitmaps", "rgb": "#b88838" },
+		{ "index": 12, "role": "gold; kept for the other boot screen bitmaps", "rgb": "#e89830" },
+		{ "index": 13, "role": "bright gold; the sun and the caption", "rgb": "#fca840" },
+		{ "index": 14, "role": "pale gold; the sun's lit cap and the horizon line", "rgb": "#fcd08c" },
+		{
+			"index": 15,
+			"role": "cream; the wordmark, the progress bar fill and the copyright text",
+			"rgb": "#fcf0dc"
+		}
+	]
+}

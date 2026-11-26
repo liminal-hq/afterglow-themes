@@ -155,7 +155,7 @@ execFileSync('zip', [
 	join(root, 'LICENSE-MIT'),
 ]);
 
-// The ReactOS desktop zip needs python3 (numpy and Pillow), llvm-rc and lld-link. CI and releases
+// The ReactOS desktop zip needs python3 (numpy and Pillow), llvm-rc, lld-link and rsvg-convert. CI and releases
 // require them; AFTERGLOW_SKIP_REACTOS=1 skips this one zip, with a warning, for a local run without them.
 if (process.env.AFTERGLOW_SKIP_REACTOS === '1') {
 	console.warn('warning: AFTERGLOW_SKIP_REACTOS=1, so the ReactOS desktop zip is not built.');
@@ -164,7 +164,7 @@ if (process.env.AFTERGLOW_SKIP_REACTOS === '1') {
 }
 
 function buildReactosDesktop() {
-	const missing = ['python3', 'llvm-rc', 'lld-link'].filter((tool) => {
+	const missing = ['python3', 'llvm-rc', 'lld-link', 'rsvg-convert'].filter((tool) => {
 		try {
 			execFileSync('which', [tool], { stdio: 'ignore' });
 			return false;
@@ -175,7 +175,7 @@ function buildReactosDesktop() {
 	if (missing.length) {
 		throw new Error(
 			`The ReactOS desktop zip needs ${missing.join(', ')} on the PATH (python3 with numpy and Pillow, ` +
-				'and the LLVM tools llvm-rc and lld-link). Install them, or set AFTERGLOW_SKIP_REACTOS=1 to skip ' +
+				'the LLVM tools llvm-rc and lld-link, and rsvg-convert). Install them, or set AFTERGLOW_SKIP_REACTOS=1 to skip ' +
 				'that zip for a local run.',
 		);
 	}
@@ -231,6 +231,14 @@ function buildReactosDesktop() {
 		// The SVG masters are reference art beside the raster pointers
 		cpSync(join(desktop, 'pointers', 'svg'), join(pointers, 'svg'), { recursive: true });
 
+		// The boot logo: the SVG master and palette, the bitmaps and previews rendered from them and the hash lists. The patch into
+		// the kernel is not here; it happens in the reactos-liminal build.
+		const boot = join(stage, 'boot');
+		execFileSync('python3', [join(desktop, 'boot', 'render.py'), boot], { stdio: 'ignore' });
+		for (const file of ['boot-logo.svg', 'palette.json', 'SHA256SUMS', 'SHA256SUMS.masters']) {
+			copyFileSync(join(desktop, 'boot', file), join(boot, file));
+		}
+
 		mkdirSync(join(stage, 'docs'));
 		// desktop/SHA256SUMS names the two builds for the check script; here they sit in folders
 		const styleSums = ['style', 'style-scrollbars'].map(
@@ -247,13 +255,21 @@ function buildReactosDesktop() {
 			join(root, 'docs', 'images', 'afterglow-pointers.png'),
 			join(stage, 'docs', 'images', 'afterglow-pointers.png'),
 		);
+		copyFileSync(
+			join(root, 'docs', 'images', 'afterglow-boot-logo.png'),
+			join(stage, 'docs', 'images', 'afterglow-boot-logo.png'),
+		);
 		const readme = readFileSync(join(desktop, 'README.md'), 'utf8').replaceAll(
 			'](../docs/',
 			'](docs/',
 		);
 		writeFileSync(join(stage, 'README.md'), readme);
 		copyFileSync(join(desktop, 'PROVENANCE.md'), join(stage, 'PROVENANCE.md'));
-		for (const doc of ['reactos-desktop-colour-schemes.md', 'reactos-desktop-pointers.md']) {
+		for (const doc of [
+			'reactos-desktop-colour-schemes.md',
+			'reactos-desktop-pointers.md',
+			'reactos-desktop-boot.md',
+		]) {
 			const text = readFileSync(join(root, 'docs', doc), 'utf8').replaceAll(
 				'](../desktop/',
 				'](../',
