@@ -106,7 +106,7 @@ _The Afterglow pointers at 4× and at true size, on the dark desktop and on crea
 
 ## ReactOS boot logo
 
-The logo on the ReactOS kernel boot screen, drawn as a vector master and rendered to the exact 414 × 366 16-colour bitmap the kernel resource needs, in both uncompressed and RLE4 form (11,272 bytes in a 16,504-byte slot). It is Afterglow art with no ReactOS logo, and the release zip carries the master, the palette and the bitmaps. See [docs/reactos-desktop-boot.md](docs/reactos-desktop-boot.md).
+The logo on the ReactOS kernel boot screen, drawn as a vector master and rendered to the exact 414 × 366 16-colour bitmap the kernel resource needs, in both uncompressed and RLE4 form (11,288 bytes in a 16,504-byte slot). It is Afterglow art with no ReactOS logo, and the release zip carries the master, the palette and the bitmaps. See [docs/reactos-desktop-boot.md](docs/reactos-desktop-boot.md).
 
 ![The Afterglow boot logo at twice its size.](docs/images/afterglow-boot-logo.png)
 

@@ -100,23 +100,22 @@ test('the master is four times the canvas, has a licence header, outlined text a
 	assert.ok(!/ReactOS logo|<image/i.test(svg), 'no ReactOS art and no embedded bitmaps');
 });
 
-test('the palette has 16 entries that are exact in six bits, all distinct, with the backdrop first', () => {
+test('the palette has 16 entries, distinct in six bits, with the shown colours the DAC gives and the backdrop first', () => {
 	assert.equal(palette.entries.length, 16);
 	palette.entries.forEach((entry, i) => {
 		assert.equal(entry.index, i);
 		assert.match(entry.rgb, /^#[0-9a-f]{6}$/);
-		for (const at of [1, 3, 5]) {
-			assert.equal(
-				parseInt(entry.rgb.slice(at, at + 2), 16) % 4,
-				0,
-				`${entry.rgb} loses bits in the DAC`,
-			);
-		}
+		const shown = [1, 3, 5].map((at) => {
+			const dac = parseInt(entry.rgb.slice(at, at + 2), 16) >> 2;
+			return ((dac << 2) | (dac & 1 ? 3 : 0)).toString(16).padStart(2, '0');
+		});
+		assert.equal(entry.shown, `#${shown.join('')}`, `${entry.rgb} is shown differently`);
 		assert.ok(entry.role.length > 0);
 	});
-	assert.equal(new Set(palette.entries.map((e) => e.rgb)).size, 16);
-	assert.equal(palette.entries[0].rgb, '#080c28');
-	assert.equal(palette.entries[15].rgb, '#fcf0dc');
+	assert.equal(new Set(palette.entries.map((e) => e.dac.join())).size, 16);
+	assert.equal(palette.entries[0].rgb, '#090e2a');
+	assert.equal(palette.entries[0].shown, '#080f28');
+	assert.equal(palette.entries[15].rgb, '#fff3de');
 	assert.equal(palette.slot, 16504);
 });
 

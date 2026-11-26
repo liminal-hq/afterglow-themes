@@ -4,7 +4,7 @@
 #
 # boot-logo.svg (1656 x 1464) becomes a 414 x 366 bitmap in the 16 colours of palette.json. rsvg-convert draws the master at its
 # own size, a box filter averages every 4 x 4 block into one pixel, and each pixel then takes the palette entry nearest to it in
-# six-bit space (the VGA DAC keeps the top six bits of each channel, so that is the space the screen is seen in): the smallest
+# six-bit space (the VGA DAC truncates each channel to its top six bits, so that is the space the screen is seen in): the smallest
 # squared distance between six-bit values wins, and a tie goes to the lower index. There is no dither: the master is drawn in flat
 # palette colours, so only its edges and text need a nearer colour, and dithering would also swell the RLE4 runs past the slot.
 # The progress bar's box is then forced to index 0, because the kernel draws the bar frame and fill there. Nothing in the output
@@ -36,7 +36,7 @@ def load_palette():
 		spec = json.load(f)
 	colours = [tuple(int(e["rgb"][i : i + 2], 16) for i in (1, 3, 5)) for e in spec["entries"]]
 	assert [e["index"] for e in spec["entries"]] == list(range(16))
-	assert all(c & 3 == 0 for rgb in colours for c in rgb), "palette entries must be exact in six bits"
+	assert len({tuple(c >> 2 for c in rgb) for rgb in colours}) == 16, "two entries are the same colour in six bits"
 	box = spec["progressBox"]
 	return spec, colours, (box["x"], box["y"], box["x"] + box["width"], box["y"] + box["height"])
 
@@ -146,8 +146,8 @@ def rle4_decode(bits, width, height):
 
 
 def display(colours):
-	"""The colours the DAC shows: six bits expanded back to eight."""
-	return [tuple((c >> 2 << 2) | (c >> 4) for c in rgb) for rgb in colours]
+	"""The colours a capture of the booted screen shows: the top six bits, with the two low bits set when the six-bit value is odd."""
+	return [tuple((c >> 2 << 2) | (3 if (c >> 2) & 1 else 0) for c in rgb) for rgb in colours]
 
 
 def render(out_dir):

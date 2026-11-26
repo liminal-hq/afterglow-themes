@@ -16,30 +16,30 @@ The art for the ReactOS 0.4.16 kernel boot screen: the logo in the middle of the
 
 The 16 colours of the logo bitmap are the palette of the whole boot screen, because the kernel loads that one palette and shows everything through it. The progress bar fill is drawn in code in index 15 at (259, 352), up to 121 × 12. The bar frame is a separate bitmap that uses indices 0, 2, 3, 6, 8, 9, 10, 12, 14 and 15. The line at the bottom is mostly index 13 and scrolls, and the copyright text is mostly index 15. The whole palette fades in over 12 steps of 15 ms. So the entries are in lightness order, and the roles below are fixed:
 
-| Index | Colour    | Role in the logo                                         | Other use on the boot screen |
-| ----- | --------- | -------------------------------------------------------- | ---------------------------- |
-| 0     | `#080c28` | The backdrop                                             | Bar frame, screen background |
-| 1     | `#0c1034` | Outermost sky band                                       |                              |
-| 2     | `#101440` | Near horizon glow sheet                                  | Bar frame                    |
-| 3     | `#182050` | Sky band                                                 | Bar frame                    |
-| 4     | `#1c2454` | Far horizon glow sheet and sky band                      |                              |
-| 5     | `#283064` | Sky band                                                 |                              |
-| 6     | `#343468` | Sky band                                                 | Bar frame                    |
-| 7     | `#40386c` | Sky band                                                 |                              |
-| 8     | `#503c6c` | Sky band                                                 | Bar frame                    |
-| 9     | `#643c68` | Rose sky band                                            | Bar frame                    |
-| 10    | `#784460` | Innermost rose sky band                                  | Bar frame                    |
-| 11    | `#b88838` | Not used by the logo; a deep gold the other bitmaps keep |                              |
-| 12    | `#e89830` | Not used by the logo; a gold the other bitmaps keep      | Bar frame                    |
-| 13    | `#fca840` | The sun and the "FOR REACTOS" line                       | The scrolling line           |
-| 14    | `#fcd08c` | The sun's lit cap and the horizon line                   | Bar frame                    |
-| 15    | `#fcf0dc` | The word Afterglow                                       | Progress fill, copyright     |
+| Index | Stored    | Shown     | Role in the logo                                         | Other use on the boot screen |
+| ----- | --------- | --------- | -------------------------------------------------------- | ---------------------------- |
+| 0     | `#090e2a` | `#080f28` | The backdrop                                             | Bar frame, screen background |
+| 1     | `#0d1336` | `#0f1037` | Outermost sky band                                       |                              |
+| 2     | `#121741` | `#101740` | Near horizon glow sheet                                  | Bar frame                    |
+| 3     | `#1a2050` | `#182050` | Sky band                                                 | Bar frame                    |
+| 4     | `#1f2554` | `#1f2757` | Far horizon glow sheet and sky band                      |                              |
+| 5     | `#2a3164` | `#283067` | Sky band                                                 |                              |
+| 6     | `#35366a` | `#373768` | Sky band                                                 | Bar frame                    |
+| 7     | `#42396c` | `#40386f` | Sky band                                                 |                              |
+| 8     | `#523d6c` | `#503f6f` | Sky band                                                 | Bar frame                    |
+| 9     | `#643f68` | `#673f68` | Rose sky band                                            | Bar frame                    |
+| 10    | `#7a4562` | `#784760` | Innermost rose sky band                                  | Bar frame                    |
+| 11    | `#b8893a` | `#b88838` | Not used by the logo; a deep gold the other bitmaps keep |                              |
+| 12    | `#e89930` | `#e89830` | Not used by the logo; a gold the other bitmaps keep      | Bar frame                    |
+| 13    | `#ffaa40` | `#ffa840` | The sun and the "FOR REACTOS" line                       | The scrolling line           |
+| 14    | `#ffd08e` | `#ffd08f` | The sun's lit cap and the horizon line                   | Bar frame                    |
+| 15    | `#fff3de` | `#fff0df` | The word Afterglow                                       | Progress fill, copyright     |
 
-The VGA DAC keeps the top six bits of each channel, so every entry has its low two bits clear and what is stored is exactly what the DAC keeps. The screen then shows each six-bit value expanded back to eight bits the usual way, `(v << 2) | (v >> 4)`, which is why cream `#fcf0dc` is seen as `#fff3df`. `palette.json` states the 8-bit value stored in the bitmap, which is what the renderer and the tests use.
+The bitmap's palette stores the design colours as they are, 8 bits a channel, the same bytes the booted spike used. The VGA DAC keeps only the top six bits of each channel, so the stored value is truncated, `dac = value >> 2`, not rounded. A QEMU capture of the booted spike shows the result: the 16 stored colours appeared as the "Shown" column, and that is exactly `(dac << 2) | (3 if dac is odd else 0)` for all 16 entries and all three channels. Rounding would give a different value for most entries (the stored green of the backdrop, `0e` = 14, has `dac` 3 under truncation and shows as `0f`, where rounding would give 4 and `10`). So the stored byte is not shifted or snapped: it stays the design value, and `palette.json` lists it as `rgb` with the six-bit value as `dac` and the captured colour as `shown`. The previews use the shown colours.
 
 ## The render
 
-`desktop/boot/render.py OUT_DIR` draws the master with `rsvg-convert` at its own size, then averages each 4 × 4 block of pixels into one with a box filter. Each pixel then takes the palette entry nearest to it in six-bit space: the smallest squared distance between six-bit values wins, and a tie goes to the lower index. There is no dither. The master is flat colour, so only its edges and text need a nearer colour, and a dither would swell the RLE4 runs past the slot. Last, the progress bar's box (x 138 to 277, y 328 to 365 in the logo, which is (251, 351) to (389, 389) on a 640 × 480 screen with the logo at (113, 23)) is forced to index 0. It writes:
+`desktop/boot/render.py OUT_DIR` draws the master with `rsvg-convert` at its own size, then averages each 4 × 4 block of pixels into one with a box filter. Each pixel then takes the palette entry nearest to it in six-bit space (the truncated values the DAC keeps): the smallest squared distance between six-bit values wins, and a tie goes to the lower index. There is no dither. The master is flat colour, so only its edges and text need a nearer colour, and a dither would swell the RLE4 runs past the slot. Last, the progress bar's box (x 138 to 277, y 328 to 365 in the logo, which is (251, 351) to (389, 389) on a 640 × 480 screen with the logo at (113, 23)) is forced to index 0. It writes:
 
 | File                                             | What                                                                                                                                                                                  |
 | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -48,7 +48,7 @@ The VGA DAC keeps the top six bits of each channel, so every entry has its low t
 | `afterglow-logo-1x.png`, `afterglow-logo-2x.png` | Previews at 414 × 366 and 828 × 732 through the colours the screen shows. They are not used by the system                                                                             |
 | `afterglow-logo-report.txt`                      | The canvas, the indices used and the compressed size against the slot                                                                                                                 |
 
-The resource is the part of the file from byte 14 on, the DIB without the 14-byte file header. The canvas is 414 × 366 because the "safe to turn off" screen draws the logo unclipped at (225, 114) and 415 × 366 is the most it can hold. The original resource is a 16,504-byte slot, and the compressed DIB is 11,272 bytes, 5,232 bytes under it, so the patch fits in place with room to spare. The render is deterministic: the headers carry no dates, pixel density or colour profile, so the same master gives the same bytes on every run.
+The resource is the part of the file from byte 14 on, the DIB without the 14-byte file header. The canvas is 414 × 366 because the "safe to turn off" screen draws the logo unclipped at (225, 114) and 415 × 366 is the most it can hold. The original resource is a 16,504-byte slot, and the compressed DIB is 11,288 bytes, 5,216 bytes under it, so the patch fits in place with room to spare. The render is deterministic: the headers carry no dates, pixel density or colour profile, so the same master gives the same bytes on every run.
 
 The renderer fails when the master has a see-through pixel, when the RLE4 stream does not decode back to the bitmap, or when the DIB is larger than the slot. Needs `rsvg-convert` (the `librsvg2-bin` package) and Python 3 with Pillow. `bun run check:desktop` renders into a scratch folder and compares:
 
@@ -77,10 +77,10 @@ The logo is Afterglow's own art. It carries no ReactOS wordmark, logo or other R
 
 ## The backdrop seam
 
-Index 0 is the backdrop of the whole boot screen, and the logon desktop that follows uses `#090e2a`. The DAC keeps the top six bits, so `#090e2a` and the stored `#080c28` are the same value to it, (2, 3, 10), and the screen shows `#080c2a`. If the colour is shown at full eight bits on the logon side, the two differ by at most two levels in one channel, which is below what the eye separates, but a visible step at the handover would be the first thing to check on a real boot.
+Index 0 is the backdrop of the whole boot screen and is stored as the design colour `#090e2a`, the colour of the logon desktop that follows. On the booted screen the DAC shows it as `#080f28`, measured in a capture, so the boot screen is one to two levels off the 8-bit logon desktop in two channels. The step is small, but look at the handover on a real boot before treating the match as exact.
 
 ## Patching it in
 
 Nothing here changes a ReactOS file. Replacing bitmap 5 in `ntoskrnl.exe` (renamed `agntoskr.exe` in the remaster) happens in the `reactos-liminal` build, which owns the patched binaries and checks the input file against the ReactOS 0.4.16 hashes first (the 5,226,496-byte kernel, SHA-256 `832cedd7…8138ff`). It writes the DIB of `afterglow-logo-rle4.bmp` over the resource in place; the slot is larger than the DIB, so the rest of it is left alone. The release zip carries the BMPs, the palette and their hashes so that build can fetch them, and never a patched kernel.
 
-The renderer was written from a spike that drew the same design directly in palette indices with 1-bit text and produced an 8,940-byte DIB. The master is a vector redraw of that design: the geometry is the same, but the text and the arc edges are anti-aliased in the master and snapped to the palette, so the bitmap is not byte for byte the spike's (about 2,200 of 151,524 pixels differ, nearly all on the text and the arc edges) and compresses to 11,272 bytes. The palette is also the spike's with each entry cleared to six bits, at most 3 levels per channel.
+The renderer was written from a spike that drew the same design directly in palette indices with 1-bit text and produced an 8,940-byte DIB. The master is a vector redraw of that design: the geometry is the same, but the text and the arc edges are anti-aliased in the master and snapped to the palette, so the bitmap is not byte for byte the spike's (about 2,200 of 151,524 pixels differ, nearly all on the text and the arc edges) and compresses to 11,288 bytes. The palette is the spike's, byte for byte, because those bytes are proven to boot and display.
