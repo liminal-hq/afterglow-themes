@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Afterglow logon bar: the strip under the banner
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+
+Master at 4x (1652 x 20); render down to 413 x 5 for msgina.dll. Text is outlined from DejaVu Sans
+(Bitstream Vera / DejaVu font licence, which allows embedding outlines), so no font is needed to render it.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1652" height="20" viewBox="0 0 1652 20">
+<title>Afterglow logon bar</title>
+<defs><linearGradient id="bar" x1="0" y1="0" x2="1652" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#050507"/><stop offset="0.4" stop-color="#ffaa40"/><stop offset="1" stop-color="#050507"/></linearGradient></defs>
+<rect x="0" y="0" width="1652" height="20" fill="url(#bar)"/>
+<rect x="0" y="0" width="1652" height="4" fill="#ffd08e" fill-opacity="0.35"/>
+</svg>

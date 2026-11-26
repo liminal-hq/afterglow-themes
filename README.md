@@ -104,6 +104,18 @@ A matching set of 14 mouse pointers for ReactOS, drawn procedurally in navy with
 
 _The Afterglow pointers at 4× and at true size, on the dark desktop and on cream._
 
+## ReactOS logon banner
+
+The banner and bar at the top of the ReactOS logon boxes, drawn as vector masters and rendered to the exact 413 × 72 and 413 × 5 24-bit bitmaps `msgina.dll` uses. It is Afterglow art with no ReactOS logo, and the release zip carries the masters and the BMPs. See [docs/reactos-desktop-logon.md](docs/reactos-desktop-logon.md).
+
+![The Afterglow logon banner and bar at twice their size.](docs/images/afterglow-logon-banner.png)
+
+## ReactOS boot logo
+
+The logo on the ReactOS kernel boot screen, drawn as a vector master and rendered to the exact 414 × 366 16-colour bitmap the kernel resource needs, in both uncompressed and RLE4 form (11,288 bytes in a 16,504-byte slot). It is Afterglow art with no ReactOS logo, and the release zip carries the master, the palette and the bitmaps. See [docs/reactos-desktop-boot.md](docs/reactos-desktop-boot.md).
+
+![The Afterglow boot logo at twice its size.](docs/images/afterglow-boot-logo.png)
+
 ## Desktop icons
 
 A set of 73 icons and a shortcut arrow for the ReactOS desktop (shell objects, Control Panel applets, drives, file types, dialogs and the Start menu), drawn as vector masters in the language of the Afterglow folder and rendered by script to 16, 32 and 48 px as one `.ico` per icon, with a map from each icon id to the ReactOS icon it replaces. See [docs/reactos-desktop-icons.md](docs/reactos-desktop-icons.md).
@@ -245,7 +257,7 @@ bun install
 bun run build            # regenerate themes/, vscode/themes/, mc/skins/, claude/themes/, tmtheme/, forgejo/themes/, firefox/themes/ and chromium/themes/
 bun run validate:themes  # check the schema rules and 4.5:1 text contrast
 bun run validate         # the full local gate that mirrors CI
-bun run bundle           # build the release assets (including the .vsix and the desktop zips) into dist/release; needs llvm-rc, lld-link and Pillow, or AFTERGLOW_SKIP_REACTOS=1
+bun run bundle           # build the release assets (including the .vsix and the desktop zips) into dist/release; needs llvm-rc, lld-link, rsvg-convert and Pillow, or AFTERGLOW_SKIP_REACTOS=1
 ```
 
 - `scripts/palette.mjs` holds the brand colours, the deeper light-mode variants and the neutral ramps.
@@ -263,7 +275,7 @@ CI runs the format check, the licence-header check, the theme build and validati
 
 ## Releases
 
-Releases are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. The release workflow runs the full validation, then attaches the three OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the Forgejo themes zip, the TextMate themes zip, a Firefox `.xpi` per theme, the Chrome and Edge themes zip, the wallpapers zip (`afterglow-wallpapers-vX.Y.Z.zip`), the ReactOS desktop zip (`afterglow-reactos-desktop-vX.Y.Z.zip`: both styles, the eight colour schemes and the pointers, with no patched binary) and a `SHA256SUMS` file to a GitHub release with generated notes.
+Releases are tagged `vX.Y.Z` on `main`, and the tag must match the `version` in `package.json`. The release workflow runs the full validation, then attaches the three OpenCode theme files, a zip bundle, the VS Code `.vsix`, the Midnight Commander skins zip, the Claude Code themes zip, the Forgejo themes zip, the TextMate themes zip, a Firefox `.xpi` per theme, the Chrome and Edge themes zip, the wallpapers zip (`afterglow-wallpapers-vX.Y.Z.zip`), the ReactOS desktop zip (`afterglow-reactos-desktop-vX.Y.Z.zip`: both styles, the eight colour schemes, the pointers, the logon banner, the boot logo, the icon set and the shortcut arrow, with no patched binary) and a `SHA256SUMS` file to a GitHub release with generated notes.
 
 ## Contributing
 

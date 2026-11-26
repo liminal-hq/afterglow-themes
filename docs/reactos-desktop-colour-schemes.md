@@ -51,6 +51,8 @@ Switching colour schemes live in Display Properties reloads the theme in every r
 
 The pointer set is separate from the colour schemes and the same in every one. See `docs/reactos-desktop-pointers.md`. The icon set is described in `docs/reactos-desktop-icons.md`.
 
+The boot logo shares the dusk palette but has its own 16 colours, in [reactos-desktop-boot.md](reactos-desktop-boot.md).
+
 ## Where the colours come from
 
 See `desktop/PROVENANCE.md`.

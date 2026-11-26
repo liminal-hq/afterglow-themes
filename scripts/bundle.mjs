@@ -231,6 +231,28 @@ function buildReactosDesktop() {
 		// The SVG masters are reference art beside the raster pointers
 		cpSync(join(desktop, 'pointers', 'svg'), join(pointers, 'svg'), { recursive: true });
 
+		// The logon banner and bar: the SVG masters, the two BMPs rendered from them and their hashes. The patch into
+		// agmsgina.dll is not here; it happens in the reactos-liminal build.
+		const logon = join(stage, 'logon');
+		execFileSync('python3', [join(desktop, 'logon', 'render.py'), logon], { stdio: 'ignore' });
+		for (const file of [
+			'banner-a.svg',
+			'banner-b.svg',
+			'bar.svg',
+			'SHA256SUMS',
+			'SHA256SUMS.masters',
+		]) {
+			copyFileSync(join(desktop, 'logon', file), join(logon, file));
+		}
+
+		// The boot logo: the SVG master and palette, the bitmaps and previews rendered from them and the hash lists. The patch into
+		// the kernel is not here; it happens in the reactos-liminal build.
+		const boot = join(stage, 'boot');
+		execFileSync('python3', [join(desktop, 'boot', 'render.py'), boot], { stdio: 'ignore' });
+		for (const file of ['boot-logo.svg', 'palette.json', 'SHA256SUMS', 'SHA256SUMS.masters']) {
+			copyFileSync(join(desktop, 'boot', file), join(boot, file));
+		}
+
 		// The icon set and the shortcut arrow: the .ico and PNG renders drawn here, the SVG masters they come from, and the id map
 		const icons = join(stage, 'icons');
 		execFileSync('python3', [join(desktop, 'icons', 'render.py'), icons], { stdio: 'ignore' });
@@ -258,6 +280,14 @@ function buildReactosDesktop() {
 			join(root, 'docs', 'images', 'afterglow-pointers.png'),
 			join(stage, 'docs', 'images', 'afterglow-pointers.png'),
 		);
+		copyFileSync(
+			join(root, 'docs', 'images', 'afterglow-logon-banner.png'),
+			join(stage, 'docs', 'images', 'afterglow-logon-banner.png'),
+		);
+		copyFileSync(
+			join(root, 'docs', 'images', 'afterglow-boot-logo.png'),
+			join(stage, 'docs', 'images', 'afterglow-boot-logo.png'),
+		);
 		for (const image of ['afterglow-icons.png', 'afterglow-arrow.png']) {
 			copyFileSync(join(root, 'docs', 'images', image), join(stage, 'docs', 'images', image));
 		}
@@ -270,6 +300,8 @@ function buildReactosDesktop() {
 		for (const doc of [
 			'reactos-desktop-colour-schemes.md',
 			'reactos-desktop-pointers.md',
+			'reactos-desktop-logon.md',
+			'reactos-desktop-boot.md',
 			'reactos-desktop-icons.md',
 		]) {
 			const text = readFileSync(join(root, 'docs', doc), 'utf8').replaceAll(

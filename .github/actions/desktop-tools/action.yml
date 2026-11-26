@@ -1,11 +1,11 @@
-# Installs the tools that build the ReactOS desktop style and pointers: LLVM (llvm-rc, lld-link, and clang for llvm-rc's preprocessor)
-# and Python with numpy and the Pillow version the pointer hashes were recorded with.
+# Installs the tools that build the ReactOS desktop style, pointers and logon art: LLVM (llvm-rc, lld-link, and clang for llvm-rc's preprocessor),
+# rsvg-convert (librsvg2-bin) for the logon SVG masters, and Python with numpy and the Pillow version the pointer hashes were recorded with.
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 
 name: Desktop tools
-description: Install llvm-rc, lld-link and a pinned Python environment for desktop/style and desktop/pointers
+description: Install llvm-rc, lld-link and a pinned Python environment for desktop/style, desktop/pointers and desktop/logon
 
 runs:
   using: composite
