@@ -17,6 +17,10 @@
 | `schemes/apply-scheme.cmd`, `install/afterglow-original.reg`                                                                    | Written by hand                                      | Import one scheme's `.reg` file; select the style and set the caption metrics                                                                                                                                                                                                                                                                                  |
 | `afterglow.msstyles` (not in git)                                                                                               | `style/build.sh`                                     | `llvm-rc`, then `lld-link /dll /noentry /machine:x86 /nodefaultlib /Brepro`. Reproducible: 731,136 bytes, SHA-256 `2a40fecc9ccaa054f6725d3626cd37e513f2413f9d385c9702dc3b0b9a03902d` (with `--scrollbars`: 824,320 bytes, `229d595aa08941080e0c22d2f21a5edb9b105fd9dbe88b49c1ec70587d775285`), recorded in `SHA256SUMS` and checked by `bun run check:desktop` |
 
+## Logon banner
+
+`logon/banner-a.svg`, `logon/bar.svg` and the fallback `logon/banner-b.svg` are original Liminal HQ art, drawn as vectors with their text outlined from DejaVu Sans (the DejaVu font licence allows embedding outlines). No ReactOS bitmap or wordmark was copied, traced or recoloured. `logon/render.py` renders them to the 24-bit BMPs, recorded in `logon/SHA256SUMS`.
+
 ## Palette
 
 The colours are in the `SCHEMES` table in `style/agdraw.py`, one entry per colour scheme, on named slots. They come from four places:
