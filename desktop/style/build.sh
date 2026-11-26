@@ -3,7 +3,7 @@
 # (gen.py), compile the resources with llvm-rc and link a resource-only x86 DLL with lld-link (/Brepro: no timestamp, so the same
 # sources give the same bytes). No other visual style is read or fetched.
 # Usage: build.sh OUT_DIR [--schemes] [--scrollbars]   (the result is OUT_DIR/afterglow.msstyles; --schemes also refreshes
-# desktop/schemes/*.reg; --scrollbars themes the scroll bars too, otherwise they stay the shell's own classic ones)
+# desktop/schemes/*.reg and the generated block of desktop/install/afterglow-original.reg; --scrollbars themes the scroll bars too, otherwise they stay the shell's own classic ones)
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -31,4 +31,5 @@ ls -l "$B/afterglow.msstyles"
 sha256sum "$B/afterglow.msstyles"
 if [ -n "$schemes" ]; then
 	for f in "$B"/schemes/*.reg; do cp "$f" "$here/../schemes/"; done
+	cp "$B/install/afterglow-original.reg" "$here/../install/"
 fi
