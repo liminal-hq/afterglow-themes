@@ -8,6 +8,8 @@
 # desktop/pointers/SHA256SUMS. With USER32=PATH (a ReactOS 0.4.16 i386 user32.dll, your own copy), it also patches a scratch copy and
 # checks the result against the patched hash in desktop/pointers/SHA256SUMS.user32.
 #
+# Also renders the logon banner and bar (desktop/logon/render.py, needs rsvg-convert and Pillow), compares the two BMPs with
+# desktop/logon/SHA256SUMS and the SVG masters with desktop/logon/SHA256SUMS.masters, and checks the docs preview PNG by pixels.
 # Also renders the boot logo (desktop/boot/render.py, needs rsvg-convert and Pillow), compares its two bitmaps with desktop/boot/SHA256SUMS
 # and its master and palette with desktop/boot/SHA256SUMS.masters, and checks the docs preview PNG by pixels.
 #
@@ -82,6 +84,33 @@ else
 	echo "the pointer preview docs/images/afterglow-pointers.png is out of date: run desktop/pointers/render-preview.py docs/images/afterglow-pointers.png"
 	status=1
 fi
+
+# The logon banner and bar: the SVG masters are hashed as they are, and the 413 x 72 and 413 x 5 BMPs are rendered fresh and hashed.
+if (cd desktop/logon && sha256sum --check --quiet SHA256SUMS.masters); then
+	echo "the logon masters in desktop/logon match desktop/logon/SHA256SUMS.masters"
+else
+	echo "a logon master in desktop/logon changed: if that is intended, run (cd desktop/logon && sha256sum banner-a.svg banner-b.svg bar.svg > SHA256SUMS.masters) and render the BMPs again"
+	status=1
+fi
+python3 desktop/logon/render.py "$out/logon"
+if (cd "$out/logon" && sha256sum --check --quiet "$root/desktop/logon/SHA256SUMS"); then
+	echo "the logon banner and bar BMPs match desktop/logon/SHA256SUMS"
+else
+	echo "the logon banner or bar BMP does not match desktop/logon/SHA256SUMS: a master or the renderer changed, so look at $out/logon, then record the new hashes with (cd OUT_DIR && sha256sum afterglow-banner.bmp afterglow-bar.bmp > desktop/logon/SHA256SUMS)"
+	status=1
+fi
+if python3 - "$out/logon/afterglow-logon-preview.png" docs/images/afterglow-logon-banner.png <<'PY'
+import sys
+from PIL import Image, ImageChops
+fresh, committed = (Image.open(path).convert("RGB") for path in sys.argv[1:3])
+sys.exit(0 if fresh.size == committed.size and ImageChops.difference(fresh, committed).getbbox() is None else 1)
+PY
+then
+	echo "the logon preview docs/images/afterglow-logon-banner.png matches the renderer"
+else
+	echo "the logon preview docs/images/afterglow-logon-banner.png is out of date: copy afterglow-logon-preview.png from desktop/logon/render.py's output over it"
+	status=1
+fi
 if [ -n "${USER32:-}" ]; then
 	if python3 desktop/pointers/patch-user32.py "$USER32" "$out/pointers" "$out/user32-afterglow.dll" >/dev/null; then
 		if (cd "$out" && sha256sum --check --quiet "$root/desktop/pointers/SHA256SUMS.user32"); then
@@ -123,5 +152,5 @@ else
 	status=1
 fi
 
-[ "$status" -eq 0 ] && echo "Desktop style and pointers are reproducible."
+[ "$status" -eq 0 ] && echo "Desktop style, pointers, logon and boot art are reproducible."
 exit "$status"
