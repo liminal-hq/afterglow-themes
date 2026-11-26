@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): winmine, Minesweeper (16 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><linearGradient id="e-winmine-16-g1f25547a4562" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f2554"/><stop offset="1" stop-color="#7a4562"/></linearGradient><clipPath id="e-winmine-16-c1"><path d="M9 12 C9 10.35 10.35 9 12 9 L36 9 C37.65 9 39 10.35 39 12 L39 36 C39 37.65 37.65 39 36 39 L12 39 C10.35 39 9 37.65 9 36 Z" clip-rule="evenodd"/></clipPath><clipPath id="e-winmine-16-c2"><path d="M16.5 24 a7.5 7.5 0 1 0 15 0 a7.5 7.5 0 1 0 -15 0 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M5 13 C5 8.6 8.6 5 13 5 L35 5 C39.4 5 43 8.6 43 13 L43 35 C43 39.4 39.4 43 35 43 L13 43 C8.6 43 5 39.4 5 35 Z" fill="url(#e-winmine-16-g1f25547a4562)"/><path d="M9 12 C9 10.35 10.35 9 12 9 L36 9 C37.65 9 39 10.35 39 12 L39 36 C39 37.65 37.65 39 36 39 L12 39 C10.35 39 9 37.65 9 36 Z" fill="#e4e2ec" fill-rule="evenodd"/><g clip-path="url(#e-winmine-16-c1)"><path d="M9 12 C9 10.35 10.35 9 12 9 L36 9 C37.65 9 39 10.35 39 12 L39 36 C39 37.65 37.65 39 36 39 L12 39 C10.35 39 9 37.65 9 36 Z" fill="none" stroke="#2a2840" stroke-width="6" stroke-opacity="0.6"/></g><path d="M24 12.5 V35.5 M12.5 24 H35.5 M16 16 L32 32 M32 16 L16 32" fill="none" stroke="#42396c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5 24 a7.5 7.5 0 1 0 15 0 a7.5 7.5 0 1 0 -15 0 Z" fill="#42396c" fill-rule="evenodd"/><g clip-path="url(#e-winmine-16-c2)"><path d="M16.5 24 a7.5 7.5 0 1 0 15 0 a7.5 7.5 0 1 0 -15 0 Z" fill="none" stroke="#1a1828" stroke-width="6" stroke-opacity="0.6"/></g><path d="M19.7 21.6 a1.9 1.9 0 1 0 3.8 0 a1.9 1.9 0 1 0 -3.8 0 Z" fill="#fbfaf6" fill-rule="evenodd"/>
+</svg>

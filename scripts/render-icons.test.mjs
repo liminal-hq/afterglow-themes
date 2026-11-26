@@ -35,6 +35,10 @@ const hinted = readdirSync(svgDir)
 	.filter((f) => f.endsWith('-16.svg'))
 	.map((f) => f.slice(0, -7))
 	.sort();
+// The Explorer toolbar glyphs also have a 24 px profile, for browseui's 24 px bitmap strips
+const toolbar = readdirSync(join(svgDir, '24'))
+	.map((f) => f.slice(0, -4))
+	.sort();
 
 const sums = (file) =>
 	Object.fromEntries(
@@ -53,13 +57,42 @@ function render() {
 	return out;
 }
 
-test('the set has 73 icons, 17 hinted 16 px redraws and a 32 and 16 px profile of every icon, and no 24 px one', () => {
-	assert.equal(ids.length, 73);
-	assert.equal(hinted.length, 17);
-	for (const id of ['mydocs', 'mypictures', 'mymusic', 'myvideos', 'desktop', 'network']) {
+test('the set has 135 icons, 20 hinted 16 px redraws, a 32 and 16 px profile of every icon and a 24 px one of the 18 toolbar glyphs', () => {
+	assert.equal(ids.length, 135);
+	assert.equal(hinted.length, 20);
+	for (const id of [
+		'mydocs',
+		'mypictures',
+		'mymusic',
+		'myvideos',
+		'desktop',
+		'network',
+		'favorites',
+		'recent',
+		'programsfolder',
+	]) {
 		assert.ok(hinted.includes(id), `${id} has a hinted redraw`);
 	}
-	assert.equal(existsSync(join(svgDir, '24')), false);
+	assert.deepEqual(toolbar, [
+		'back',
+		'copy',
+		'copyclip',
+		'cut',
+		'del',
+		'disconnect',
+		'folderopts',
+		'folders',
+		'forward',
+		'mapdrive',
+		'move',
+		'paste',
+		'properties',
+		'search',
+		'star',
+		'undo',
+		'up',
+		'views',
+	]);
 	for (const sub of ['32', '16']) {
 		const files = readdirSync(join(svgDir, sub)).map((f) => f.slice(0, -4));
 		assert.deepEqual(files.sort(), ids, `svg/${sub}`);
@@ -73,8 +106,8 @@ test('the set has 73 icons, 17 hinted 16 px redraws and a 32 and 16 px profile o
 
 test('the masters match their recorded hashes and keep their licence header', () => {
 	const recorded = sums('SHA256SUMS.masters');
-	// 73 icons in three profiles, 17 hinted redraws, 3 arrow frames, the sheet and 3 generators
-	assert.equal(Object.keys(recorded).length, 73 * 3 + 17 + 3 + 1 + 3);
+	// 135 icons in three profiles, 18 toolbar glyphs at 24 px, 20 hinted redraws, 3 arrow frames, the sheet and 4 generators
+	assert.equal(Object.keys(recorded).length, 135 * 3 + 18 + 20 + 3 + 1 + 4);
 	for (const [name, hash] of Object.entries(recorded)) {
 		assert.equal(sha256(readFileSync(join(icons, name))), hash, `${name} changed`);
 		if (name.endsWith('.svg') || name.endsWith('.py')) {
@@ -87,7 +120,7 @@ test('the masters match their recorded hashes and keep their licence header', ()
 
 test('every master draws on a square grid of its own size', () => {
 	for (const id of ids) {
-		for (const sub of ['', '32/', '16/']) {
+		for (const sub of ['', '32/', '16/', ...(toolbar.includes(id) ? ['24/'] : [])]) {
 			const svg = readFileSync(join(svgDir, `${sub}${id}.svg`), 'utf8');
 			assert.ok(svg.includes('viewBox="0 0 48 48" width="48" height="48"'), `${sub}${id}`);
 		}
@@ -106,14 +139,33 @@ test('every master draws on a square grid of its own size', () => {
 	}
 });
 
-test('map.json names every icon once and the arrow, and records only the verified resource ids', () => {
+test('map.json names every icon once and the arrow, and records only verified resources', () => {
 	const map = JSON.parse(readFileSync(join(icons, 'map.json'), 'utf8'));
 	assert.deepEqual(map.icons.map((i) => i.id).sort(), [...ids, 'arrow'].sort());
+	const checkResource = (resource, id) => {
+		assert.match(resource.module, /^[a-z0-9]+\.(dll|exe|cpl)$/, id);
+		assert.ok(resource.evidence.length > 0, id);
+		for (const kind of resource.evidence) assert.ok(['source', 'binary'].includes(kind), id);
+		if (resource.module === 'browseui.dll') {
+			assert.deepEqual(resource.bitmaps, [214, 215, 216, 217], id);
+			assert.ok(Number.isInteger(resource.cell) && resource.cell >= 0 && resource.cell < 47, id);
+		} else {
+			assert.ok(Number.isInteger(resource.group) && resource.group > 0, id);
+		}
+	};
+	const claimed = new Map();
 	for (const icon of map.icons) {
 		assert.ok(['named', 'unmapped'].includes(icon.status), icon.id);
-		if (icon.resource !== null) {
-			assert.equal(icon.resource.module, 'shell32.dll', icon.id);
-			assert.ok(icon.resource.evidence.length > 0, icon.id);
+		for (const resource of [icon.resource, ...(icon.also ?? [])].filter(Boolean)) {
+			checkResource(resource, icon.id);
+			// one icon per group or cell
+			const key = `${resource.module}:${resource.group ?? `cell ${resource.cell}`}`;
+			assert.equal(
+				claimed.get(key),
+				undefined,
+				`${key} is claimed by ${claimed.get(key)} and ${icon.id}`,
+			);
+			claimed.set(key, icon.id);
 		}
 		if (icon.status === 'named') {
 			assert.ok(icon.replaces && map.kinds[icon.kind], icon.id);
@@ -122,13 +174,24 @@ test('map.json names every icon once and the arrow, and records only the verifie
 			assert.equal(icon.kind, null, icon.id);
 			assert.equal(icon.resource, null, icon.id);
 		}
+		if (toolbar.includes(icon.id)) {
+			const cells = [icon.resource, ...(icon.also ?? [])].filter(
+				(r) => r?.module === 'browseui.dll',
+			);
+			assert.equal(cells.length, 1, `${icon.id} names one toolbar cell`);
+		}
 	}
-	assert.equal(map.icons.filter((i) => i.status === 'named').length, 55);
-	// The group ids the folder icon research verified in the 0.4.16 source and binary, and no others
-	const verified = Object.fromEntries(
-		map.icons.filter((i) => i.resource).map((i) => [i.id, i.resource.group]),
+	assert.deepEqual(
+		map.icons.filter((i) => i.status === 'unmapped').map((i) => i.id),
+		['clock', 'shield', 'showdesk', 'trynet'],
 	);
-	assert.deepEqual(verified, {
+	// The folder ids the folder icon research verified in the 0.4.16 source and binary are unchanged
+	const shell32 = Object.fromEntries(
+		map.icons
+			.filter((i) => i.resource?.module === 'shell32.dll')
+			.map((i) => [i.id, i.resource.group]),
+	);
+	for (const [id, group] of Object.entries({
 		arrow: 30,
 		desktop: 35,
 		folder: 4,
@@ -141,7 +204,9 @@ test('map.json names every icon once and the arrow, and records only the verifie
 		network: 18,
 		recycle: 32,
 		recyclefull: 33,
-	});
+	})) {
+		assert.equal(shell32[id], group, id);
+	}
 });
 
 test(
@@ -180,8 +245,21 @@ test(
 				}
 				assert.deepEqual(seen, SIZES, `${id} frames`);
 			}
-			assert.equal(readdirSync(join(out, 'ico')).length, 74);
-			assert.equal(readdirSync(join(out, 'png')).length, 74 * 3);
+			assert.equal(readdirSync(join(out, 'ico')).length, 136);
+			assert.equal(readdirSync(join(out, 'png')).length, 136 * 3 + toolbar.length);
+			// the 24 px toolbar frames: a one-frame .ico each, so the three-frame .ico stays as the shell patchers read it
+			assert.deepEqual(
+				readdirSync(join(out, 'ico24')).sort(),
+				toolbar.map((id) => `${id}.ico`),
+			);
+			for (const id of toolbar) {
+				const ico = readFileSync(join(out, 'ico24', `${id}.ico`));
+				assert.deepEqual(
+					[ico.readUInt16LE(4), ico[6], ico[7], ico.readUInt16LE(12)],
+					[1, 24, 24, 32],
+					id,
+				);
+			}
 			assert.ok(existsSync(join(out, 'afterglow-icons-sheet.png')));
 			assert.ok(existsSync(join(out, 'afterglow-arrow-preview.png')));
 		} finally {
@@ -275,12 +353,20 @@ test('two renders give the same .ico bytes, and they match the recorded hashes',
 		const recorded = sums('SHA256SUMS');
 		assert.deepEqual(
 			Object.keys(recorded).sort(),
-			[...ids, 'arrow'].map((id) => `ico/${id}.ico`).sort(),
+			[
+				...[...ids, 'arrow'].map((id) => `ico/${id}.ico`),
+				...toolbar.map((id) => `ico24/${id}.ico`),
+			].sort(),
 		);
 		for (const id of [...ids, 'arrow']) {
 			const first = readFileSync(join(a, 'ico', `${id}.ico`));
 			assert.deepEqual(first, readFileSync(join(b, 'ico', `${id}.ico`)), `${id} differs`);
 			assert.equal(sha256(first), recorded[`ico/${id}.ico`], `${id}.ico hash`);
+		}
+		for (const id of toolbar) {
+			const first = readFileSync(join(a, 'ico24', `${id}.ico`));
+			assert.deepEqual(first, readFileSync(join(b, 'ico24', `${id}.ico`)), `${id} 24 px differs`);
+			assert.equal(sha256(first), recorded[`ico24/${id}.ico`], `${id} 24 px hash`);
 		}
 	} finally {
 		rmSync(a, { recursive: true, force: true });

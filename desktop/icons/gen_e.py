@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Afterglow icon set, variant E: every icon drawn in the language of the M1 folder, with hinted 16 px redraws and the sheet.
+# The icons added in v2 are drawn in gen_v2.py with this file's Pen and registered here.
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -14,6 +15,7 @@ import importlib.util
 import math
 import os
 import sys
+import types
 
 sys.dont_write_bytecode = True  # importing folders_g.py must not leave a cache beside it
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -84,7 +86,7 @@ MATS = {
 SKY = ("sky", SKY1, SKY7)  # the brand sky ramp for screens and the plate: a colour, not lighting, so it keeps its own two stops
 
 # ---- the profile by size: edge weight, band, ramp and shadow ---------------------------------------------------------------------------------
-PROFILE = {48: dict(edge=0.30, soft=True), 32: dict(edge=0.45, soft=True), 16: dict(edge=0.60, soft=False)}
+PROFILE = {48: dict(edge=0.30, soft=True), 32: dict(edge=0.45, soft=True), 24: dict(edge=0.50, soft=True), 16: dict(edge=0.60, soft=False)}
 SHADOW = {"body": 0.30, "tile": 0.30, "lift": 0.20, "flat": 0.0}
 
 
@@ -817,6 +819,8 @@ def build(k, size, pre=None):
 	kind, tier, f = I[k]
 	if kind == "m1":
 		return FG.icon(M1, M1_NAME[k], size, pre)
+	if kind == "built":
+		return f(size, pre)
 	p = Pen(pre, size)
 	if kind == "tile":
 		plate(p)
@@ -964,6 +968,18 @@ GROUPS = [
 	("Start menu", [("programs", "Programs"), ("documents", "Documents"), ("settings", "Settings"), ("search", "Search"), ("help", "Help"), ("run", "Run"),
 		("shutdown", "Shut Down")]),
 ]
+
+
+def load_v2():
+	spec = importlib.util.spec_from_file_location("gen_v2", os.path.join(HERE, "gen_v2.py"))
+	module = importlib.util.module_from_spec(spec)
+	spec.loader.exec_module(module)
+	return module
+
+
+V2 = load_v2()
+V2.register(types.SimpleNamespace(**globals()))
+TOOLBAR_24 = V2.TOOLBAR_24  # the Explorer toolbar glyphs, which also get a 24 px profile for browseui's 24 px strips
 LABEL = {k: l for _, items in GROUPS for k, l in items}
 
 HEAD = """<!--
@@ -982,13 +998,17 @@ def standalone(body, defs, vb, title, crisp=False):
 
 
 def write_icons(out):
-	for sub in ("icons", "icons/32", "icons/16"):
+	for sub in ("icons", "icons/32", "icons/24", "icons/16"):
 		os.makedirs(os.path.join(out, sub), exist_ok=True)
 	n = 0
 	for k in I:
 		for size, path in ((48, "icons/%s.svg"), (32, "icons/32/%s.svg"), (16, "icons/16/%s.svg")):
 			d, b = build(k, size)
 			open(os.path.join(out, path % k), "w").write(standalone(b, d, 48, "%s, %s (%s profile)" % (k, LABEL[k], "48 master" if size == 48 else "%d px" % size)))
+			n += 1
+		if k in TOOLBAR_24:
+			d, b = build(k, 24)
+			open(os.path.join(out, "icons/24/%s.svg" % k), "w").write(standalone(b, d, 48, "%s, %s (24 px profile)" % (k, LABEL[k])))
 			n += 1
 	for k in HINTED:
 		open(os.path.join(out, "icons/%s-16.svg" % k), "w").write(standalone(hinted(k), "", 16, "%s, %s (hinted 16 px)" % (k, LABEL[k]), True))
@@ -1035,7 +1055,7 @@ def write_sheet(syms):
 	for line in [
 		"Every icon drawn the way the chosen M1 folder is drawn: a flat two-tone base from Afterglow tokens (a deeper tone behind, a lighter lit tone in front), a very gentle",
 		"top-to-bottom ramp, a 1 px lit band on the top and left, a thin inner edge in a darker tone of the same hue at 30 %, a soft contact shadow and generous radii. No navy ink line,",
-		"no extrusion. Symbols and toolbar glyphs only lift; Delete, Undo and Shut Down stay flat. Apps and applets sit on M1's softly raised dusk plate. Sizes are 48, 32 and 16; 24 is not drawn.",
+		"no extrusion. Symbols and toolbar glyphs only lift; Delete, Undo and Shut Down stay flat. Apps and applets sit on M1's softly raised dusk plate. Sizes are 48, 32 and 16, plus 24 for toolbar glyphs.",
 	]:
 		y += 20
 		out.append(txt(40, y, line, 13, SUB))
@@ -1083,14 +1103,17 @@ def write_sheet(syms):
 	# hinted 16
 	out.append(txt(40, y + 14, "Hinted 16 px redraws · 1 px edge at about 60 % baked to a solid tone, no ramp, no shadow · at 1× on void, cream and dusk, and at 4×", 15, HD, weight=600))
 	y += 24
-	out.append('<rect x="40" y="%d" width="%d" height="112" rx="6" fill="%s"/>' % (y, W - 80, CELL))
-	for i, k in enumerate(HINTED):
-		x = 52 + i * 94
-		for j, bg in enumerate(("#060609", CREAM, SKY4)):
-			out.append('<rect x="%d" y="%d" width="24" height="24" fill="%s"/>' % (x, y + 10 + j * 28, bg) + use(syms.get(k, "h16"), x + 4, y + 14 + j * 28, 16))
-		out.append('<rect x="%d" y="%d" width="72" height="72" fill="%s"/>' % (x + 30, y + 10, CREAM) + use(syms.get(k, "h16"), x + 34, y + 14, 64))
-		out.append(txt(x + 66, y + 104, LABEL[k], 10, SUB, "middle"))
-	y += 112 + 22
+	per_row = (W - 104) // 94  # the hinted redraws wrap onto as many rows as they need
+	for start in range(0, len(HINTED), per_row):
+		out.append('<rect x="40" y="%d" width="%d" height="112" rx="6" fill="%s"/>' % (y, W - 80, CELL))
+		for i, k in enumerate(HINTED[start:start + per_row]):
+			x = 52 + i * 94
+			for j, bg in enumerate(("#060609", CREAM, SKY4)):
+				out.append('<rect x="%d" y="%d" width="24" height="24" fill="%s"/>' % (x, y + 10 + j * 28, bg) + use(syms.get(k, "h16"), x + 4, y + 14 + j * 28, 16))
+			out.append('<rect x="%d" y="%d" width="72" height="72" fill="%s"/>' % (x + 30, y + 10, CREAM) + use(syms.get(k, "h16"), x + 34, y + 14, 64))
+			out.append(txt(x + 66, y + 104, LABEL[k], 10, SUB, "middle"))
+		y += 112 + 6
+	y += 16
 
 	# groups
 	CW, CH, GAP = 200, 88, 4

@@ -302,6 +302,7 @@ function buildReactosDesktop() {
 		);
 		for (const image of [
 			'afterglow-icons.png',
+			'afterglow-icons-contact.png',
 			'afterglow-arrow.png',
 			'afterglow-console-palettes.png',
 			'afterglow-console-before-after.png',

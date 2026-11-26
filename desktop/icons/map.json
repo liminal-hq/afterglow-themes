@@ -1,5 +1,5 @@
 {
-	"note": "Maps each Afterglow icon id to the ReactOS icon it replaces. status is named when the sheet or the plan names a ReactOS object and unmapped otherwise. resource is the module and icon group id to replace; it is null unless the id is verified, and evidence says how: source (ReactOS 0.4.16 source) and binary (the installed 0.4.16 shell32.dll). Ids listed here come from the folder icon research; every null is unverified, not guessed.",
+	"note": "Maps each Afterglow icon id to the ReactOS icon it replaces. status is named when a ReactOS object is named and unmapped otherwise. resource is the module and icon group id to replace (for the Explorer toolbar, the browseui.dll bitmap strips and the cell index); also lists more groups or cells that take the same icon, each with what uses it. A resource is null unless the id is verified, and evidence says how: source (ReactOS 0.4.16 source, tag 0.4.16-release) and binary (the stock 0.4.16 i386 file holds that group). Every null is unverified, not guessed.",
 	"kinds": {
 		"shell": "shell32 object icon",
 		"drive": "shell32 drive icon",
@@ -7,7 +7,10 @@
 		"dialog": "stock message box icon in user32",
 		"applet": "icon of the Control Panel applet",
 		"start-menu": "Start menu entry icon",
-		"overlay": "the shortcut arrow overlay shell32 draws over a shortcut's icon"
+		"overlay": "the shortcut arrow overlay shell32 draws over a shortcut's icon",
+		"program": "the program's own icon group",
+		"toolbar": "a cell of the Explorer toolbar strips in browseui.dll (24 px strips 214 and 215, 16 px strips 216 and 217)",
+		"tray": "a notification area icon in stobject.dll or the keyboard layout indicator"
 	},
 	"icons": [
 		{
@@ -17,7 +20,24 @@
 			"status": "named",
 			"replaces": "Control Panel applet: Accessibility",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "access.cpl",
+				"group": 110,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "acpower",
+			"label": "Mains power",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "On mains power",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 413,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "addhw",
@@ -26,7 +46,11 @@
 			"status": "named",
 			"replaces": "Control Panel applet: Add Hardware",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "hdwwiz.cpl",
+				"group": 100,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "addremove",
@@ -35,7 +59,11 @@
 			"status": "named",
 			"replaces": "Control Panel applet: Add/Remove Programs",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "appwiz.cpl",
+				"group": 1500,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "admintools",
@@ -44,25 +72,37 @@
 			"status": "named",
 			"replaces": "Control Panel applet: Administrative Tools",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "main.cpl",
+				"group": 500,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "appmanager",
 			"label": "Applications Manager",
 			"group": "Desktop and shell",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Applications Manager",
+			"kind": "program",
+			"resource": {
+				"module": "rapps.exe",
+				"group": 10,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "archive",
 			"label": "Archive",
 			"group": "File types",
 			"status": "named",
-			"replaces": "Archive (.zip, .cab)",
+			"replaces": "Cabinet (.cab) files",
 			"kind": "file-type",
-			"resource": null
+			"resource": {
+				"module": "cabview.dll",
+				"group": 1,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "arrow",
@@ -80,22 +120,169 @@
 			"note": "The stock group 30 has 16 and 32 px frames only; arrow.ico has real 16, 32 and 48 px frames."
 		},
 		{
+			"id": "audio",
+			"label": "Audio file",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Audio files (.wav, .mid, .cda)",
+			"kind": "file-type",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 225,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
 			"id": "back",
 			"label": "Back",
 			"group": "Explorer toolbar",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Back",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 0,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "batch",
+			"label": "Batch file",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Batch and command files (.bat, .cmd, .wsf)",
+			"kind": "file-type",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 153,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "battery0",
+			"label": "Battery, 0 of 5",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Battery at 0 of 5",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 400,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "battery1",
+			"label": "Battery, 1 of 5",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Battery at 1 of 5",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 401,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "battery2",
+			"label": "Battery, 2 of 5",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Battery at 2 of 5",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 402,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "battery3",
+			"label": "Battery, 3 of 5",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Battery at 3 of 5",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 403,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "battery4",
+			"label": "Battery, 4 of 5",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Battery at 4 of 5",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 404,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "battery5",
+			"label": "Battery, 5 of 5",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Battery at 5 of 5",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 405,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "stobject.dll",
+					"group": 200,
+					"evidence": ["source", "binary"],
+					"use": "IDI_BATTERY"
+				}
+			]
+		},
+		{
+			"id": "batteryerror",
+			"label": "Battery fault",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Battery fault",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 412,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "browser",
 			"label": "Internet Browser",
 			"group": "Desktop and shell",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Internet Browser",
+			"kind": "program",
+			"resource": {
+				"module": "iexplore.exe",
+				"group": 1,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "calc",
+			"label": "Calculator",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Calculator",
+			"kind": "program",
+			"resource": {
+				"module": "calc.exe",
+				"group": 110,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "cd",
@@ -104,7 +291,102 @@
 			"status": "named",
 			"replaces": "CD-ROM drive",
 			"kind": "drive",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 12,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "charging0",
+			"label": "Charging, 0 of 5",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Battery charging at 0 of 5",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 406,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "charging1",
+			"label": "Charging, 1 of 5",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Battery charging at 1 of 5",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 407,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "charging2",
+			"label": "Charging, 2 of 5",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Battery charging at 2 of 5",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 408,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "charging3",
+			"label": "Charging, 3 of 5",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Battery charging at 3 of 5",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 409,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "charging4",
+			"label": "Charging, 4 of 5",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Battery charging at 4 of 5",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 410,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "charmap",
+			"label": "Character Map",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Character Map",
+			"kind": "program",
+			"resource": {
+				"module": "charmap.exe",
+				"group": 100,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "clipbrd",
+			"label": "Clipboard Viewer",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Clipboard Viewer",
+			"kind": "program",
+			"resource": {
+				"module": "clipbrd.exe",
+				"group": 100,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "clock",
@@ -119,10 +401,14 @@
 			"id": "cmd",
 			"label": "Command Prompt",
 			"group": "Desktop and shell",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Command Prompt",
+			"kind": "program",
+			"resource": {
+				"module": "cmd.exe",
+				"group": 1,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "console",
@@ -140,16 +426,66 @@
 			"status": "named",
 			"replaces": "Control Panel",
 			"kind": "shell",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 137,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 22,
+					"evidence": ["source", "binary"],
+					"use": "Control Panel in the Start menu and the Control Panel folder"
+				},
+				{
+					"module": "control.exe",
+					"group": 100,
+					"evidence": ["source", "binary"]
+				}
+			]
 		},
 		{
 			"id": "copy",
 			"label": "Copy to",
 			"group": "Explorer toolbar",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Copy to",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 45,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "copyclip",
+			"label": "Copy",
+			"group": "Explorer toolbar",
+			"status": "named",
+			"replaces": "Copy",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 6,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "cut",
+			"label": "Cut",
+			"group": "Explorer toolbar",
+			"status": "named",
+			"replaces": "Cut",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 5,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "datetime",
@@ -158,16 +494,25 @@
 			"status": "named",
 			"replaces": "Control Panel applet: Date/Time",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "timedate.cpl",
+				"group": 1,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "del",
 			"label": "Delete",
 			"group": "Explorer toolbar",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Delete",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 10,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "desktop",
@@ -183,13 +528,52 @@
 			}
 		},
 		{
+			"id": "devmgmt",
+			"label": "Device Manager",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Device Manager",
+			"kind": "program",
+			"resource": {
+				"module": "devmgmt.exe",
+				"group": 1,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "disconnect",
+			"label": "Disconnect network drive",
+			"group": "Explorer toolbar",
+			"status": "named",
+			"replaces": "Disconnect network drive",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 30,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
 			"id": "display",
 			"label": "Display",
 			"group": "Control Panel applets",
 			"status": "named",
 			"replaces": "Control Panel applet: Display",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "desk.cpl",
+				"group": 40,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "desk.cpl",
+					"group": 100,
+					"evidence": ["source", "binary"],
+					"use": "theme-compatibility id"
+				}
+			]
 		},
 		{
 			"id": "doc",
@@ -198,16 +582,37 @@
 			"status": "named",
 			"replaces": "Generic document",
 			"kind": "file-type",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 1,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "documents",
 			"label": "Documents",
 			"group": "Start menu",
 			"status": "named",
-			"replaces": "Start menu, Documents",
+			"replaces": "Start menu: Documents",
 			"kind": "start-menu",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 327,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "dxdiag",
+			"label": "ReactX Diagnostic",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "ReactX Diagnostic",
+			"kind": "program",
+			"resource": {
+				"module": "dxdiag.exe",
+				"group": 20000,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "error",
@@ -216,16 +621,71 @@
 			"status": "named",
 			"replaces": "Message box error icon (IDI_HAND)",
 			"kind": "dialog",
-			"resource": null
+			"resource": {
+				"module": "user32.dll",
+				"group": 103,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "eventvwr",
+			"label": "Event Viewer",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Event Viewer",
+			"kind": "program",
+			"resource": {
+				"module": "eventvwr.exe",
+				"group": 10,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "explorer",
+			"label": "ReactOS Explorer",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "The ReactOS Explorer Start menu entry (icon 1, IDI_CABINET)",
+			"kind": "program",
+			"resource": {
+				"module": "explorer.exe",
+				"group": 101,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "favorites",
+			"label": "Favourites",
+			"group": "Start menu",
+			"status": "named",
+			"replaces": "Favourites folder and the Start menu's Favourites",
+			"kind": "shell",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 44,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 322,
+					"evidence": ["source", "binary"],
+					"use": "Start menu: Favourites"
+				}
+			]
 		},
 		{
 			"id": "floppy",
 			"label": "Floppy",
 			"group": "Drives and folders",
 			"status": "named",
-			"replaces": "Floppy drive",
+			"replaces": "3.5 inch floppy drive",
 			"kind": "drive",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 7,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "folder",
@@ -259,72 +719,213 @@
 			"label": "Folder Options",
 			"group": "Control Panel applets",
 			"status": "named",
-			"replaces": "Control Panel applet: Folder Options",
-			"kind": "applet",
-			"resource": null
+			"replaces": "Folder Options",
+			"kind": "shell",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 210,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "browseui.dll",
+					"bitmaps": [214, 215, 216, 217],
+					"cell": 46,
+					"evidence": ["source", "binary"],
+					"use": "Folder Options"
+				}
+			]
 		},
 		{
 			"id": "folders",
 			"label": "Folders",
 			"group": "Explorer toolbar",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Folders",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 43,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "font",
 			"label": "Font",
 			"group": "File types",
 			"status": "named",
-			"replaces": "Font file (.ttf)",
+			"replaces": "Font files (.fon, .fnt, .ttf, .otf)",
 			"kind": "file-type",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 155,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 156,
+					"evidence": ["source", "binary"],
+					"use": "TrueType and OpenType font files"
+				}
+			]
 		},
 		{
 			"id": "fonts",
 			"label": "Fonts",
 			"group": "Control Panel applets",
 			"status": "named",
-			"replaces": "Control Panel applet: Fonts",
-			"kind": "applet",
-			"resource": null
+			"replaces": "Fonts folder",
+			"kind": "shell",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 39,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "main.cpl",
+					"group": 400,
+					"evidence": ["source", "binary"],
+					"use": "Fonts applet"
+				}
+			]
 		},
 		{
 			"id": "forward",
 			"label": "Forward",
 			"group": "Explorer toolbar",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Forward",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 1,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "hdd",
 			"label": "Hard disk",
 			"group": "Drives and folders",
 			"status": "named",
-			"replaces": "Local disk drive",
+			"replaces": "Fixed disk",
 			"kind": "drive",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 9,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "help",
 			"label": "Help",
 			"group": "Start menu",
 			"status": "named",
-			"replaces": "Start menu, Help",
+			"replaces": "Help files (.hlp) and Start menu: Help and Support",
 			"kind": "start-menu",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 24,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 324,
+					"evidence": ["source", "binary"],
+					"use": "Start menu: Help and Support"
+				},
+				{
+					"module": "hh.exe",
+					"group": 2,
+					"evidence": ["source", "binary"],
+					"use": "HTML Help viewer and .chm files"
+				},
+				{
+					"module": "winhlp32.exe",
+					"group": 3840,
+					"evidence": ["source", "binary"],
+					"use": "Help viewer"
+				}
+			]
+		},
+		{
+			"id": "hotplug",
+			"label": "Safely remove hardware",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Safely remove hardware",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 421,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "stobject.dll",
+					"group": 210,
+					"evidence": ["source", "binary"],
+					"use": "IDI_EXTRACT"
+				}
+			]
+		},
+		{
+			"id": "hotplugerror",
+			"label": "Hardware removal problem",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Safely remove hardware, problem",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 420,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "html",
+			"label": "Web page",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Web pages (.htm, .html)",
+			"kind": "file-type",
+			"resource": {
+				"module": "ieframe.dll",
+				"group": 1401,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "image",
 			"label": "Image",
 			"group": "File types",
 			"status": "named",
-			"replaces": "Bitmap image (.bmp)",
+			"replaces": "Image files",
 			"kind": "file-type",
-			"resource": null
+			"resource": {
+				"module": "shimgvw.dll",
+				"group": 1,
+				"evidence": ["source", "binary"],
+				"use": ".jpg, .emf, .wmf, .tif"
+			},
+			"also": [
+				{
+					"module": "shimgvw.dll",
+					"group": 2,
+					"evidence": ["source", "binary"],
+					"use": ".bmp"
+				},
+				{
+					"module": "shimgvw.dll",
+					"group": 5,
+					"evidence": ["source", "binary"],
+					"use": ".gif, .png"
+				}
+			]
 		},
 		{
 			"id": "inetsettings",
@@ -333,7 +934,11 @@
 			"status": "named",
 			"replaces": "Control Panel applet: Internet Settings",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "inetcpl.cpl",
+				"group": 100,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "info",
@@ -342,16 +947,58 @@
 			"status": "named",
 			"replaces": "Message box information icon (IDI_ASTERISK)",
 			"kind": "dialog",
-			"resource": null
+			"resource": {
+				"module": "user32.dll",
+				"group": 104,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "inifile",
+			"label": "Settings file",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Settings files (.ini, .inf, .nt)",
+			"kind": "file-type",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 151,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "joystick",
+			"label": "Game Controllers",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Game Controllers",
+			"kind": "applet",
+			"resource": {
+				"module": "joy.cpl",
+				"group": 102,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "kbdlayout",
 			"label": "Keyboard layout",
 			"group": "System tray",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Keyboard layout indicator",
+			"kind": "tray",
+			"resource": {
+				"module": "ctfmon.exe",
+				"group": 100,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "kbswitch.exe",
+					"group": 150,
+					"evidence": ["source", "binary"],
+					"use": "Keyboard Layout Switcher"
+				}
+			]
 		},
 		{
 			"id": "keyboard",
@@ -360,16 +1007,72 @@
 			"status": "named",
 			"replaces": "Control Panel applet: Keyboard",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "main.cpl",
+				"group": 200,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "library",
 			"label": "Library (DLL)",
 			"group": "File types",
 			"status": "named",
-			"replaces": "Library (.dll)",
+			"replaces": "System files (.dll, .sys, .cpl, .drv, .ocx)",
 			"kind": "file-type",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 154,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "logoff",
+			"label": "Log Off",
+			"group": "Start menu",
+			"status": "named",
+			"replaces": "Start menu: Log Off",
+			"kind": "start-menu",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 325,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 45,
+					"evidence": ["source", "binary"],
+					"use": "IDI_SHELL_LOGOFF"
+				}
+			]
+		},
+		{
+			"id": "magnify",
+			"label": "Magnifier",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Magnifier",
+			"kind": "program",
+			"resource": {
+				"module": "magnify.exe",
+				"group": 101,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "mapdrive",
+			"label": "Map network drive",
+			"group": "Explorer toolbar",
+			"status": "named",
+			"replaces": "Map network drive",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 29,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "mouse",
@@ -378,16 +1081,64 @@
 			"status": "named",
 			"replaces": "Control Panel applet: Mouse",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "main.cpl",
+				"group": 100,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "move",
 			"label": "Move to",
 			"group": "Explorer toolbar",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Move to",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 44,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "mplay32",
+			"label": "Media Player",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Media Player",
+			"kind": "program",
+			"resource": {
+				"module": "mplay32.exe",
+				"group": 10,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "msconfig",
+			"label": "System Configuration",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "System Configuration",
+			"kind": "program",
+			"resource": {
+				"module": "msconfig.exe",
+				"group": 3001,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "mstsc",
+			"label": "Remote Desktop Connection",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Remote Desktop Connection and .rdp files",
+			"kind": "program",
+			"resource": {
+				"module": "mstsc.exe",
+				"group": 2000,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "mycomputer",
@@ -400,7 +1151,15 @@
 				"module": "shell32.dll",
 				"group": 16,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 43,
+					"evidence": ["source", "binary"],
+					"use": "the CSIDL_DRIVES folder entry"
+				}
+			]
 		},
 		{
 			"id": "mydocs",
@@ -459,9 +1218,21 @@
 			"label": "Network Connections",
 			"group": "Control Panel applets",
 			"status": "named",
-			"replaces": "Control Panel applet: Network Connections",
-			"kind": "applet",
-			"resource": null
+			"replaces": "Network Connections in the Start menu",
+			"kind": "start-menu",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 257,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "netshell.dll",
+					"group": 100,
+					"evidence": ["source", "binary"],
+					"use": "Network Connections folder"
+				}
+			]
 		},
 		{
 			"id": "netdrive",
@@ -470,7 +1241,24 @@
 			"status": "named",
 			"replaces": "Network drive",
 			"kind": "drive",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 10,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "netdriveoff",
+			"label": "Network drive (not connected)",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "Drive not connected",
+			"kind": "drive",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 54,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "network",
@@ -484,7 +1272,61 @@
 				"group": 18,
 				"evidence": ["source", "binary"]
 			},
-			"note": "Registry DefaultIcon says shell32.dll,17, the zero-based index of group 18."
+			"note": "Registry DefaultIcon says shell32.dll,17, the zero-based index of group 18.",
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 15,
+					"evidence": ["source", "binary"],
+					"use": "the NetHood folder"
+				},
+				{
+					"module": "shell32.dll",
+					"group": 172,
+					"evidence": ["source", "binary"],
+					"use": "items under Entire Network"
+				}
+			]
+		},
+		{
+			"id": "osk",
+			"label": "On-Screen Keyboard",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "On-Screen Keyboard",
+			"kind": "program",
+			"resource": {
+				"module": "osk.exe",
+				"group": 200,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "paint",
+			"label": "Paint",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Paint",
+			"kind": "program",
+			"resource": {
+				"module": "mspaint.exe",
+				"group": 500,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "paste",
+			"label": "Paste",
+			"group": "Explorer toolbar",
+			"status": "named",
+			"replaces": "Paste",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 7,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "power",
@@ -493,34 +1335,99 @@
 			"status": "named",
 			"replaces": "Control Panel applet: Power Options",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "powercfg.cpl",
+				"group": 100,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "printers",
 			"label": "Printers",
 			"group": "Control Panel applets",
 			"status": "named",
-			"replaces": "Control Panel applet: Printers",
-			"kind": "applet",
-			"resource": null
+			"replaces": "Printers folder",
+			"kind": "shell",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 38,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 138,
+					"evidence": ["source", "binary"],
+					"use": "registry DefaultIcon of the Printers item"
+				},
+				{
+					"module": "main.cpl",
+					"group": 300,
+					"evidence": ["source", "binary"],
+					"use": "Printers applet"
+				}
+			]
 		},
 		{
 			"id": "program",
 			"label": "Program",
 			"group": "File types",
 			"status": "named",
-			"replaces": "Program (.exe)",
+			"replaces": "Programs without an icon of their own (.exe, .com)",
 			"kind": "file-type",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 3,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "user32.dll",
+					"group": 100,
+					"evidence": ["source", "binary"],
+					"use": "IDI_APPLICATION"
+				}
+			]
 		},
 		{
 			"id": "programs",
 			"label": "Programs",
 			"group": "Start menu",
 			"status": "named",
-			"replaces": "Start menu, Programs",
+			"replaces": "Start menu: Programs",
 			"kind": "start-menu",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 326,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "programsfolder",
+			"label": "Programs folder",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "Programs folder (by id)",
+			"kind": "shell",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 20,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "properties",
+			"label": "Properties",
+			"group": "Explorer toolbar",
+			"status": "named",
+			"replaces": "Properties",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 15,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "question",
@@ -529,16 +1436,46 @@
 			"status": "named",
 			"replaces": "Message box question icon (IDI_QUESTION)",
 			"kind": "dialog",
-			"resource": null
+			"resource": {
+				"module": "user32.dll",
+				"group": 102,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "ramdisk",
+			"label": "RAM disk",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "RAM disk (the stock group has no 16 px frame)",
+			"kind": "drive",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 13,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "readme",
 			"label": "Read Me",
 			"group": "Desktop and shell",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
+			"status": "named",
+			"replaces": "The Read Me desktop shortcut, once the shortcut names an icon (it shows the .txt icon today)",
+			"kind": "start-menu",
 			"resource": null
+		},
+		{
+			"id": "recent",
+			"label": "Recent",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "Recent folder",
+			"kind": "shell",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 21,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "recycle",
@@ -569,31 +1506,82 @@
 			"note": "Registry DefaultIcon values Empty and Full say shell32.dll,31 and shell32.dll,32, the zero-based indexes of groups 32 and 33."
 		},
 		{
+			"id": "regedit",
+			"label": "Registry Editor",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Registry Editor",
+			"kind": "program",
+			"resource": {
+				"module": "regedit.exe",
+				"group": 100,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "regfile",
+			"label": "Registry file",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Registry files (.reg)",
+			"kind": "file-type",
+			"resource": {
+				"module": "regedit.exe",
+				"group": 101,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
 			"id": "regional",
 			"label": "Regional Options",
 			"group": "Control Panel applets",
 			"status": "named",
 			"replaces": "Control Panel applet: Regional Options",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "intl.cpl",
+				"group": 200,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "removable",
+			"label": "Removable drive",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "Removable drive",
+			"kind": "drive",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 8,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "rtf",
 			"label": "Rich text (.RTF)",
 			"group": "File types",
 			"status": "named",
-			"replaces": "Rich text document (.rtf)",
+			"replaces": "Rich text (.rtf)",
 			"kind": "file-type",
-			"resource": null
+			"resource": {
+				"module": "wordpad.exe",
+				"group": 103,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "run",
 			"label": "Run",
 			"group": "Start menu",
 			"status": "named",
-			"replaces": "Start menu, Run",
+			"replaces": "Start menu: Run",
 			"kind": "start-menu",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 328,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "search",
@@ -602,16 +1590,52 @@
 			"status": "named",
 			"replaces": "Search",
 			"kind": "start-menu",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 23,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 323,
+					"evidence": ["source", "binary"],
+					"use": "Start menu: Search"
+				},
+				{
+					"module": "browseui.dll",
+					"bitmaps": [214, 215, 216, 217],
+					"cell": 17,
+					"evidence": ["source", "binary"],
+					"use": "Search"
+				}
+			]
+		},
+		{
+			"id": "servman",
+			"label": "Service Manager",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Service Manager",
+			"kind": "program",
+			"resource": {
+				"module": "servman.exe",
+				"group": 50,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "settings",
 			"label": "Settings",
 			"group": "Start menu",
 			"status": "named",
-			"replaces": "Start menu, Settings",
+			"replaces": "Start menu: Settings",
 			"kind": "start-menu",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 330,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "shield",
@@ -636,9 +1660,39 @@
 			"label": "Shut Down",
 			"group": "Start menu",
 			"status": "named",
-			"replaces": "Start menu, Shut Down",
+			"replaces": "Start menu: Shut Down",
 			"kind": "start-menu",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 329,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "sndrec32",
+			"label": "Sound Recorder",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Sound Recorder",
+			"kind": "program",
+			"resource": {
+				"module": "sndrec32.exe",
+				"group": 107,
+				"evidence": ["source"]
+			}
+		},
+		{
+			"id": "sol",
+			"label": "Solitaire",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Solitaire",
+			"kind": "program",
+			"resource": {
+				"module": "sol.exe",
+				"group": 100,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "sound",
@@ -647,7 +1701,46 @@
 			"status": "named",
 			"replaces": "Control Panel applet: Sound and Audio",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "mmsys.cpl",
+				"group": 3004,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "sndvol32.exe",
+					"group": 301,
+					"evidence": ["source", "binary"],
+					"use": "Volume Control"
+				}
+			]
+		},
+		{
+			"id": "spider",
+			"label": "Spider Solitaire",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Spider Solitaire",
+			"kind": "program",
+			"resource": {
+				"module": "spider.exe",
+				"group": 100,
+				"evidence": ["source"]
+			}
+		},
+		{
+			"id": "star",
+			"label": "Favourites",
+			"group": "Explorer toolbar",
+			"status": "named",
+			"replaces": "Favourites",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 2,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "system",
@@ -656,25 +1749,71 @@
 			"status": "named",
 			"replaces": "Control Panel applet: System",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "sysdm.cpl",
+				"group": 50,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "taskbarstart",
 			"label": "Taskbar and Start Menu",
 			"group": "Control Panel applets",
 			"status": "named",
-			"replaces": "Control Panel applet: Taskbar and Start Menu",
+			"replaces": "Taskbar and Start Menu; the Start Menu folder",
+			"kind": "shell",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 40,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "taskmgr",
+			"label": "Task Manager",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Task Manager",
+			"kind": "program",
+			"resource": {
+				"module": "taskmgr.exe",
+				"group": 136,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "telephon",
+			"label": "Phone and Modem",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Phone and Modem",
 			"kind": "applet",
-			"resource": null
+			"resource": {
+				"module": "telephon.cpl",
+				"group": 100,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "text",
 			"label": "Text",
 			"group": "File types",
 			"status": "named",
-			"replaces": "Text document (.txt)",
+			"replaces": "Text files (.txt)",
 			"kind": "file-type",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 152,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "notepad.exe",
+					"group": 521,
+					"evidence": ["source", "binary"],
+					"use": "Notepad"
+				}
+			]
 		},
 		{
 			"id": "trynet",
@@ -689,37 +1828,116 @@
 			"id": "undo",
 			"label": "Undo",
 			"group": "Explorer toolbar",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Undo",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 8,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "up",
 			"label": "Up",
 			"group": "Explorer toolbar",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Up one level",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 28,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "usrmgr",
+			"label": "User Accounts",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: User Accounts",
+			"kind": "applet",
+			"resource": {
+				"module": "usrmgr.cpl",
+				"group": 40,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "usrmgr.cpl",
+					"group": 100,
+					"evidence": ["source", "binary"],
+					"use": "theme-compatibility id"
+				}
+			]
+		},
+		{
+			"id": "utilman",
+			"label": "Utility Manager",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Utility Manager (the stock group has a 32 px frame only)",
+			"kind": "program",
+			"resource": {
+				"module": "utilman.exe",
+				"group": 30,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "video",
+			"label": "Video file",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Video files (.avi)",
+			"kind": "file-type",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 224,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "views",
 			"label": "Views",
 			"group": "Explorer toolbar",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Views",
+			"kind": "toolbar",
+			"resource": {
+				"module": "browseui.dll",
+				"bitmaps": [214, 215, 216, 217],
+				"cell": 22,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "volume",
 			"label": "Volume",
 			"group": "System tray",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Volume",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 230,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "volumemute",
+			"label": "Volume (muted)",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Volume, muted",
+			"kind": "tray",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 231,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "warning",
@@ -728,7 +1946,58 @@
 			"status": "named",
 			"replaces": "Message box warning icon (IDI_EXCLAMATION)",
 			"kind": "dialog",
-			"resource": null
+			"resource": {
+				"module": "user32.dll",
+				"group": 101,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "winmine",
+			"label": "Minesweeper",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Minesweeper",
+			"kind": "program",
+			"resource": {
+				"module": "winmine.exe",
+				"group": 1,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "wordpad",
+			"label": "WordPad",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "WordPad",
+			"kind": "program",
+			"resource": {
+				"module": "wordpad.exe",
+				"group": 102,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "write.exe",
+					"group": 1,
+					"evidence": ["source", "binary"],
+					"use": "Write, which starts WordPad"
+				}
+			]
+		},
+		{
+			"id": "wusa",
+			"label": "Update installer",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "The update installer",
+			"kind": "program",
+			"resource": {
+				"module": "wusa.exe",
+				"group": 101,
+				"evidence": ["source", "binary"]
+			}
 		}
 	]
 }

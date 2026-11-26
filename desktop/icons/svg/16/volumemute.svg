@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): volumemute, Volume (muted) (16 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="e-volumemute-16-c1"><path d="M5 20.5 C5 19.4 5.9 18.5 7 18.5 L12.2 18.5 C12.64 18.5 13.274 18.267 13.61 17.982 L21.857 10.971 C22.486 10.437 23 10.675 23 11.5 L23 36.5 C23 37.325 22.486 37.563 21.857 37.029 L13.61 30.018 C13.274 29.733 12.64 29.5 12.2 29.5 L7 29.5 C5.9 29.5 5 28.6 5 27.5 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M5 20.5 C5 19.4 5.9 18.5 7 18.5 L12.2 18.5 C12.64 18.5 13.274 18.267 13.61 17.982 L21.857 10.971 C22.486 10.437 23 10.675 23 11.5 L23 36.5 C23 37.325 22.486 37.563 21.857 37.029 L13.61 30.018 C13.274 29.733 12.64 29.5 12.2 29.5 L7 29.5 C5.9 29.5 5 28.6 5 27.5 Z" fill="#e4e2ec" fill-rule="evenodd"/><g clip-path="url(#e-volumemute-16-c1)"><path d="M5 20.5 C5 19.4 5.9 18.5 7 18.5 L12.2 18.5 C12.64 18.5 13.274 18.267 13.61 17.982 L21.857 10.971 C22.486 10.437 23 10.675 23 11.5 L23 36.5 C23 37.325 22.486 37.563 21.857 37.029 L13.61 30.018 C13.274 29.733 12.64 29.5 12.2 29.5 L7 29.5 C5.9 29.5 5 28.6 5 27.5 Z" fill="none" stroke="#2a2840" stroke-width="6" stroke-opacity="0.6"/></g><path d="M29 18 L41 30 M41 18 L29 30" fill="none" stroke="#782131" stroke-opacity="0.6" stroke-width="9.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M29 18 L41 30 M41 18 L29 30" fill="none" stroke="#f43f5e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
