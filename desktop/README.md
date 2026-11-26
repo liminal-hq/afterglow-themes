@@ -53,7 +53,7 @@ python3 desktop/pointers/patch-user32.py USER32_COPY desktop/build/pointers USER
 
 ## Icons
 
-`icons/gen_d.py` draws the 69 Afterglow icons as SVG masters (`icons/svg/`, committed; `icons/sheet.svg` is the contact sheet), and `icons/render.py` renders them to `.ico` files with 16, 24, 32 and 48 px frames and PNGs (needs `rsvg-convert` and Pillow). `icons/map.json` maps each icon id to the ReactOS icon it replaces, with every resource id still `null`. `icons/SHA256SUMS` records the `.ico` files and `icons/SHA256SUMS.masters` the masters, and `bun run check:desktop` checks both. See `docs/reactos-desktop-icons.md`.
+`icons/gen_e.py` (with `icons/folders_g.py`, the folder family it imports) draws the 73 Afterglow icons as SVG masters (`icons/svg/`, committed; `icons/sheet.svg` is the contact sheet), `icons/arrows.py` draws the shortcut arrow masters (`icons/arrow/`), and `icons/render.py` renders them to `.ico` files with 16, 32 and 48 px frames and PNGs (needs `rsvg-convert` and Pillow). `icons/map.json` maps each icon id to the ReactOS icon it replaces, with only the verified resource ids filled in. `icons/SHA256SUMS` records the `.ico` files and `icons/SHA256SUMS.masters` the masters, and `bun run check:desktop` checks both. See `docs/reactos-desktop-icons.md`.
 
 ```sh
 python3 desktop/icons/render.py desktop/build/icons

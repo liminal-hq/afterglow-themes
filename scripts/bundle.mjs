@@ -231,11 +231,13 @@ function buildReactosDesktop() {
 		// The SVG masters are reference art beside the raster pointers
 		cpSync(join(desktop, 'pointers', 'svg'), join(pointers, 'svg'), { recursive: true });
 
-		// The icon set: the .ico and PNG renders drawn here, the SVG masters they come from, and the id map
+		// The icon set and the shortcut arrow: the .ico and PNG renders drawn here, the SVG masters they come from, and the id map
 		const icons = join(stage, 'icons');
 		execFileSync('python3', [join(desktop, 'icons', 'render.py'), icons], { stdio: 'ignore' });
 		rmSync(join(icons, 'afterglow-icons-sheet.png'));
+		rmSync(join(icons, 'afterglow-arrow-preview.png'));
 		cpSync(join(desktop, 'icons', 'svg'), join(icons, 'svg'), { recursive: true });
+		cpSync(join(desktop, 'icons', 'arrow'), join(icons, 'arrow'), { recursive: true });
 		for (const file of ['map.json', 'SHA256SUMS', 'SHA256SUMS.masters']) {
 			copyFileSync(join(desktop, 'icons', file), join(icons, file));
 		}
@@ -256,10 +258,9 @@ function buildReactosDesktop() {
 			join(root, 'docs', 'images', 'afterglow-pointers.png'),
 			join(stage, 'docs', 'images', 'afterglow-pointers.png'),
 		);
-		copyFileSync(
-			join(root, 'docs', 'images', 'afterglow-icons.png'),
-			join(stage, 'docs', 'images', 'afterglow-icons.png'),
-		);
+		for (const image of ['afterglow-icons.png', 'afterglow-arrow.png']) {
+			copyFileSync(join(root, 'docs', 'images', image), join(stage, 'docs', 'images', image));
+		}
 		const readme = readFileSync(join(desktop, 'README.md'), 'utf8').replaceAll(
 			'](../docs/',
 			'](docs/',

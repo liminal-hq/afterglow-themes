@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): info, Information (32 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><filter id="e-info-32-b1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter><linearGradient id="e-info-32-g937adb856fc6" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#937adb"/><stop offset="1" stop-color="#856fc6"/></linearGradient><clipPath id="e-info-32-c1"><path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" clip-rule="evenodd"/></clipPath></defs>
+<ellipse cx="25" cy="43.4" rx="15.48" ry="1.5" fill="#0a1230" opacity="0.2" filter="url(#e-info-32-b1)"/><path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" fill="#a78bfa" fill-rule="evenodd"/><g clip-path="url(#e-info-32-c1)"><path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" fill="url(#e-info-32-g937adb856fc6)" fill-rule="evenodd" transform="translate(1.5 1.5)"/></g><g clip-path="url(#e-info-32-c1)"><path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" fill="none" stroke="#3a3157" stroke-width="3" stroke-opacity="0.45"/></g><path d="M22 23 C22 21.9 22.9 21 24 21 L24 21 C25.1 21 26 21.9 26 23 L26 32 C26 33.1 25.1 34 24 34 L24 34 C22.9 34 22 33.1 22 32 Z" fill="#fbfaf6" fill-rule="evenodd"/><path d="M21.4 15.2 a2.6 2.6 0 1 0 5.2 0 a2.6 2.6 0 1 0 -5.2 0 Z" fill="#fbfaf6" fill-rule="evenodd"/>
+</svg>

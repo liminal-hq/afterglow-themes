@@ -1,12 +1,13 @@
 {
-	"note": "Maps each Afterglow icon id to the ReactOS icon it replaces. status is named when the sheet or the plan names a ReactOS object and unmapped otherwise. resource is the module and resource id (or registry key) to patch; it stays null until checked against ReactOS 0.4.16, so no id here is a guess.",
+	"note": "Maps each Afterglow icon id to the ReactOS icon it replaces. status is named when the sheet or the plan names a ReactOS object and unmapped otherwise. resource is the module and icon group id to replace; it is null unless the id is verified, and evidence says how: source (ReactOS 0.4.16 source) and binary (the installed 0.4.16 shell32.dll). Ids listed here come from the folder icon research; every null is unverified, not guessed.",
 	"kinds": {
 		"shell": "shell32 object icon",
 		"drive": "shell32 drive icon",
 		"file-type": "DefaultIcon of the file type",
 		"dialog": "stock message box icon in user32",
 		"applet": "icon of the Control Panel applet",
-		"start-menu": "Start menu entry icon"
+		"start-menu": "Start menu entry icon",
+		"overlay": "the shortcut arrow overlay shell32 draws over a shortcut's icon"
 	},
 	"icons": [
 		{
@@ -62,6 +63,21 @@
 			"replaces": "Archive (.zip, .cab)",
 			"kind": "file-type",
 			"resource": null
+		},
+		{
+			"id": "arrow",
+			"label": "Shortcut arrow",
+			"group": "Overlay",
+			"status": "named",
+			"replaces": "Shortcut arrow overlay, drawn over the icon of every shortcut",
+			"kind": "overlay",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 30,
+				"evidence": ["source", "binary"]
+			},
+			"registry": "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Icons, value 29",
+			"note": "The stock group 30 has 16 and 32 px frames only; arrow.ico has real 16, 32 and 48 px frames."
 		},
 		{
 			"id": "back",
@@ -154,6 +170,19 @@
 			"resource": null
 		},
 		{
+			"id": "desktop",
+			"label": "Desktop",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "Desktop",
+			"kind": "shell",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 35,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
 			"id": "display",
 			"label": "Display",
 			"group": "Control Panel applets",
@@ -205,7 +234,11 @@
 			"status": "named",
 			"replaces": "Folder, closed",
 			"kind": "shell",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 4,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "folderopen",
@@ -214,7 +247,12 @@
 			"status": "named",
 			"replaces": "Folder, open",
 			"kind": "shell",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 5,
+				"evidence": ["source", "binary"]
+			},
+			"note": "Rarely shown in ReactOS 0.4.16: only the file dialog's Look in list and regedit ask for it. Delivered so the pair is complete."
 		},
 		{
 			"id": "folderopts",
@@ -358,7 +396,11 @@
 			"status": "named",
 			"replaces": "My Computer",
 			"kind": "shell",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 16,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "mydocs",
@@ -367,7 +409,50 @@
 			"status": "named",
 			"replaces": "My Documents",
 			"kind": "shell",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 235,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "mymusic",
+			"label": "My Music",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "My Music folder",
+			"kind": "shell",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 237,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "mypictures",
+			"label": "My Pictures",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "My Pictures folder",
+			"kind": "shell",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 236,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "myvideos",
+			"label": "My Videos",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "My Videos folder",
+			"kind": "shell",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 238,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "netconn",
@@ -394,7 +479,12 @@
 			"status": "named",
 			"replaces": "My Network Places",
 			"kind": "shell",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 18,
+				"evidence": ["source", "binary"]
+			},
+			"note": "Registry DefaultIcon says shell32.dll,17, the zero-based index of group 18."
 		},
 		{
 			"id": "power",
@@ -457,7 +547,12 @@
 			"status": "named",
 			"replaces": "Recycle Bin, empty",
 			"kind": "shell",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 32,
+				"evidence": ["source", "binary"]
+			},
+			"note": "Registry DefaultIcon values Empty and Full say shell32.dll,31 and shell32.dll,32, the zero-based indexes of groups 32 and 33."
 		},
 		{
 			"id": "recyclefull",
@@ -466,7 +561,12 @@
 			"status": "named",
 			"replaces": "Recycle Bin, full",
 			"kind": "shell",
-			"resource": null
+			"resource": {
+				"module": "shell32.dll",
+				"group": 33,
+				"evidence": ["source", "binary"]
+			},
+			"note": "Registry DefaultIcon values Empty and Full say shell32.dll,31 and shell32.dll,32, the zero-based indexes of groups 32 and 33."
 		},
 		{
 			"id": "regional",

@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-# Render the Afterglow icon masters to PNG at 16, 24, 32 and 48 px and pack one .ico per icon with all four frames.
+# Render the Afterglow icon masters to PNG at 16, 32 and 48 px and pack one .ico per icon with those three frames.
 # Usage: render.py OUT_DIR
 #
-# Writes OUT_DIR/png/ID-SIZE.png, OUT_DIR/ico/ID.ico and OUT_DIR/afterglow-icons-sheet.png (the generator's contact sheet). Each size
-# draws from the master built for it: 48 and 32 from svg/ID.svg (32 is the 48 master scaled), 24 from svg/24/ID.svg, and 16 from the
-# hinted redraw svg/ID-16.svg where one exists, otherwise from svg/16/ID.svg. An .ico holds four uncompressed 32-bit BGRA DIB frames
-# (alpha in the pixels, an all-zero AND mask), the classic layout every Windows since 95 reads, ReactOS included; no PNG-compressed
-# frames, which older icon loaders reject. The ico bytes carry no dates and depend only on the rendered pixels, so the same masters
-# and the same rsvg-convert give the same files; the PNGs and the sheet are written as rsvg-convert makes them. Needs rsvg-convert and Pillow.
+# Writes OUT_DIR/png/ID-SIZE.png, OUT_DIR/ico/ID.ico, the shortcut arrow as png/arrow-SIZE.png and ico/arrow.ico, the contact sheet
+# afterglow-icons-sheet.png and a preview of the arrow over six icons, afterglow-arrow-preview.png. ReactOS never asks for 24 px, so there
+# is no 24 px frame. Each size draws from the master built for it: 48 from svg/ID.svg, 32 from svg/32/ID.svg (the 32 px profile, still a
+# 48 viewBox), and 16 from the hinted redraw svg/ID-16.svg where one exists, otherwise from svg/16/ID.svg. The arrow draws from
+# arrow/arrow-48.svg, arrow-32.svg and the pixel-drawn arrow-16-hinted.svg. The soft shadows are blurs in the masters, so each size bakes
+# its own when rsvg-convert rasterises it. An .ico holds three uncompressed 32-bit BGRA DIB frames (alpha in the pixels, an all-zero AND
+# mask), the classic layout every Windows since 95 reads, ReactOS included; no PNG-compressed frames, which older icon loaders reject. The
+# ico bytes carry no dates and depend only on the rendered pixels, so the same masters and the same rsvg-convert give the same files; the
+# PNGs and the two preview images are written as rsvg-convert and Pillow make them. Needs rsvg-convert and Pillow.
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -21,7 +24,8 @@ from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SVG = os.path.join(HERE, "svg")
-SIZES = (16, 24, 32, 48)
+ARROW = os.path.join(HERE, "arrow")
+SIZES = (16, 32, 48)
 
 
 def ids():
@@ -31,8 +35,10 @@ def ids():
 
 def master(icon, size):
 	"""The SVG that draws `icon` at `size`."""
-	if size == 24:
-		return os.path.join(SVG, "24", icon + ".svg")
+	if icon == "arrow":
+		return os.path.join(ARROW, "arrow-16-hinted.svg" if size == 16 else f"arrow-{size}.svg")
+	if size == 32:
+		return os.path.join(SVG, "32", icon + ".svg")
 	if size == 16:
 		hinted = os.path.join(SVG, icon + "-16.svg")
 		return hinted if os.path.exists(hinted) else os.path.join(SVG, "16", icon + ".svg")
@@ -81,7 +87,8 @@ def render(out_dir):
 	ico_dir = os.path.join(out_dir, "ico")
 	os.makedirs(png_dir, exist_ok=True)
 	os.makedirs(ico_dir, exist_ok=True)
-	for icon in ids():
+	pixels = {}
+	for icon in ids() + ["arrow"]:
 		frames = []
 		for size in SIZES:
 			data = rsvg(master(icon, size), size, size)
@@ -91,10 +98,32 @@ def render(out_dir):
 			if image.size != (size, size):
 				sys.exit(f"render.py: {icon} at {size} came out {image.size[0]} x {image.size[1]}")
 			frames.append(image)
+			pixels[icon, size] = image
 		with open(os.path.join(ico_dir, icon + ".ico"), "wb") as f:
 			f.write(ico(frames))
 	with open(os.path.join(out_dir, "afterglow-icons-sheet.png"), "wb") as f:
 		f.write(subprocess.run(["rsvg-convert", "--format", "png", os.path.join(HERE, "sheet.svg")], check=True, stdout=subprocess.PIPE).stdout)
+	arrow_preview(pixels).save(os.path.join(out_dir, "afterglow-arrow-preview.png"), optimize=False)
+
+
+def arrow_preview(pixels):
+	"""The arrow over six icons at 48, 32 and 16 px on the desktop and on cream, composited the way ReactOS does (at 0, 0, same size), at 3x."""
+	shown = ("folder", "doc", "mycomputer", "hdd", "recycle", "program")
+	grounds = ((9, 14, 42), (212, 208, 200))
+	pad, scale = 8, 3
+	width = pad + len(shown) * (48 + 32 + 16 + 3 * pad)
+	sheet = Image.new("RGBA", (width, 2 * (48 + 2 * pad)), (0, 0, 0, 255))
+	for row, ground in enumerate(grounds):
+		y = row * (48 + 2 * pad)
+		sheet.paste(Image.new("RGBA", (width, 48 + 2 * pad), ground + (255,)), (0, y))
+		x = pad
+		for icon in shown:
+			for size in SIZES[::-1]:
+				frame = pixels[icon, size].copy()
+				frame.alpha_composite(pixels["arrow", size])
+				sheet.alpha_composite(frame, (x, y + pad + (48 - size)))
+				x += size + pad
+	return sheet.resize((sheet.width * scale, sheet.height * scale), Image.NEAREST)
 
 
 if __name__ == "__main__":

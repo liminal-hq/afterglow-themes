@@ -14,8 +14,8 @@ Every release attaches two zips for the desktop, next to the editor and terminal
 - `style-scrollbars/afterglow.msstyles`, the build with the Afterglow scroll bars. Both files have the same name because the style registry entries name `afterglow.msstyles`, so use one or the other
 - `schemes/`, the eight colour schemes as `.reg` files and `apply-scheme.cmd`, and `install/afterglow-original.reg`, which selects the style and sets the caption metrics. See [reactos-desktop-colour-schemes.md](reactos-desktop-colour-schemes.md)
 - `pointers/`, the 14 `.cur` and two `.ani` pointers, `afterglow-pointers.reg` and `patch-user32.py` with its hash list. The zip never carries a patched `user32.dll`: you patch your own copy. See [reactos-desktop-pointers.md](reactos-desktop-pointers.md)
-- `icons/`, the 69 icons as `ico/ID.ico` (16, 24, 32 and 48 px frames, 32-bit alpha) and `png/ID-SIZE.png`, the SVG masters in `svg/` they are drawn from, `map.json` (which ReactOS icon each id replaces, with resource ids left null until checked) and the hash lists. See [reactos-desktop-icons.md](reactos-desktop-icons.md)
-- `SHA256SUMS` for the two styles, `README.md`, `PROVENANCE.md`, the three docs pages above with the pointer and icon sheet images they show (`docs/images/`) and the licence files
+- `icons/`, the 73 icons and the shortcut arrow as `ico/ID.ico` (16, 32 and 48 px frames, 32-bit alpha; `ico/arrow.ico` replaces shell32 group 30) and `png/ID-SIZE.png`, the SVG masters in `svg/` and `arrow/` they are drawn from, `map.json` (which ReactOS icon each id replaces, with the verified resource ids and the rest null) and the hash lists. See [reactos-desktop-icons.md](reactos-desktop-icons.md)
+- `SHA256SUMS` for the two styles, `README.md`, `PROVENANCE.md`, the three docs pages above with the pointer, icon sheet and arrow images they show (`docs/images/`) and the licence files
 
 ## How the zips are built
 
