@@ -24,6 +24,10 @@ The Afterglow mouse pointers for ReactOS 0.4.16: 14 pointers at the standard siz
 
 The generator also writes an 8-frame `afterglow-working.ani` and `afterglow-busy.ani`, for systems that play animated pointers.
 
+## Icons
+
+The matching icon set is in [reactos-desktop-icons.md](reactos-desktop-icons.md).
+
 ## SVG masters
 
 The pointers that ship are the 32 × 32 raster files from the generator. The repository also holds vector masters of the same 14 pointers in `desktop/pointers/svg/`, drawn from the same shape definitions (polygons, circles and strokes) in a 32 × 32 viewBox, so the art survives a larger size or a new target. They are reference art: raster is what ships (`.cur`, `.ani`, and the sheet above), vector is the scalable source.

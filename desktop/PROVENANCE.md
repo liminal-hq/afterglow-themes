@@ -47,3 +47,13 @@ The colours are in the `SCHEMES` table in `style/agdraw.py`, one entry per colou
 | ----------------------------------------------- | ------------------------- | ------------------------------------------------------------------------ |
 | `pointers/afterglow-*.cur`, `.ani` (not in git) | `pointers/gen-cursors.py` | Deterministic; `pointers/SHA256SUMS`, checked by `bun run check:desktop` |
 | `pointers/afterglow-pointers.reg`               | Written by hand           | The "Afterglow" scheme under `HKCU\Control Panel\Cursors`                |
+
+## Icons
+
+**Original art.** The 69 icons are drawn by `icons/gen_d.py` from rectangles, circles, paths and strokes defined in the script on a 48-unit grid, with one depth pass (ramps, lit edge, extrusion, contact shadow) applied by rule. The colours are the Afterglow tokens plus side tones and highlights derived from them in the script. Nothing was traced or recoloured, and no ReactOS, Windows or third-party icon was opened or used. The design followed Microsoft Learn's public app icon design and construction guidance and Fluent 2's iconography notes for grid, radii, sizes and light direction; only the guidance was read.
+
+| Asset                                             | Made by           | Notes                                                                                        |
+| ------------------------------------------------- | ----------------- | -------------------------------------------------------------------------------------------- |
+| `icons/svg/**`, `icons/sheet.svg`                 | `icons/gen_d.py`  | The generator is canonical; the SVGs are its output, hashed in `icons/SHA256SUMS.masters`    |
+| `icons/ico/*.ico`, `icons/png/*.png` (not in git) | `icons/render.py` | Deterministic `.ico` bytes, hashed in `icons/SHA256SUMS`, checked by `bun run check:desktop` |
+| `icons/map.json`                                  | Written by hand   | Icon id to the ReactOS icon it replaces; no resource id is recorded until it is checked      |

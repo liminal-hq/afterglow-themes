@@ -49,7 +49,7 @@ Switching colour schemes live in Display Properties reloads the theme in every r
 
 ## Pointers
 
-The pointer set is separate from the colour schemes and the same in every one. See `docs/reactos-desktop-pointers.md`.
+The pointer set is separate from the colour schemes and the same in every one. See `docs/reactos-desktop-pointers.md`. The icon set is described in `docs/reactos-desktop-icons.md`.
 
 ## Where the colours come from
 

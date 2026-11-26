@@ -1,0 +1,634 @@
+{
+	"note": "Maps each Afterglow icon id to the ReactOS icon it replaces. status is named when the sheet or the plan names a ReactOS object and unmapped otherwise. resource is the module and resource id (or registry key) to patch; it stays null until checked against ReactOS 0.4.16, so no id here is a guess.",
+	"kinds": {
+		"shell": "shell32 object icon",
+		"drive": "shell32 drive icon",
+		"file-type": "DefaultIcon of the file type",
+		"dialog": "stock message box icon in user32",
+		"applet": "icon of the Control Panel applet",
+		"start-menu": "Start menu entry icon"
+	},
+	"icons": [
+		{
+			"id": "access",
+			"label": "Accessibility",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Accessibility",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "addhw",
+			"label": "Add Hardware",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Add Hardware",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "addremove",
+			"label": "Add/Remove Programs",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Add/Remove Programs",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "admintools",
+			"label": "Administrative Tools",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Administrative Tools",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "appmanager",
+			"label": "Applications Manager",
+			"group": "Desktop and shell",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "archive",
+			"label": "Archive",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Archive (.zip, .cab)",
+			"kind": "file-type",
+			"resource": null
+		},
+		{
+			"id": "back",
+			"label": "Back",
+			"group": "Explorer toolbar",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "browser",
+			"label": "Internet Browser",
+			"group": "Desktop and shell",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "cd",
+			"label": "CD drive",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "CD-ROM drive",
+			"kind": "drive",
+			"resource": null
+		},
+		{
+			"id": "clock",
+			"label": "Clock",
+			"group": "System tray",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "cmd",
+			"label": "Command Prompt",
+			"group": "Desktop and shell",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "console",
+			"label": "Console",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Console",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "controlpanel",
+			"label": "Control Panel",
+			"group": "Desktop and shell",
+			"status": "named",
+			"replaces": "Control Panel",
+			"kind": "shell",
+			"resource": null
+		},
+		{
+			"id": "copy",
+			"label": "Copy to",
+			"group": "Explorer toolbar",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "datetime",
+			"label": "Date/Time",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Date/Time",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "del",
+			"label": "Delete",
+			"group": "Explorer toolbar",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "display",
+			"label": "Display",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Display",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "doc",
+			"label": "Document",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Generic document",
+			"kind": "file-type",
+			"resource": null
+		},
+		{
+			"id": "documents",
+			"label": "Documents",
+			"group": "Start menu",
+			"status": "named",
+			"replaces": "Start menu, Documents",
+			"kind": "start-menu",
+			"resource": null
+		},
+		{
+			"id": "error",
+			"label": "Error",
+			"group": "Dialogs",
+			"status": "named",
+			"replaces": "Message box error icon (IDI_HAND)",
+			"kind": "dialog",
+			"resource": null
+		},
+		{
+			"id": "floppy",
+			"label": "Floppy",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "Floppy drive",
+			"kind": "drive",
+			"resource": null
+		},
+		{
+			"id": "folder",
+			"label": "Folder",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "Folder, closed",
+			"kind": "shell",
+			"resource": null
+		},
+		{
+			"id": "folderopen",
+			"label": "Folder (open)",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "Folder, open",
+			"kind": "shell",
+			"resource": null
+		},
+		{
+			"id": "folderopts",
+			"label": "Folder Options",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Folder Options",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "folders",
+			"label": "Folders",
+			"group": "Explorer toolbar",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "font",
+			"label": "Font",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Font file (.ttf)",
+			"kind": "file-type",
+			"resource": null
+		},
+		{
+			"id": "fonts",
+			"label": "Fonts",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Fonts",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "forward",
+			"label": "Forward",
+			"group": "Explorer toolbar",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "hdd",
+			"label": "Hard disk",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "Local disk drive",
+			"kind": "drive",
+			"resource": null
+		},
+		{
+			"id": "help",
+			"label": "Help",
+			"group": "Start menu",
+			"status": "named",
+			"replaces": "Start menu, Help",
+			"kind": "start-menu",
+			"resource": null
+		},
+		{
+			"id": "image",
+			"label": "Image",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Bitmap image (.bmp)",
+			"kind": "file-type",
+			"resource": null
+		},
+		{
+			"id": "inetsettings",
+			"label": "Internet Settings",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Internet Settings",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "info",
+			"label": "Information",
+			"group": "Dialogs",
+			"status": "named",
+			"replaces": "Message box information icon (IDI_ASTERISK)",
+			"kind": "dialog",
+			"resource": null
+		},
+		{
+			"id": "kbdlayout",
+			"label": "Keyboard layout",
+			"group": "System tray",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "keyboard",
+			"label": "Keyboard",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Keyboard",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "library",
+			"label": "Library (DLL)",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Library (.dll)",
+			"kind": "file-type",
+			"resource": null
+		},
+		{
+			"id": "mouse",
+			"label": "Mouse",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Mouse",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "move",
+			"label": "Move to",
+			"group": "Explorer toolbar",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "mycomputer",
+			"label": "My Computer",
+			"group": "Desktop and shell",
+			"status": "named",
+			"replaces": "My Computer",
+			"kind": "shell",
+			"resource": null
+		},
+		{
+			"id": "mydocs",
+			"label": "My Documents",
+			"group": "Desktop and shell",
+			"status": "named",
+			"replaces": "My Documents",
+			"kind": "shell",
+			"resource": null
+		},
+		{
+			"id": "netconn",
+			"label": "Network Connections",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Network Connections",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "netdrive",
+			"label": "Network drive",
+			"group": "Drives and folders",
+			"status": "named",
+			"replaces": "Network drive",
+			"kind": "drive",
+			"resource": null
+		},
+		{
+			"id": "network",
+			"label": "My Network Places",
+			"group": "Desktop and shell",
+			"status": "named",
+			"replaces": "My Network Places",
+			"kind": "shell",
+			"resource": null
+		},
+		{
+			"id": "power",
+			"label": "Power Options",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Power Options",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "printers",
+			"label": "Printers",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Printers",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "program",
+			"label": "Program",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Program (.exe)",
+			"kind": "file-type",
+			"resource": null
+		},
+		{
+			"id": "programs",
+			"label": "Programs",
+			"group": "Start menu",
+			"status": "named",
+			"replaces": "Start menu, Programs",
+			"kind": "start-menu",
+			"resource": null
+		},
+		{
+			"id": "question",
+			"label": "Question",
+			"group": "Dialogs",
+			"status": "named",
+			"replaces": "Message box question icon (IDI_QUESTION)",
+			"kind": "dialog",
+			"resource": null
+		},
+		{
+			"id": "readme",
+			"label": "Read Me",
+			"group": "Desktop and shell",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "recycle",
+			"label": "Recycle Bin (empty)",
+			"group": "Desktop and shell",
+			"status": "named",
+			"replaces": "Recycle Bin, empty",
+			"kind": "shell",
+			"resource": null
+		},
+		{
+			"id": "recyclefull",
+			"label": "Recycle Bin (full)",
+			"group": "Desktop and shell",
+			"status": "named",
+			"replaces": "Recycle Bin, full",
+			"kind": "shell",
+			"resource": null
+		},
+		{
+			"id": "regional",
+			"label": "Regional Options",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Regional Options",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "rtf",
+			"label": "Rich text (.RTF)",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Rich text document (.rtf)",
+			"kind": "file-type",
+			"resource": null
+		},
+		{
+			"id": "run",
+			"label": "Run",
+			"group": "Start menu",
+			"status": "named",
+			"replaces": "Start menu, Run",
+			"kind": "start-menu",
+			"resource": null
+		},
+		{
+			"id": "search",
+			"label": "Search",
+			"group": "Explorer toolbar",
+			"status": "named",
+			"replaces": "Search",
+			"kind": "start-menu",
+			"resource": null
+		},
+		{
+			"id": "settings",
+			"label": "Settings",
+			"group": "Start menu",
+			"status": "named",
+			"replaces": "Start menu, Settings",
+			"kind": "start-menu",
+			"resource": null
+		},
+		{
+			"id": "shield",
+			"label": "Security",
+			"group": "Dialogs",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "showdesk",
+			"label": "Show desktop",
+			"group": "System tray",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "shutdown",
+			"label": "Shut Down",
+			"group": "Start menu",
+			"status": "named",
+			"replaces": "Start menu, Shut Down",
+			"kind": "start-menu",
+			"resource": null
+		},
+		{
+			"id": "sound",
+			"label": "Sound and Audio",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Sound and Audio",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "system",
+			"label": "System",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: System",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "taskbarstart",
+			"label": "Taskbar and Start Menu",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: Taskbar and Start Menu",
+			"kind": "applet",
+			"resource": null
+		},
+		{
+			"id": "text",
+			"label": "Text",
+			"group": "File types",
+			"status": "named",
+			"replaces": "Text document (.txt)",
+			"kind": "file-type",
+			"resource": null
+		},
+		{
+			"id": "trynet",
+			"label": "Network",
+			"group": "System tray",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "undo",
+			"label": "Undo",
+			"group": "Explorer toolbar",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "up",
+			"label": "Up",
+			"group": "Explorer toolbar",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "views",
+			"label": "Views",
+			"group": "Explorer toolbar",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "volume",
+			"label": "Volume",
+			"group": "System tray",
+			"status": "unmapped",
+			"replaces": null,
+			"kind": null,
+			"resource": null
+		},
+		{
+			"id": "warning",
+			"label": "Warning",
+			"group": "Dialogs",
+			"status": "named",
+			"replaces": "Message box warning icon (IDI_EXCLAMATION)",
+			"kind": "dialog",
+			"resource": null
+		}
+	]
+}

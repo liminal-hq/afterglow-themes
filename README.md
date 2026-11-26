@@ -104,6 +104,10 @@ A matching set of 14 mouse pointers for ReactOS, drawn procedurally in navy with
 
 _The Afterglow pointers at 4× and at true size, on the dark desktop and on cream._
 
+## Desktop icons
+
+A set of 69 icons for the ReactOS desktop (shell objects, Control Panel applets, drives, file types, dialogs and the Start menu), drawn as vector masters in light 3D and rendered by script to 16, 24, 32 and 48 px as one `.ico` per icon, with a map from each icon id to the ReactOS icon it replaces. See [docs/reactos-desktop-icons.md](docs/reactos-desktop-icons.md).
+
 ## Install
 
 ### OpenCode

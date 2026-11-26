@@ -18,7 +18,7 @@ set -euo pipefail
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$root"
 
-for tool in python3 llvm-rc lld-link sha256sum; do
+for tool in python3 llvm-rc lld-link sha256sum rsvg-convert; do
 	command -v "$tool" >/dev/null || { echo "check-desktop: $tool is required" >&2; exit 2; }
 done
 
@@ -91,6 +91,30 @@ if [ -n "${USER32:-}" ]; then
 		echo "patch-user32.py refused or failed on $USER32"
 		status=1
 	fi
+fi
+
+# The icon set: the generator redraws every SVG master and the contact sheet (compared byte for byte, and with SHA256SUMS.masters), then
+# render.py draws the 69 .ico files, which are compared with SHA256SUMS. The .ico bytes were identical with rsvg-convert 2.58 and 2.63.
+mkdir -p "$out/icons-gen"
+python3 desktop/icons/gen_d.py "$out/icons-gen" >/dev/null
+if diff -r "$out/icons-gen/icons" desktop/icons/svg >/dev/null && cmp -s "$out/icons-gen/sheet.svg" desktop/icons/sheet.svg; then
+	echo "the icon masters in desktop/icons/svg and sheet.svg match the generator"
+else
+	echo "the icon masters in desktop/icons are out of date: run desktop/icons/gen_d.py OUT_DIR, then copy OUT_DIR/icons over desktop/icons/svg and OUT_DIR/sheet.svg over desktop/icons/sheet.svg"
+	status=1
+fi
+if (cd desktop/icons && sha256sum --check --quiet SHA256SUMS.masters); then
+	echo "the icon masters match desktop/icons/SHA256SUMS.masters"
+else
+	echo "an icon master changed: record the new hashes in desktop/icons/SHA256SUMS.masters (see desktop/README.md)"
+	status=1
+fi
+python3 desktop/icons/render.py "$out/icons"
+if (cd "$out/icons" && sha256sum --check --quiet "$root/desktop/icons/SHA256SUMS"); then
+	echo "the 69 Afterglow .ico files match desktop/icons/SHA256SUMS"
+else
+	echo "the .ico files do not match desktop/icons/SHA256SUMS: a master or the renderer changed, so look at $out/icons, then record the new hashes with (cd OUT_DIR && sha256sum ico/*.ico > desktop/icons/SHA256SUMS)"
+	status=1
 fi
 
 [ "$status" -eq 0 ] && echo "Desktop style and pointers are reproducible."
