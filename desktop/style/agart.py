@@ -691,13 +691,18 @@ def flash_button():
 
 
 def tray_background():
-	"""The notification area: the taskbar's own rows, so it reads as part of the band (same hairline, same lift and fall, no tint of its
-	own), with a one-pixel neutral divider down its left edge."""
+	"""The notification area: the taskbar's own rows, so the fill, hairline, lift and fall continue across it, with a dusk-blue stroke
+	down its left edge only, curving round the top-left and bottom-left corners. Outside the curve is the key colour, so the taskbar
+	shows through; there is no stroke along the top, bottom or right."""
 	W = 12
 	column = taskbar_background()[:, -1]
-	a = np.zeros((len(column), W, 3))
-	a[:, :] = column[:, None, :]
-	a[2:, 0] = mix(column[2:], P["raised3"], 0.55)
+	H = len(column)
+	a, m = shape(W, H, 4, None, None, corners="tl bl", rows=list(column))
+	e = inner_edge(m)
+	e[:, W - 1] = False
+	e[0, :] &= np.arange(W) < 5
+	e[H - 1, :] &= np.arange(W) < 5
+	a[e] = DUSK[1]
 	return a
 
 
