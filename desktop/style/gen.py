@@ -68,6 +68,19 @@ def check_contrast(colour):
 	if worst < 4.5 or inactive < 4.5:
 		sys.exit(f"{colour}: caption contrast {worst:.1f}:1, inactive {inactive:.1f}:1 (need 4.5:1)")
 	return worst, inactive
+def check_caption_edge(colour, art):
+	"""The last row of a caption (the line a dialog or message box shows against its client) must be darker than the row above it in
+	both states: an accent colour there reads as a stray fleck where it meets the frame's outline."""
+	for path in ("window/caption.bmp", "window/caption-max.bmp"):
+		a = art[path]
+		half = a.shape[0] // 2
+		for state, name in ((0, "active"), (1, "inactive")):
+			edge = a[(state + 1) * half - 1]
+			above = a[(state + 1) * half - 2]
+			if any(luminance(pixel) > luminance(pixel_above) + 1e-6 for pixel, pixel_above in zip(edge, above)):
+				sys.exit(f"{colour}: the {name} {path} bottom row is lighter than the row above it")
+
+
 SIZE_NAME = "Normal"
 DOC = {
 	"DisplayName": "Afterglow",
@@ -190,6 +203,7 @@ def main():
 	ini_total = 0
 	for n, (colour, _tip) in enumerate(COLOURS):
 		art = all_art(colour, scrollbars)
+		check_caption_edge(colour, art)
 		names = {}
 		for path, a in art.items():
 			data = encode_bmp(a)

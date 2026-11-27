@@ -43,12 +43,9 @@ def caption(active, rounded=True):
 		for y in range(h):
 			if not m[y, x]:
 				continue
-			if y == h - 1:  # the ink line: gold under the title, fading out to the right
-				if active:
-					t = x / (w - 1)
-					a[y, x] = mix(P["ink"], mix(c, P["night"], 0.35), min(1.0, t * 1.25) ** 0.85)
-				else:
-					a[y, x] = P["raised3"]
+			if y == h - 1:  # the closing line under the title: a dark step of the ramp, never a bright colour, so it cannot read as a stray
+				# gold fleck where it meets the frame (dialogs and message boxes draw no menu bar over it)
+				a[y, x] = mix(c, P["night"], 0.6) if active else P["night"]
 			elif y == h - 2:  # darker bottom edge
 				a[y, x] = mix(c, P["night"], 0.38)
 			elif y <= 1:

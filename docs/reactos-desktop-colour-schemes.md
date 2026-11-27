@@ -4,16 +4,16 @@ The Afterglow visual style for ReactOS 0.4.16 (`afterglow.msstyles`) holds eight
 
 ## The schemes
 
-| Scheme             | Caption ramp                                                   | Accent (Start button, ink line, default ring, tick) | Taskbar              | Close               |
-| ------------------ | -------------------------------------------------------------- | --------------------------------------------------- | -------------------- | ------------------- |
-| **Dusk** (default) | `#1f2554` navy to `#7a4562` rose                               | gold `#ffaa40`                                      | `#0c0c10`            | rose `#f43f5e`      |
-| Ember              | `#2b1330` aubergine through burnt orange to coral `#ab4b3a`    | pale gold `#f3d58a`                                 | `#110c0b`            | crimson `#c41e3a`   |
-| Aurora             | `#0e2238` teal-navy through teal to violet `#4b3d86`           | mint `#7be3c8`                                      | `#070b14`            | magenta `#d0508f`   |
-| Graphite           | `#1e2126` charcoal through slate to warm grey `#585451`        | gold `#ffaa40`                                      | `#0d0d0e`            | muted red `#b5473f` |
-| Dusk Light         | `#f6dcc8` peach to `#d0c6e2` lilac, navy title text            | gold `#ffaa40`                                      | cream to lavender    | soft rose `#e0607a` |
-| Ember Light        | `#f7e3d3` apricot to `#e4ab9c` coral, aubergine title text     | gold `#e8b85a`                                      | warm cream           | crimson `#c41e3a`   |
-| Aurora Light       | `#dff3ef` mint ice to `#d8cbea` lavender, teal-navy title text | mint `#3cc6a4`                                      | cool light grey-blue | magenta `#d0508f`   |
-| Graphite Light     | `#f2f2f3` to `#ccc8c4` pale greys, charcoal title text         | gold `#ffaa40`                                      | light grey           | muted red `#b5473f` |
+| Scheme             | Caption ramp                                                   | Accent (Start button, default ring, tick) | Taskbar              | Close               |
+| ------------------ | -------------------------------------------------------------- | ----------------------------------------- | -------------------- | ------------------- |
+| **Dusk** (default) | `#1f2554` navy to `#7a4562` rose                               | gold `#ffaa40`                            | `#0c0c10`            | rose `#f43f5e`      |
+| Ember              | `#2b1330` aubergine through burnt orange to coral `#ab4b3a`    | pale gold `#f3d58a`                       | `#110c0b`            | crimson `#c41e3a`   |
+| Aurora             | `#0e2238` teal-navy through teal to violet `#4b3d86`           | mint `#7be3c8`                            | `#070b14`            | magenta `#d0508f`   |
+| Graphite           | `#1e2126` charcoal through slate to warm grey `#585451`        | gold `#ffaa40`                            | `#0d0d0e`            | muted red `#b5473f` |
+| Dusk Light         | `#f6dcc8` peach to `#d0c6e2` lilac, navy title text            | gold `#ffaa40`                            | cream to lavender    | soft rose `#e0607a` |
+| Ember Light        | `#f7e3d3` apricot to `#e4ab9c` coral, aubergine title text     | gold `#e8b85a`                            | warm cream           | crimson `#c41e3a`   |
+| Aurora Light       | `#dff3ef` mint ice to `#d8cbea` lavender, teal-navy title text | mint `#3cc6a4`                            | cool light grey-blue | magenta `#d0508f`   |
+| Graphite Light     | `#f2f2f3` to `#ccc8c4` pale greys, charcoal title text         | gold `#ffaa40`                            | light grey           | muted red `#b5473f` |
 
 Title text meets 4.5:1 on every caption ramp step in all eight schemes; the generator refuses to build otherwise. In every scheme the system colours an application paints with stay the classic cream scheme, so application client areas do not change.
 
