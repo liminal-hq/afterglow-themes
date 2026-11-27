@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Afterglow icon set, variant E: every icon drawn in the language of the M1 folder, with hinted 16 px redraws and the sheet.
-# The icons added in v2 are drawn in gen_v2.py, and the dialog pictures of v3 in gen_v3.py, with this file's Pen and registered here; hint16_v2.py
-# holds the hand-tuned 16 px frames.
+# The icons added in v2 are drawn in gen_v2.py, the dialog pictures of v3 in gen_v3.py and the full image's art of v4 in gen_v4.py, with this
+# file's Pen and registered here; hint16_v2.py holds the hand-tuned 16 px frames.
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -1100,6 +1100,8 @@ V3 = load_module("gen_v3")  # the dialog pictures added in v3
 V3.register(types.SimpleNamespace(**globals()))
 V16 = load_module("hint16_v2")  # the hand-tuned 16 px frames
 V16.register(types.SimpleNamespace(**globals()))
+V4 = load_module("gen_v4")  # the art the full image still showed in stock, with its own hand-tuned 16 px frames
+V4.register(types.SimpleNamespace(**globals()))
 TOOLBAR_24 = V2.TOOLBAR_24  # the Explorer toolbar glyphs, which also get a 24 px profile for browseui's 24 px strips
 LABEL = {k: l for _, items in GROUPS for k, l in items}
 

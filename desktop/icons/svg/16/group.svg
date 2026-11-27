@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): group, Group (16 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="e-group-16-c1"><path d="M24.18 11.82 a6.82 6.82 0 1 0 13.64 0 a6.82 6.82 0 1 0 -13.64 0 Z" clip-rule="evenodd"/></clipPath><clipPath id="e-group-16-c2"><path d="M18.9 34.7 C18.9 23.7 25.5 20.4 31 20.4 C36.5 20.4 43.1 23.7 43.1 34.7 V34.7 H18.9 Z" clip-rule="evenodd"/></clipPath><clipPath id="e-group-16-c3"><path d="M10.87 17.13 a7.13 7.13 0 1 0 14.26 0 a7.13 7.13 0 1 0 -14.26 0 Z" clip-rule="evenodd"/></clipPath><clipPath id="e-group-16-c4"><path d="M5.35 41.05 C5.35 29.55 12.25 26.1 18 26.1 C23.75 26.1 30.65 29.55 30.65 41.05 V41.05 H5.35 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M24.18 11.82 a6.82 6.82 0 1 0 13.64 0 a6.82 6.82 0 1 0 -13.64 0 Z" fill="#b4bfce" fill-rule="evenodd"/><g clip-path="url(#e-group-16-c1)"><path d="M24.18 11.82 a6.82 6.82 0 1 0 13.64 0 a6.82 6.82 0 1 0 -13.64 0 Z" fill="none" stroke="#5d668f" stroke-width="9" stroke-opacity="1"/></g><path d="M18.9 34.7 C18.9 23.7 25.5 20.4 31 20.4 C36.5 20.4 43.1 23.7 43.1 34.7 V34.7 H18.9 Z" fill="#42396c" fill-rule="evenodd"/><g clip-path="url(#e-group-16-c2)"><path d="M18.9 34.7 C18.9 23.7 25.5 20.4 31 20.4 C36.5 20.4 43.1 23.7 43.1 34.7 V34.7 H18.9 Z" fill="none" stroke="#67609f" stroke-width="9" stroke-opacity="1"/></g><path d="M10.87 17.13 a7.13 7.13 0 1 0 14.26 0 a7.13 7.13 0 1 0 -14.26 0 Z" fill="#ffaa40" fill-rule="evenodd"/><g clip-path="url(#e-group-16-c3)"><path d="M10.87 17.13 a7.13 7.13 0 1 0 14.26 0 a7.13 7.13 0 1 0 -14.26 0 Z" fill="none" stroke="#8c5e26" stroke-width="9" stroke-opacity="1"/></g><path d="M5.35 41.05 C5.35 29.55 12.25 26.1 18 26.1 C23.75 26.1 30.65 29.55 30.65 41.05 V41.05 H5.35 Z" fill="#8a73ce" fill-rule="evenodd"/><g clip-path="url(#e-group-16-c4)"><path d="M5.35 41.05 C5.35 29.55 12.25 26.1 18 26.1 C23.75 26.1 30.65 29.55 30.65 41.05 V41.05 H5.35 Z" fill="none" stroke="#6d5da3" stroke-width="9" stroke-opacity="1"/></g>
+</svg>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Afterglow card back: sun and rays (review only)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+
+Review only, not shipped: an alternative for cards.dll bitmap 54, in the same frame as card-back-sunset.svg.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="288" height="448" viewBox="0 0 72 112">
+<title>Afterglow card back: sun and rays (review only)</title>
+<defs><radialGradient id="glow" cx="36" cy="56" r="60" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#7a4562"/><stop offset="0.45" stop-color="#42396c"/><stop offset="1" stop-color="#1f2554"/></radialGradient><clipPath id="panel"><rect x="6.5" y="6.5" width="59" height="99" rx="1.5"/></clipPath></defs>
+<rect x="0" y="0" width="72" height="112" fill="#fbfaf6"/><rect x="3.5" y="3.5" width="65" height="105" rx="3" fill="url(#glow)"/><rect x="5.75" y="5.75" width="60.5" height="100.5" rx="2" fill="none" stroke="#ffd08e" stroke-width="1"/><g clip-path="url(#panel)"><path d="M49.88 57.827 L105.401 65.137 M48.934 61.358 L100.672 82.788 M47.107 64.523 L91.535 98.613 M44.523 67.107 L78.613 111.535 M41.358 68.934 L62.788 120.672 M37.827 69.88 L45.137 125.401 M34.173 69.88 L26.863 125.401 M30.642 68.934 L9.212 120.672 M27.477 67.107 L-6.613 111.535 M24.893 64.523 L-19.535 98.613 M23.066 61.358 L-28.672 82.788 M22.12 57.827 L-33.401 65.137 M22.12 54.173 L-33.401 46.863 M23.066 50.642 L-28.672 29.212 M24.893 47.477 L-19.535 13.387 M27.477 44.893 L-6.613 0.465 M30.642 43.066 L9.212 -8.672 M34.173 42.12 L26.863 -13.401 M37.827 42.12 L45.137 -13.401 M41.358 43.066 L62.788 -8.672 M44.523 44.893 L78.613 0.465 M47.107 47.477 L91.535 13.387 M48.934 50.642 L100.672 29.212 M49.88 54.173 L105.401 46.863" fill="none" stroke="#ffaa40" stroke-width="1.1" stroke-opacity="0.55" stroke-linecap="round"/></g><circle cx="36" cy="56" r="12" fill="#ffaa40" fill-opacity="0.35"/><circle cx="36" cy="56" r="9" fill="#ffaa40"/><ellipse cx="33" cy="52.5" rx="3.6" ry="2" fill="#ffe7c4" fill-opacity="0.8"/>
+</svg>

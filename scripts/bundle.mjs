@@ -278,6 +278,25 @@ function buildReactosDesktop() {
 			copyFileSync(join(desktop, 'dialogs', file), join(dialogs, file));
 		}
 
+		// The card art: the card back and the empty-pile marks for cards.dll, as SVG masters (with the two review-only backs), the BMPs
+		// rendered from them and the hash lists. The patches into cards.dll and the felt colour in sol.exe and spider.exe happen in the
+		// reactos-liminal build.
+		const cardArt = join(stage, 'cards');
+		execFileSync('python3', [join(desktop, 'cards', 'render.py'), cardArt], { stdio: 'ignore' });
+		rmSync(join(cardArt, 'afterglow-cards-preview.png'));
+		mkdirSync(join(cardArt, 'alternatives'));
+		for (const file of [
+			'card-back-sunset.svg',
+			'card-x.svg',
+			'card-o.svg',
+			'alternatives/card-back-lattice.svg',
+			'alternatives/card-back-rays.svg',
+			'SHA256SUMS',
+			'SHA256SUMS.masters',
+		]) {
+			copyFileSync(join(desktop, 'cards', file), join(cardArt, file));
+		}
+
 		// The icon set and the shortcut arrow: the .ico and PNG renders drawn here, the SVG masters they come from, and the id map
 		const icons = join(stage, 'icons');
 		execFileSync('python3', [join(desktop, 'icons', 'render.py'), icons], { stdio: 'ignore' });
@@ -321,6 +340,10 @@ function buildReactosDesktop() {
 			join(root, 'docs', 'images', 'afterglow-dialogs.png'),
 			join(stage, 'docs', 'images', 'afterglow-dialogs.png'),
 		);
+		copyFileSync(
+			join(root, 'docs', 'images', 'afterglow-cards.png'),
+			join(stage, 'docs', 'images', 'afterglow-cards.png'),
+		);
 		for (const image of [
 			'afterglow-icons.png',
 			'afterglow-icons-contact.png',
@@ -346,6 +369,7 @@ function buildReactosDesktop() {
 			'reactos-desktop-start.md',
 			'reactos-desktop-icons.md',
 			'reactos-desktop-dialogs.md',
+			'reactos-desktop-cards.md',
 			'reactos-stock-art-survey.md',
 		]) {
 			const text = readFileSync(join(root, 'docs', doc), 'utf8').replaceAll(
