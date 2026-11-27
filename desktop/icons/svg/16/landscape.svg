@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): landscape, Landscape (16 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="e-landscape-16-c1"><path d="M4 14 C4 12.35 5.35 11 7 11 L41 11 C42.65 11 44 12.35 44 14 L44 36 C44 37.65 42.65 39 41 39 L7 39 C5.35 39 4 37.65 4 36 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M4 14 C4 12.35 5.35 11 7 11 L41 11 C42.65 11 44 12.35 44 14 L44 36 C44 37.65 42.65 39 41 39 L7 39 C5.35 39 4 37.65 4 36 Z" fill="#f2eff4" fill-rule="evenodd"/><g clip-path="url(#e-landscape-16-c1)"><path d="M4 14 C4 12.35 5.35 11 7 11 L41 11 C42.65 11 44 12.35 44 14 L44 36 C44 37.65 42.65 39 41 39 L7 39 C5.35 39 4 37.65 4 36 Z" fill="none" stroke="#66619b" stroke-width="9" stroke-opacity="1"/></g><path d="M15 33 L22 16 L29 33 M17.5 27 H26.5" fill="none" stroke="#4a4580" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

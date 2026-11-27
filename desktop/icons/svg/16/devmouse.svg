@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): devmouse, Mouse (16 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="e-devmouse-16-c1"><path d="M13 19 C13 12.95 17.95 8 24 8 L24 8 C30.05 8 35 12.95 35 19 L35 32 C35 38.05 30.05 43 24 43 L24 43 C17.95 43 13 38.05 13 32 Z" clip-rule="evenodd"/></clipPath><clipPath id="e-devmouse-16-c2"><path d="M13 22 V19 a11 11 0 0 1 11 -11 V22 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M24 9 C24 4 31 2 37 5" fill="none" stroke="#5d668f" stroke-opacity="1" stroke-width="11.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 9 C24 4 31 2 37 5" fill="none" stroke="#b4bfce" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 19 C13 12.95 17.95 8 24 8 L24 8 C30.05 8 35 12.95 35 19 L35 32 C35 38.05 30.05 43 24 43 L24 43 C17.95 43 13 38.05 13 32 Z" fill="#e4e2ec" fill-rule="evenodd"/><g clip-path="url(#e-devmouse-16-c1)"><path d="M13 19 C13 12.95 17.95 8 24 8 L24 8 C30.05 8 35 12.95 35 19 L35 32 C35 38.05 30.05 43 24 43 L24 43 C17.95 43 13 38.05 13 32 Z" fill="none" stroke="#66619b" stroke-width="9" stroke-opacity="1"/></g><path d="M13 22 V19 a11 11 0 0 1 11 -11 V22 Z" fill="#ffaa40" fill-rule="evenodd"/><g clip-path="url(#e-devmouse-16-c2)"><path d="M13 22 V19 a11 11 0 0 1 11 -11 V22 Z" fill="none" stroke="#8c5e26" stroke-width="9" stroke-opacity="1"/></g><path d="M13.8 22 C13.8 21.615 14.115 21.3 14.5 21.3 L33.5 21.3 C33.885 21.3 34.2 21.615 34.2 22 L34.2 22.1 C34.2 22.485 33.885 22.8 33.5 22.8 L14.5 22.8 C14.115 22.8 13.8 22.485 13.8 22.1 Z" fill="#8f8da6" fill-rule="evenodd"/><path d="M23.3 9.5 C23.3 9.115 23.615 8.8 24 8.8 L24.1 8.8 C24.485 8.8 24.8 9.115 24.8 9.5 L24.8 21.1 C24.8 21.485 24.485 21.8 24.1 21.8 L24 21.8 C23.615 21.8 23.3 21.485 23.3 21.1 Z" fill="#8f8da6" fill-rule="evenodd"/>
+</svg>

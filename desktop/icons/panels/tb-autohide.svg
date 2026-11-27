@@ -1,0 +1,16 @@
+<!--
+Afterglow panel: Taskbar preview, auto-hide
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+
+Drawn by desktop/icons/gen_panels.py at the bitmap's own size; render.py writes it as a 24-bit bitmap, 336 x 35. The icons are the Afterglow icon set's own
+drawings and the words are outlined from DejaVu Sans, so no font is needed to render it.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="336" height="35" viewBox="0 0 336 35">
+<title>Taskbar preview, auto-hide</title>
+<defs><linearGradient id="tb-autohide-g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f2554"/><stop offset="1" stop-color="#7a4562"/></linearGradient></defs>
+<rect x="0" y="0" width="336" height="35" fill="url(#tb-autohide-g1)"/>
+<path d="M150 35 a18 18 0 0 1 36 0 Z" fill="#ffaa40" opacity="0.9"/>
+<rect x="0" y="33" width="336" height="2" fill="#3a384f"/>
+</svg>

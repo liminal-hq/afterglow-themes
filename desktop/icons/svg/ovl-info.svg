@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): ovl-info, Overlay, device note (48 master profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><linearGradient id="e-ovl-info-48-g937adb856fc6" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#937adb"/><stop offset="1" stop-color="#856fc6"/></linearGradient><clipPath id="e-ovl-info-48-c1"><path d="M0.4 39 a8.6 8.6 0 1 0 17.2 0 a8.6 8.6 0 1 0 -17.2 0 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M0.4 39 a8.6 8.6 0 1 0 17.2 0 a8.6 8.6 0 1 0 -17.2 0 Z" fill="url(#e-ovl-info-48-g937adb856fc6)" fill-rule="evenodd"/><g clip-path="url(#e-ovl-info-48-c1)"><path d="M0.4 39 a8.6 8.6 0 1 0 17.2 0 a8.6 8.6 0 1 0 -17.2 0 Z" fill="none" stroke="#6d5da3" stroke-width="3" stroke-opacity="1"/></g><path d="M6.737 36.284 a2.263 2.263 0 1 1 3.621 1.811 c-0.905 0.679 -1.358 1.132 -1.358 2.263" fill="none" stroke="#fbfaf6" stroke-width="3.268" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.868 43.074 a1.132 1.132 0 1 0 2.263 0 a1.132 1.132 0 1 0 -2.263 0 Z" fill="#fbfaf6" fill-rule="evenodd"/>
+</svg>

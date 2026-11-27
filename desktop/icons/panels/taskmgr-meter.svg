@@ -1,0 +1,23 @@
+<!--
+Afterglow panel: Task Manager tray meter
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+
+Drawn by desktop/icons/gen_panels.py at the bitmap's own size; render.py writes it as a 24-bit bitmap, 16 x 16. The icons are the Afterglow icon set's own
+drawings and the words are outlined from DejaVu Sans, so no font is needed to render it.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+<title>Task Manager tray meter</title>
+<defs></defs>
+<rect x="0" y="0" width="16" height="16" fill="#1a1828"/>
+<rect x="1" y="2" width="14" height="1" fill="#3a384f"/>
+<rect x="1" y="5" width="14" height="1" fill="#3a384f"/>
+<rect x="1" y="8" width="14" height="1" fill="#3a384f"/>
+<rect x="1" y="11" width="14" height="1" fill="#3a384f"/>
+<rect x="1" y="14" width="14" height="1" fill="#3a384f"/>
+<rect x="2" y="1" width="1" height="14" fill="#3a384f"/>
+<rect x="6" y="1" width="1" height="14" fill="#3a384f"/>
+<rect x="10" y="1" width="1" height="14" fill="#3a384f"/>
+<rect x="14" y="1" width="1" height="14" fill="#3a384f"/>
+</svg>

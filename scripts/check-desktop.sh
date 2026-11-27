@@ -206,9 +206,11 @@ else
 	status=1
 fi
 
-# The icon set: gen_e.py (with gen_v2.py, gen_v3.py, hint16_v2.py, gen_v4.py and gen_v5.py) redraws every SVG master and the contact sheet, and arrows.py the three shortcut arrow masters
-# (all compared byte for byte, and with SHA256SUMS.masters), then render.py draws the 196 .ico files, the 19 one-frame 24 px toolbar
-# .ico files and the 20 px Go bitmap, which are compared with SHA256SUMS. The .ico bytes were identical with rsvg-convert 2.58 and 2.63.
+# The icon set: gen_e.py (with gen_v2.py, gen_v3.py, hint16_v2.py, gen_v4.py, gen_v5.py and gen_v6.py) redraws every SVG master and the
+# contact sheet and arrows.py the three shortcut arrow masters (compared byte for byte, and with SHA256SUMS.masters). The panel masters are
+# hashed as they are, like the dialog art, because gen_panels.py outlines their words from DejaVu Sans. Then render.py draws the 253 .ico
+# files, the 75 one-frame 24 px .ico files, the Go bitmap, the toolbar strips and the panels, which are compared with SHA256SUMS. The .ico
+# bytes were identical with rsvg-convert 2.58 and 2.63.
 mkdir -p "$out/icons-gen"
 python3 desktop/icons/gen_e.py "$out/icons-gen" >/dev/null
 python3 -B desktop/icons/arrows.py --variant A1 --out "$out/icons-gen/arrow" >/dev/null
@@ -219,7 +221,7 @@ done
 if diff -r "$out/icons-gen/icons" desktop/icons/svg >/dev/null && cmp -s "$out/icons-gen/sheet.svg" desktop/icons/sheet.svg && [ "$arrow_ok" = 1 ]; then
 	echo "the icon masters in desktop/icons/svg, sheet.svg and arrow match the generators"
 else
-	echo "the icon masters in desktop/icons are out of date: run desktop/icons/gen_e.py OUT_DIR, copy OUT_DIR/icons over desktop/icons/svg and OUT_DIR/sheet.svg over desktop/icons/sheet.svg, and run arrows.py --variant A1 --out DIR for the three arrow masters"
+	echo "the icon masters in desktop/icons are out of date: run desktop/icons/gen_e.py OUT_DIR, copy OUT_DIR/icons over desktop/icons/svg and OUT_DIR/sheet.svg over desktop/icons/sheet.svg, run arrows.py --variant A1 --out DIR for the three arrow masters and gen_panels.py desktop/icons/panels for the panels"
 	status=1
 fi
 if (cd desktop/icons && sha256sum --check --quiet SHA256SUMS.masters); then
@@ -230,7 +232,7 @@ else
 fi
 python3 desktop/icons/render.py "$out/icons"
 if (cd "$out/icons" && sha256sum --check --quiet "$root/desktop/icons/SHA256SUMS"); then
-	echo "the 196 Afterglow .ico files, the 19 toolbar frames and the Go bitmap match desktop/icons/SHA256SUMS"
+	echo "the 253 Afterglow .ico files, the 75 24 px frames, the Go bitmap, the toolbar strips and the panels match desktop/icons/SHA256SUMS"
 else
 	echo "the .ico files do not match desktop/icons/SHA256SUMS: a master or the renderer changed, so look at $out/icons, then record the new hashes with (cd OUT_DIR && sha256sum ico/*.ico ico24/*.ico bmp/*.bmp > desktop/icons/SHA256SUMS)"
 	status=1

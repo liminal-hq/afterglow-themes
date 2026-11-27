@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): ovl-error, Overlay, device disabled (48 master profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><linearGradient id="e-ovl-error-48-gf65974ec3d5b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f65974"/><stop offset="1" stop-color="#ec3d5b"/></linearGradient><clipPath id="e-ovl-error-48-c1"><path d="M0.4 39 a8.6 8.6 0 1 0 17.2 0 a8.6 8.6 0 1 0 -17.2 0 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M0.4 39 a8.6 8.6 0 1 0 17.2 0 a8.6 8.6 0 1 0 -17.2 0 Z" fill="url(#e-ovl-error-48-gf65974ec3d5b)" fill-rule="evenodd"/><g clip-path="url(#e-ovl-error-48-c1)"><path d="M0.4 39 a8.6 8.6 0 1 0 17.2 0 a8.6 8.6 0 1 0 -17.2 0 Z" fill="none" stroke="#bd344d" stroke-width="3" stroke-opacity="1"/></g><path d="M4.7 39 H13.3" fill="none" stroke="#fbfaf6" stroke-width="3.268" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

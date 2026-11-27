@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): dot, Default item (48 master profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><linearGradient id="e-dot-48-gffb55af7a53e" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb55a"/><stop offset="1" stop-color="#f7a53e"/></linearGradient><clipPath id="e-dot-48-c1"><path d="M15 24 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M15 24 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z" fill="#ffd096" fill-rule="evenodd"/><g clip-path="url(#e-dot-48-c1)"><path d="M15 24 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z" fill="url(#e-dot-48-gffb55af7a53e)" fill-rule="evenodd" transform="translate(1 1)"/></g><g clip-path="url(#e-dot-48-c1)"><path d="M15 24 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z" fill="none" stroke="#8c5e26" stroke-width="3" stroke-opacity="1"/></g>
+</svg>

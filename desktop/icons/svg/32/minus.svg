@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): minus, Remove (32 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><filter id="e-minus-32-b1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter><linearGradient id="e-minus-32-gf65974ec3d5b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f65974"/><stop offset="1" stop-color="#ec3d5b"/></linearGradient><clipPath id="e-minus-32-c1"><path d="M5 21 C5 19.9 5.9 19 7 19 L41 19 C42.1 19 43 19.9 43 21 L43 27 C43 28.1 42.1 29 41 29 L7 29 C5.9 29 5 28.1 5 27 Z" clip-rule="evenodd"/></clipPath></defs>
+<ellipse cx="25" cy="35.4" rx="15.48" ry="1.5" fill="#0a1230" opacity="0.2" filter="url(#e-minus-32-b1)"/><path d="M5 21 C5 19.9 5.9 19 7 19 L41 19 C42.1 19 43 19.9 43 21 L43 27 C43 28.1 42.1 29 41 29 L7 29 C5.9 29 5 28.1 5 27 Z" fill="#f995a6" fill-rule="evenodd"/><g clip-path="url(#e-minus-32-c1)"><path d="M5 21 C5 19.9 5.9 19 7 19 L41 19 C42.1 19 43 19.9 43 21 L43 27 C43 28.1 42.1 29 41 29 L7 29 C5.9 29 5 28.1 5 27 Z" fill="url(#e-minus-32-gf65974ec3d5b)" fill-rule="evenodd" transform="translate(1.5 1.5)"/></g><g clip-path="url(#e-minus-32-c1)"><path d="M5 21 C5 19.9 5.9 19 7 19 L41 19 C42.1 19 43 19.9 43 21 L43 27 C43 28.1 42.1 29 41 29 L7 29 C5.9 29 5 28.1 5 27 Z" fill="none" stroke="#bd344d" stroke-width="5.01" stroke-opacity="1"/></g>
+</svg>

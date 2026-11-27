@@ -1,0 +1,426 @@
+{
+	"credui-banner": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			320,
+			60
+		]
+	},
+	"desk-monitor": {
+		"ground": [
+			212,
+			208,
+			200
+		],
+		"key": [
+			255,
+			0,
+			255
+		],
+		"size": [
+			160,
+			120
+		]
+	},
+	"start-preview": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			300,
+			180
+		]
+	},
+	"start-preview-classic": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			300,
+			180
+		]
+	},
+	"taskmgr-meter": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			16,
+			16
+		]
+	},
+	"tb-autohide": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tb-lock-group-noql": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tb-lock-group-ql": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tb-lock-nogroup-noql": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tb-lock-nogroup-ql": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tb-nolock-group-noql": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tb-nolock-group-ql": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tb-nolock-nogroup-noql": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tb-nolock-nogroup-ql": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tray-hide-clock-desk": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tray-hide-clock-nodesk": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tray-hide-noclock-desk": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tray-hide-noclock-nodesk": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tray-hide-seconds-desk": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tray-hide-seconds-nodesk": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tray-show-clock-desk": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tray-show-clock-nodesk": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tray-show-noclock-desk": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tray-show-noclock-nodesk": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tray-show-seconds-desk": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"tray-show-seconds-nodesk": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			336,
+			35
+		]
+	},
+	"wiz-addhw": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			164,
+			400
+		]
+	},
+	"wiz-cert": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			164,
+			628
+		]
+	},
+	"wiz-newdev": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			164,
+			400
+		]
+	},
+	"wiz-shortcut": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			164,
+			400
+		]
+	},
+	"wiz-zip": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			164,
+			628
+		]
+	},
+	"wizhead-addhw": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			49,
+			49
+		]
+	},
+	"wizhead-cert": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			49,
+			49
+		]
+	},
+	"wizhead-newdev": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			49,
+			49
+		]
+	},
+	"wizhead-zip": {
+		"ground": [
+			255,
+			255,
+			255
+		],
+		"key": null,
+		"size": [
+			49,
+			49
+		]
+	}
+}
