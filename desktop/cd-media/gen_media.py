@@ -5,11 +5,15 @@
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 #
-#   python3 gen_media.py OUT_DIR [FONT_DIR]
+#   python3 gen_media.py OUT_DIR [FONT_DIR] [--style stepped|smooth]
 #
-# Writes the masters to OUT_DIR (desktop/cd-media in the repository): disc.svg (the selected composition), alternatives/disc-sunrise.svg,
-# alternatives/disc-horizon.svg, label.svg, jewel-front.svg, jewel-back.svg and mockup.svg. render.py imports this module to lay the same
-# drawings out on print pages. Every length is in millimetres (the viewBox is the artboard in mm). Every colour is an Afterglow palette
+# Draws every piece in two styles, the names the desktop wallpapers use: stepped (flat bands, the retro 16 and 256 colour look of the boot
+# logo) and smooth (the same colours as continuous gradients, with a soft glow round the sun). Writes each style's masters to
+# OUT_DIR/<style>/ (desktop/cd-media/stepped and desktop/cd-media/smooth in the repository), or only the one --style names: disc.svg (the
+# selected composition), alternatives/disc-sunrise.svg, alternatives/disc-horizon.svg, label.svg, jewel-front.svg, jewel-back.svg and
+# mockup.svg. The style changes only the sky, the bands and the glow; the layout, the words and the sizes are the same in both. Each
+# piece's sky sits in its own scene group (id ending "scene", data-raster giving the box it covers), which render.py turns into a dithered
+# print-resolution image for the smooth PDFs. render.py imports this module for the contact sheet's type. Every length is in millimetres (the viewBox is the artboard in mm). Every colour is an Afterglow palette
 # colour: the 16 entries of desktop/boot/palette.json, read here so the two cannot drift, and the few named in EXTRA_COLOURS. All text is
 # outlined from Noto Sans (SIL Open Font License, which allows embedding the outlines) in FONT_DIR (default: the first folder holding
 # NotoSans-Light.ttf), so no font is needed to render or print a master. Each text path carries data-text (the words) and data-pt (its size
@@ -71,6 +75,10 @@ BOOKLET = 120.0  # the jewel case front insert, square
 BOOKLET_BLEED = 2.0
 TRAY_WIDTH, TRAY_HEIGHT, SPINE = 150.0, 118.0, 6.0  # the back tray card and its two spines
 TRAY_BLEED = 2.0
+
+STYLES = ("stepped", "smooth")  # as the desktop wallpapers name them
+GLOW_REACH = 1.45  # the smooth sun's glow, in sun radii
+GLOW_OPACITY = 0.45
 
 
 def load(name, path):
@@ -304,8 +312,80 @@ def stepped_sun(x, y, cell):
 	return '<g transform="translate(%s %s) scale(%s)" shape-rendering="crispEdges">%s</g>' % (number(x), number(y), number(cell), body)
 
 
+# ---- the sky, in either style ------------------------------------------------------------------------------------------------------------
+def band_middles(edges):
+	"""The middle of each band between consecutive edges, as a list one shorter than edges."""
+	return [(outer + inner) / 2 for outer, inner in zip(edges, edges[1:])]
+
+
+def ring_sky(style, centre_x, centre_y, radii, sun_radius, gradient_id):
+	"""The dusk bands round a sun at (centre_x, centre_y), radii outermost first as SKY_BANDS. Stepped: a flat circle per band. Smooth: one
+	radial gradient through the same colours, each at the middle of its band, fading into the backdrop across the outermost band, with
+	the sun's glow over it. Returns (defs, art); the art is not clipped, so the caller clips it to the sky."""
+	if style == "stepped":
+		return "", "".join(circle(centre_x, centre_y, radius, colour) for radius, colour in zip(radii, SKY_BANDS))
+	outer = radii[0]
+	middles = band_middles(list(radii) + [sun_radius])
+	stops = [(0.0, SKY_BANDS[-1], 1)]
+	stops += [(middle / outer, colour, 1) for middle, colour in reversed(list(zip(middles, SKY_BANDS)))]
+	stops.append((1.0, BACKDROP, 1))
+	defs = radial_gradient(gradient_id, centre_x, centre_y, outer, stops)
+	glow_id = gradient_id + "-glow"
+	reach = sun_radius * GLOW_REACH
+	defs += radial_gradient(glow_id, centre_x, centre_y, reach, ((sun_radius / reach, BRIGHT_GOLD, GLOW_OPACITY), (1.0, BRIGHT_GOLD, 0)))
+	size = 2 * outer + 200
+	art = rect(centre_x - size / 2, centre_y - size / 2, size, size, "url(#%s)" % gradient_id) + circle(centre_x, centre_y, reach, "url(#%s)" % glow_id)
+	return defs, art
+
+
+def stripe_sky(style, left, width, horizon, heights, sun, gradient_id):
+	"""The stepped wallpapers' sky over a level horizon: flat stripes of `heights`, the top one first, down to the horizon (stepped), or
+	one vertical gradient through the same colours at the middle of each stripe (smooth), with the sun's glow (sun is centre_x, radius)."""
+	top = horizon - sum(heights)
+	if style == "stepped":
+		stripes = []
+		for height, colour in zip(heights, SKY_BANDS):
+			stripes.append(rect(left, top, width, height + 0.05, colour))
+			top += height
+		return "", "".join(stripes)
+	edges = [top]
+	for height in heights:
+		edges.append(edges[-1] + height)
+	span = horizon - top
+	stops = [(0.0, SKY_BANDS[0], 1)] + [((middle - top) / span, colour, 1) for middle, colour in zip(band_middles(edges), SKY_BANDS)]
+	stops.append((1.0, SKY_BANDS[-1], 1))
+	defs = ('<linearGradient id="%s" gradientUnits="userSpaceOnUse" x1="0" y1="%s" x2="0" y2="%s">%s</linearGradient>'
+		% (gradient_id, number(top), number(horizon), gradient_stops(stops)))
+	sun_x, sun_radius = sun
+	glow_id = gradient_id + "-glow"
+	reach = sun_radius * GLOW_REACH
+	defs += radial_gradient(glow_id, sun_x, horizon, reach, ((sun_radius / reach, BRIGHT_GOLD, GLOW_OPACITY), (1.0, BRIGHT_GOLD, 0)))
+	art = rect(left, top, width, span, "url(#%s)" % gradient_id) + circle(sun_x, horizon, reach, "url(#%s)" % glow_id)
+	return defs, art
+
+
+def gradient_stops(stops):
+	out = []
+	for offset, colour, opacity in stops:
+		extra = "" if opacity == 1 else ' stop-opacity="%s"' % number(opacity)
+		out.append('<stop offset="%s" stop-color="%s"%s/>' % (number(offset), colour, extra))
+	return "".join(out)
+
+
+def radial_gradient(gradient_id, centre_x, centre_y, radius, stops):
+	return ('<radialGradient id="%s" gradientUnits="userSpaceOnUse" cx="%s" cy="%s" r="%s">%s</radialGradient>'
+		% (gradient_id, number(centre_x), number(centre_y), number(radius), gradient_stops(stops)))
+
+
+def scene(prefix, box, art):
+	"""The sky layer of a piece: what changes between the styles. box is (x, y, width, height), the area the layer must cover in its own
+	coordinates, which render.py rasterises for the smooth PDFs."""
+	return '<g id="%sscene" data-raster="%s">%s</g>' % (prefix, " ".join(number(value) for value in box), art)
+
+
 # ---- the disc compositions -----------------------------------------------------------------------------------------------------------------
-# Each draws the art around (centre_x, centre_y) bigger than any print area and is clipped by its caller. Each returns (defs, art, text).
+# Each draws the art around (centre_x, centre_y) bigger than any print area and is clipped by its caller. Each returns (defs, sky, art,
+# text): the sky is the backdrop and the bands, the part the style changes; the art is the sun, the sheets and the horizon drawn over it.
 def lower_block(kind, centre):
 	"""The media, system and legal lines set on bottom arcs, innermost first so they read top to bottom."""
 	return [
@@ -319,18 +399,18 @@ def lower_block(kind, centre):
 	]
 
 
-def disc_halo(kind, centre_x, centre_y, prefix):
+def disc_halo(kind, style, centre_x, centre_y, prefix):
 	"""B, Halo: the boot logo turned into the disc. The sun sits behind the hub, half set on a horizon through the centre, the dusk bands
 	ring it to the rim, and the night below holds the horizon sheets and the small print."""
 	sky, night = prefix + "sky", prefix + "night"
 	defs = ('<clipPath id="%s"><rect x="%s" y="%s" width="140" height="70"/></clipPath>' % (sky, number(centre_x - 70), number(centre_y - 70))
 		+ '<clipPath id="%s"><rect x="%s" y="%s" width="140" height="70"/></clipPath>' % (night, number(centre_x - 70), number(centre_y)))
 	radii = (64, 57.5, 53.5, 49.5, 45.5, 41.5, 38, 34.5, 31.5, 28.5)
-	bands = "".join(circle(centre_x, centre_y, radius, colour) for radius, colour in zip(radii, SKY_BANDS))
+	sun_radius = 25.5
+	band_defs, bands = ring_sky(style, centre_x, centre_y, radii, sun_radius, prefix + "bands")
+	backdrop = circle(centre_x, centre_y, 70, BACKDROP) + '<g clip-path="url(#%s)">%s</g>' % (sky, bands)
 	art = "".join([
-		circle(centre_x, centre_y, 70, BACKDROP),
-		'<g clip-path="url(#%s)">%s</g>' % (sky, bands),
-		sun(centre_x, centre_y, 25.5, sky),
+		sun(centre_x, centre_y, sun_radius, sky),
 		sheets(centre_x, centre_y, 58, night),
 		horizon_line(centre_x - 62, centre_y, 124),
 	])
@@ -339,10 +419,10 @@ def disc_halo(kind, centre_x, centre_y, prefix):
 		kind.arc(kind.light, TITLE, 31, CREAM, centre, 46.2, "top"),
 		kind.arc(kind.medium, SUBTITLE, 9.5, BRIGHT_GOLD, centre, 39.6, "top", tracking=0.9),
 	] + lower_block(kind, centre)
-	return defs, art, text
+	return defs + band_defs, backdrop, art, text
 
 
-def disc_sunrise(kind, centre_x, centre_y, prefix):
+def disc_sunrise(kind, style, centre_x, centre_y, prefix):
 	"""A, Sunrise: the sun rises from the bottom rim and its bands sweep up past the hub; the fine print runs round the top rim, the title
 	arches over the hub and the media line sits under the horizon."""
 	horizon = centre_y + 40
@@ -350,11 +430,11 @@ def disc_sunrise(kind, centre_x, centre_y, prefix):
 	defs = ('<clipPath id="%s"><rect x="%s" y="%s" width="140" height="%s"/></clipPath>' % (sky, number(centre_x - 70), number(centre_y - 70), number(horizon - centre_y + 70))
 		+ '<clipPath id="%s"><rect x="%s" y="%s" width="140" height="40"/></clipPath>' % (night, number(centre_x - 70), number(horizon)))
 	radii = (104, 92, 81, 71, 62, 53.5, 45.5, 38, 31, 24.5)
-	bands = "".join(circle(centre_x, horizon, radius, colour) for radius, colour in zip(radii, SKY_BANDS))
+	sun_radius = 13
+	band_defs, bands = ring_sky(style, centre_x, horizon, radii, sun_radius, prefix + "bands")
+	backdrop = circle(centre_x, centre_y, 70, BACKDROP) + '<g clip-path="url(#%s)">%s</g>' % (sky, bands)
 	art = "".join([
-		circle(centre_x, centre_y, 70, BACKDROP),
-		'<g clip-path="url(#%s)">%s</g>' % (sky, bands),
-		sun(centre_x, horizon, 13, sky),
+		sun(centre_x, horizon, sun_radius, sky),
 		sheets(centre_x, horizon, 40, night),
 		horizon_line(centre_x - 62, horizon, 124),
 	])
@@ -369,10 +449,10 @@ def disc_sunrise(kind, centre_x, centre_y, prefix):
 		kind.straight(kind.medium, MEDIA_LINE, 7.5, BRIGHT_GOLD, centre_x, horizon + 5.4, "middle", tracking=0.45),
 		kind.straight(kind.regular, SYSTEM_LINE + " · " + VERSION, 6.5, CREAM, centre_x, horizon + 9.2, "middle"),
 	]
-	return defs, art, text
+	return defs + band_defs, backdrop, art, text
 
 
-def disc_horizon(kind, centre_x, centre_y, prefix):
+def disc_horizon(kind, style, centre_x, centre_y, prefix):
 	"""C, Horizon: a level horizon below the hub with the stepped sky of the stepped wallpapers above it and the sun setting to the right;
 	the wordmark sits straight over the hub and the small print curves under the horizon."""
 	horizon = centre_y + 12
@@ -381,15 +461,13 @@ def disc_horizon(kind, centre_x, centre_y, prefix):
 	defs = ('<clipPath id="%s"><rect x="%s" y="%s" width="140" height="70"/></clipPath>' % (night, number(centre_x - 70), number(horizon))
 		+ '<clipPath id="%s"><rect x="%s" y="%s" width="140" height="%s"/></clipPath>' % (sky, number(centre_x - 70), number(centre_y - 70), number(horizon - centre_y + 70)))
 	heights = (24, 10, 8, 7, 6, 6, 5.5, 5.5, 5, 5)  # the top band reaches above the artboard; thinner toward the horizon, like the stepped wallpapers
-	top = horizon - sum(heights)
-	stripes = []
-	for height, colour in zip(heights, SKY_BANDS):
-		stripes.append(rect(centre_x - 70, top, 140, height + 0.05, colour))
-		top += height
+	sun_x, sun_radius = centre_x + 31, 9.5
+	band_defs, stripes = stripe_sky(style, centre_x - 70, 140, horizon, heights, (sun_x, sun_radius), prefix + "bands")
+	if style == "smooth":
+		stripes = '<g clip-path="url(#%s)">%s</g>' % (sky, stripes)  # the sun's glow stops at the horizon
+	backdrop = circle(centre_x, centre_y, 70, BACKDROP) + stripes
 	art = "".join([
-		circle(centre_x, centre_y, 70, BACKDROP),
-		"".join(stripes),
-		sun(centre_x + 31, horizon, 9.5, sky),
+		sun(sun_x, horizon, sun_radius, sky),
 		sheets(centre_x, horizon, 52, night),
 		horizon_line(centre_x - 62, horizon, 124),
 	])
@@ -398,7 +476,7 @@ def disc_horizon(kind, centre_x, centre_y, prefix):
 		kind.straight(kind.light, TITLE, 34, CREAM, centre_x, centre_y - 31.5, "middle"),
 		kind.straight(kind.medium, SUBTITLE, 9.5, BRIGHT_GOLD, centre_x, centre_y - 24.6, "middle", tracking=0.9),
 	] + lower_block(kind, centre)
-	return defs, art, text
+	return defs + band_defs, backdrop, art, text
 
 
 COMPOSITIONS = {"halo": disc_halo, "sunrise": disc_sunrise, "horizon": disc_horizon}
@@ -413,12 +491,14 @@ def guides(centre_x, centre_y, circles, colour=ROSE_LINE):
 	return ('<g id="guides" data-print="no" fill="none" stroke="%s" stroke-width="0.15" stroke-dasharray="1 0.6">%s%s</g>' % (colour, body, cross))
 
 
-def disc_art(kind, composition, centre_x, centre_y, prefix, outer, inner):
-	"""A composition clipped to the annulus between inner and outer: returns (defs, body)."""
-	defs, art, text = COMPOSITIONS[composition](kind, centre_x, centre_y, prefix)
+def disc_art(kind, style, composition, centre_x, centre_y, prefix, outer, inner):
+	"""A composition clipped to the annulus between inner and outer: returns (defs, body). The sky's scene group covers the square round
+	the outer circle."""
+	defs, sky, art, text = COMPOSITIONS[composition](kind, style, centre_x, centre_y, prefix)
 	clip = prefix + "print"
 	defs += '<clipPath id="%s"><path clip-rule="evenodd" d="%s"/></clipPath>' % (clip, ring_path(centre_x, centre_y, outer, inner))
-	body = '<g id="%sart" clip-path="url(#%s)">%s<g id="%stext">%s</g></g>' % (prefix, clip, art, prefix, "".join(text))
+	layer = scene(prefix, (centre_x - outer, centre_y - outer, 2 * outer, 2 * outer), sky)
+	body = '<g id="%sart" clip-path="url(#%s)">%s%s<g id="%stext">%s</g></g>' % (prefix, clip, layer, art, prefix, "".join(text))
 	return defs, body
 
 
@@ -428,37 +508,43 @@ def svg(title, note, width, height, defs, body):
 		% (number(width), number(height), number(width), number(height), escape(title), defs, body))
 
 
-def disc_master(kind, composition):
-	defs, body = disc_art(kind, composition, 60, 60, "d-", DISC_RADIUS, HOLE_RADIUS)
+STYLE_NOTES = {
+	"stepped": "Stepped: the sky is flat bands of the boot logo's colours, the retro 16 and 256 colour look.",
+	"smooth": "Smooth: the sky is continuous gradients through the same colours, with a soft glow round the sun.",
+}
+
+
+def disc_master(kind, style, composition):
+	defs, body = disc_art(kind, style, composition, 60, 60, "d-", DISC_RADIUS, HOLE_RADIUS)
 	circles = (("disc edge 120 mm", DISC_RADIUS), ("printable outer 118 mm", DISC_PRINT_OUTER), ("label 117 mm", LABEL_RADIUS),
 		("text safe outer 112 mm", SAFE_OUTER), ("text safe inner 46 mm", SAFE_INNER), ("printable inner and label hole 41 mm", HOLE_RADIUS),
 		("stacking ring 33 mm", STACKING_RING), ("spindle hole 15 mm", SPINDLE_RADIUS))
 	selected = composition == SELECTED
-	title = "Afterglow for ReactOS disc art, %s%s" % (NAMES[composition], " (selected)" if selected else " (alternative)")
+	title = "Afterglow for ReactOS disc art, %s, %s%s" % (NAMES[composition], style, " (selected)" if selected else " (alternative)")
 	note = ("A 120 x 120 mm artboard in mm for a printable disc: the art runs from the 41 mm inner limit out to the 120 mm edge, 1 mm of bleed\n"
 		"past the usual 118 mm printable area, and the hub stays clear. Text stays between 46 and 112 mm. The guides group (data-print=\"no\")\n"
 		"marks the edge, the printable limits, the label, the text safe area, the stacking ring and the spindle hole, and render.py removes it\n"
-		"before any print. Text is outlined from Noto Sans; generated by gen_media.py, so edit the generator, not this file.")
+		"before any print. Text is outlined from Noto Sans; generated by gen_media.py, so edit the generator, not this file.\n" + STYLE_NOTES[style])
 	return svg(title, note, 120, 120, defs, body + "\n" + guides(60, 60, circles))
 
 
 LABEL_SIZE = 2 * (LABEL_RADIUS + LABEL_BLEED)  # 123 mm
 
 
-def label_master(kind):
+def label_master(kind, style):
 	centre = LABEL_SIZE / 2
-	defs, body = disc_art(kind, SELECTED, centre, centre, "l-", LABEL_RADIUS + LABEL_BLEED, HOLE_RADIUS - LABEL_BLEED)
+	defs, body = disc_art(kind, style, SELECTED, centre, centre, "l-", LABEL_RADIUS + LABEL_BLEED, HOLE_RADIUS - LABEL_BLEED)
 	circles = (("bleed outer 123 mm", LABEL_RADIUS + LABEL_BLEED), ("label cut 117 mm", LABEL_RADIUS), ("text safe outer 112 mm", SAFE_OUTER),
 		("text safe inner 46 mm", SAFE_INNER), ("label hole 41 mm", HOLE_RADIUS), ("bleed inner 35 mm", HOLE_RADIUS - LABEL_BLEED))
-	title = "Afterglow for ReactOS CD label, %s, 117 mm full face with 3 mm bleed" % NAMES[SELECTED]
+	title = "Afterglow for ReactOS CD label, %s, %s, 117 mm full face with 3 mm bleed" % (NAMES[SELECTED], style)
 	note = ("A 123 x 123 mm artboard in mm: the 117 mm full-face label with its 41 mm hole, and 3 mm of bleed past the edge and into the hole.\n"
 		"Text stays between 46 and 112 mm. The guides group (data-print=\"no\") marks the cut, the bleed and the safe area and is removed\n"
-		"before printing; render.py lays the label out on A4 and Letter sheets with crop marks. Generated by gen_media.py.")
+		"before printing; render.py lays the label out on A4 and Letter sheets with crop marks. Generated by gen_media.py.\n" + STYLE_NOTES[style])
 	return svg(title, note, LABEL_SIZE, LABEL_SIZE, defs, body + "\n" + guides(centre, centre, circles))
 
 
 # ---- the jewel case ------------------------------------------------------------------------------------------------------------------------
-def jewel_front(kind, prefix="f-"):
+def jewel_front(kind, style, prefix="f-"):
 	"""The 120 mm front insert, in trim coordinates (0 to 120), drawn 2 mm past the trim on every side: the boot logo's scene as the cover."""
 	bleed = BOOKLET_BLEED
 	horizon = 60.0
@@ -467,11 +553,14 @@ def jewel_front(kind, prefix="f-"):
 	defs = ('<clipPath id="%s"><rect x="%s" y="%s" width="%s" height="%s"/></clipPath>' % (sky, number(-bleed), number(-bleed), number(BOOKLET + 2 * bleed), number(horizon + bleed))
 		+ '<clipPath id="%s"><rect x="%s" y="%s" width="%s" height="%s"/></clipPath>' % (night, number(-bleed), number(horizon), number(BOOKLET + 2 * bleed), number(BOOKLET - horizon + bleed)))
 	radii = (66, 59.5, 53, 46.5, 40, 34, 28.5, 23.5, 19, 15)
-	bands = "".join(circle(centre_x, horizon, radius, colour) for radius, colour in zip(radii, SKY_BANDS))
+	sun_radius = 9.5
+	band_defs, bands = ring_sky(style, centre_x, horizon, radii, sun_radius, prefix + "bands")
+	defs += band_defs
+	layer = scene(prefix, (-bleed, -bleed, BOOKLET + 2 * bleed, BOOKLET + 2 * bleed),
+		rect(-bleed, -bleed, BOOKLET + 2 * bleed, BOOKLET + 2 * bleed, BACKDROP) + '<g clip-path="url(#%s)">%s</g>' % (sky, bands))
 	art = "".join([
-		rect(-bleed, -bleed, BOOKLET + 2 * bleed, BOOKLET + 2 * bleed, BACKDROP),
-		'<g clip-path="url(#%s)">%s</g>' % (sky, bands),
-		sun(centre_x, horizon, 9.5, sky),
+		layer,
+		sun(centre_x, horizon, sun_radius, sky),
 		sheets(centre_x, horizon, 58, night),
 		horizon_line(8, horizon, BOOKLET - 16, 0.3),
 	])
@@ -486,7 +575,7 @@ def jewel_front(kind, prefix="f-"):
 	return defs, art + '<g id="%stext">%s</g>' % (prefix, "".join(text))
 
 
-def jewel_back(kind, prefix="b-"):
+def jewel_back(kind, style, prefix="b-"):
 	"""The 150 x 118 mm tray card, in trim coordinates, drawn 2 mm past the trim: two 6 mm spines and the 138 mm back between them."""
 	bleed = TRAY_BLEED
 	left, right = SPINE, TRAY_WIDTH - SPINE
@@ -496,11 +585,13 @@ def jewel_back(kind, prefix="b-"):
 	defs = ('<clipPath id="%s"><rect x="%s" y="%s" width="%s" height="%s"/></clipPath>' % (sky, number(left), number(-bleed), number(right - left), number(band_bottom + bleed))
 		+ '<clipPath id="%s"><rect x="%s" y="%s" width="%s" height="12"/></clipPath>' % (night, number(left), number(band_bottom), number(right - left)))
 	radii = (66, 58, 50, 43, 36.5, 30.5, 25, 20, 15.5, 11.5)
-	bands = "".join(circle(centre_x, band_bottom, radius, colour) for radius, colour in zip(radii, SKY_BANDS))
+	sun_radius = 7
+	band_defs, bands = ring_sky(style, centre_x, band_bottom, radii, sun_radius, prefix + "bands")
+	defs += band_defs
 	art = [
-		rect(-bleed, -bleed, TRAY_WIDTH + 2 * bleed, TRAY_HEIGHT + 2 * bleed, BACKDROP),
-		'<g clip-path="url(#%s)">%s</g>' % (sky, bands),
-		sun(centre_x, band_bottom, 7, sky),
+		scene(prefix, (-bleed, -bleed, TRAY_WIDTH + 2 * bleed, TRAY_HEIGHT + 2 * bleed),
+			rect(-bleed, -bleed, TRAY_WIDTH + 2 * bleed, TRAY_HEIGHT + 2 * bleed, BACKDROP) + '<g clip-path="url(#%s)">%s</g>' % (sky, bands)),
+		sun(centre_x, band_bottom, sun_radius, sky),
 		sheets(centre_x, band_bottom, 60, night),
 		horizon_line(left + 6, band_bottom, right - left - 12, 0.3),
 	]
@@ -550,27 +641,28 @@ def trim_guides(width, height, folds=()):
 	return '<g id="guides" data-print="no" fill="none" stroke="%s" stroke-width="0.15" stroke-dasharray="1 0.6">%s</g>' % (ROSE_LINE, "".join(lines))
 
 
-def jewel_front_master(kind):
-	defs, body = jewel_front(kind)
+def jewel_front_master(kind, style):
+	defs, body = jewel_front(kind, style)
 	size = BOOKLET + 2 * BOOKLET_BLEED
 	note = ("The jewel case front insert: a 120 x 120 mm trim with 2 mm of bleed on every side (a 124 x 124 mm artboard in mm, the trim at\n"
-		"2 mm in). The guides group marks the trim and is removed before printing. Generated by gen_media.py.")
+		"2 mm in). The guides group marks the trim and is removed before printing. Generated by gen_media.py.\n" + STYLE_NOTES[style])
 	content = '<g transform="translate(%s %s)">%s\n%s</g>' % (number(BOOKLET_BLEED), number(BOOKLET_BLEED), body, trim_guides(BOOKLET, BOOKLET))
-	return svg("Afterglow for ReactOS jewel case front insert", note, size, size, defs, content)
+	return svg("Afterglow for ReactOS jewel case front insert, " + style, note, size, size, defs, content)
 
 
-def jewel_back_master(kind):
-	defs, body = jewel_back(kind)
+def jewel_back_master(kind, style):
+	defs, body = jewel_back(kind, style)
 	note = ("The jewel case back tray card: a 150 x 118 mm trim (6 mm spines on both sides of a 138 mm back) with 2 mm of bleed, on a\n"
-		"154 x 122 mm artboard in mm. The guides group marks the trim and the two folds and is removed before printing. Generated by gen_media.py.")
+		"154 x 122 mm artboard in mm. The guides group marks the trim and the two folds and is removed before printing. Generated by gen_media.py.\n"
+		+ STYLE_NOTES[style])
 	content = '<g transform="translate(%s %s)">%s\n%s</g>' % (number(TRAY_BLEED), number(TRAY_BLEED), body, trim_guides(TRAY_WIDTH, TRAY_HEIGHT, (SPINE, TRAY_WIDTH - SPINE)))
-	return svg("Afterglow for ReactOS jewel case back tray card", note, TRAY_WIDTH + 2 * TRAY_BLEED, TRAY_HEIGHT + 2 * TRAY_BLEED, defs, content)
+	return svg("Afterglow for ReactOS jewel case back tray card, " + style, note, TRAY_WIDTH + 2 * TRAY_BLEED, TRAY_HEIGHT + 2 * TRAY_BLEED, defs, content)
 
 
 # ---- the mock-up -----------------------------------------------------------------------------------------------------------------------------
-def disc_object(kind, centre_x, centre_y, prefix):
+def disc_object(kind, style, centre_x, centre_y, prefix):
 	"""A pressed disc: the printed face, the clear stacking ring and mirror band, the spindle hole, and a soft sheen."""
-	defs, face = disc_art(kind, SELECTED, centre_x, centre_y, prefix, DISC_PRINT_OUTER, HOLE_RADIUS)
+	defs, face = disc_art(kind, style, SELECTED, centre_x, centre_y, prefix, DISC_PRINT_OUTER, HOLE_RADIUS)
 	sheen = prefix + "sheen"
 	hub = prefix + "hub"
 	defs += ('<linearGradient id="%s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%s" stop-opacity="0"/><stop offset="0.38" stop-color="%s" stop-opacity="0.14"/>'
@@ -590,7 +682,7 @@ def disc_object(kind, centre_x, centre_y, prefix):
 	return defs, body
 
 
-def mockup_master(kind):
+def mockup_master(kind, style):
 	"""The hero picture: the jewel case, the disc with its sheen, and the label on its backing sheet, on a dusk table."""
 	width, height = 412.0, 180.0
 	defs = ('<radialGradient id="m-glow" cx="0.5" cy="1.05" r="0.75"><stop offset="0" stop-color="%s"/><stop offset="0.45" stop-color="%s"/>'
@@ -601,7 +693,7 @@ def mockup_master(kind):
 	body = [rect(0, 0, width, height, "url(#m-glow)")]
 	# the jewel case: 142 x 125 mm with the hinge on the left, the front insert under the lid
 	case_x, case_y = 16.0, 27.0
-	front_defs, front = jewel_front(kind, "m-f-")
+	front_defs, front = jewel_front(kind, style, "m-f-")
 	defs += front_defs + '<clipPath id="m-trim"><rect x="0" y="0" width="120" height="120"/></clipPath>'
 	body.append('<rect x="%s" y="%s" width="142" height="125" rx="1.5" fill="%s" fill-opacity="0.6" filter="url(#m-shadow)" transform="translate(2.5 3)"/>' % (number(case_x), number(case_y), BACKDROP))
 	body.append('<rect x="%s" y="%s" width="142" height="125" rx="1.5" fill="%s"/>' % (number(case_x), number(case_y), NIGHT1))
@@ -613,7 +705,7 @@ def mockup_master(kind):
 	# the label on its backing sheet, flat, to the right
 	sheet_x, sheet_y = 276.0, 15.0
 	label_centre = (sheet_x + 64.0, sheet_y + 72.0)
-	label_defs, label = disc_art(kind, SELECTED, label_centre[0], label_centre[1], "m-l-", LABEL_RADIUS, HOLE_RADIUS)
+	label_defs, label = disc_art(kind, style, SELECTED, label_centre[0], label_centre[1], "m-l-", LABEL_RADIUS, HOLE_RADIUS)
 	defs += label_defs
 	body.append('<rect x="%s" y="%s" width="128" height="150" rx="1" fill="%s" fill-opacity="0.6" filter="url(#m-shadow)" transform="translate(2 2.5)"/>' % (number(sheet_x), number(sheet_y), BACKDROP))
 	body.append('<rect x="%s" y="%s" width="128" height="150" rx="1" fill="%s"/>' % (number(sheet_x), number(sheet_y), PAPER))
@@ -621,13 +713,14 @@ def mockup_master(kind):
 	body.append('<path fill="none" stroke="%s" stroke-width="0.25" d="%s"/>' % (PAPER_SHADE, ring_path(label_centre[0], label_centre[1], LABEL_RADIUS + 0.2, HOLE_RADIUS - 0.2)))
 	# the disc, over the case's right edge
 	disc_centre = (204.0, 90.0)
-	disc_defs, disc = disc_object(kind, disc_centre[0], disc_centre[1], "m-d-")
+	disc_defs, disc = disc_object(kind, style, disc_centre[0], disc_centre[1], "m-d-")
 	defs += disc_defs
 	body.append('<path fill-rule="evenodd" fill="%s" fill-opacity="0.7" filter="url(#m-shadow)" transform="translate(2.5 3.5)" d="%s"/>' % (BACKDROP, ring_path(disc_centre[0], disc_centre[1], DISC_RADIUS, SPINDLE_RADIUS)))
 	body.append(disc)
 	note = ("The hero picture for the design canvas and the board: a 412 x 180 mm scene in mm, built from the same drawings as the masters\n"
-		"(the selected disc with a sheen, the jewel case front under its lid, the label on its backing sheet). Not for print. Generated by gen_media.py.")
-	return svg("Afterglow for ReactOS CD media mock-up", note, width, height, defs, "\n".join(body))
+		"(the selected disc with a sheen, the jewel case front under its lid, the label on its backing sheet). Not for print. Generated by gen_media.py.\n"
+		+ STYLE_NOTES[style])
+	return svg("Afterglow for ReactOS CD media mock-up, " + style, note, width, height, defs, "\n".join(body))
 
 
 # ---- files ---------------------------------------------------------------------------------------------------------------------------------------
@@ -639,29 +732,47 @@ def find_font_dir(argument):
 	sys.exit("gen_media.py: NotoSans-Light.ttf not found; pass its folder as FONT_DIR")
 
 
-def masters(kind):
+def masters(kind, style):
 	return {
-		"disc.svg": disc_master(kind, SELECTED),
-		"alternatives/disc-sunrise.svg": disc_master(kind, "sunrise"),
-		"alternatives/disc-horizon.svg": disc_master(kind, "horizon"),
-		"label.svg": label_master(kind),
-		"jewel-front.svg": jewel_front_master(kind),
-		"jewel-back.svg": jewel_back_master(kind),
-		"mockup.svg": mockup_master(kind),
+		"disc.svg": disc_master(kind, style, SELECTED),
+		"alternatives/disc-sunrise.svg": disc_master(kind, style, "sunrise"),
+		"alternatives/disc-horizon.svg": disc_master(kind, style, "horizon"),
+		"label.svg": label_master(kind, style),
+		"jewel-front.svg": jewel_front_master(kind, style),
+		"jewel-back.svg": jewel_back_master(kind, style),
+		"mockup.svg": mockup_master(kind, style),
 	}
 
 
+def parse_style(arguments, program):
+	"""Take --style stepped|smooth out of arguments; returns the styles to draw (both when it is absent)."""
+	if "--style" not in arguments:
+		return list(STYLES)
+	index = arguments.index("--style")
+	if index + 1 >= len(arguments) or arguments[index + 1] not in STYLES:
+		sys.exit("%s: --style takes %s" % (program, " or ".join(STYLES)))
+	style = arguments[index + 1]
+	del arguments[index:index + 2]
+	return [style]
+
+
 def main():
-	if len(sys.argv) not in (2, 3):
-		sys.exit("usage: gen_media.py OUT_DIR [FONT_DIR]")
-	out = sys.argv[1]
-	kind = Type(find_font_dir(sys.argv[2] if len(sys.argv) == 3 else None))
-	os.makedirs(os.path.join(out, "alternatives"), exist_ok=True)
-	files = masters(kind)
-	for name, text in files.items():
-		with open(os.path.join(out, name), "w") as handle:
-			handle.write(text)
-	print("cd media masters", len(files))
+	arguments = sys.argv[1:]
+	styles = parse_style(arguments, "gen_media.py")
+	if len(arguments) not in (1, 2):
+		sys.exit("usage: gen_media.py OUT_DIR [FONT_DIR] [--style stepped|smooth]")
+	out = arguments[0]
+	kind = Type(find_font_dir(arguments[1] if len(arguments) == 2 else None))
+	count = 0
+	for style in styles:
+		folder = os.path.join(out, style)
+		os.makedirs(os.path.join(folder, "alternatives"), exist_ok=True)
+		files = masters(kind, style)
+		for name, text in files.items():
+			with open(os.path.join(folder, name), "w") as handle:
+				handle.write(text)
+		count += len(files)
+	print("cd media masters", count, "(%s)" % ", ".join(styles))
 
 
 if __name__ == "__main__":
