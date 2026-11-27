@@ -1,4 +1,4 @@
-// Tests for the Afterglow card art: masters, hashes, the bitmap and felt entries of the map, sizes, depth and repeatable bytes
+// Tests for the Afterglow card art: masters, hashes, the bitmap and felt entries of the map, sizes, depth, repeatable bytes and the faces' indices
 //
 // (c) Copyright 2026 Liminal HQ, Scott Morris
 // SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -24,8 +24,40 @@ const needTools = haveTools
 	? {}
 	: { skip: 'rsvg-convert and python3 with Pillow are not installed' };
 
+// cards.dll's faces: resource = suit * 13 + rank, suits in this order, ace to king (dll/win32/cards/cards.rc)
+const SUITS = ['clubs', 'diamonds', 'hearts', 'spades'];
+const RANKS = [
+	'ace',
+	'two',
+	'three',
+	'four',
+	'five',
+	'six',
+	'seven',
+	'eight',
+	'nine',
+	'ten',
+	'jack',
+	'queen',
+	'king',
+];
+const FACES = [
+	...SUITS.flatMap((suit, suitIndex) =>
+		RANKS.map((rank, rankIndex) => [
+			`${String(suitIndex * 13 + rankIndex + 1).padStart(2, '0')}-${suit}-${rank}`,
+			suitIndex * 13 + rankIndex + 1,
+		]),
+	),
+	['53-free-cell', 53],
+	['66-joker', 66],
+];
 // bitmap name -> cards.dll resource; every card bitmap is 72 x 112
-const BITMAPS = { 'card-back-sunset.bmp': 54, 'card-x.bmp': 67, 'card-o.bmp': 68 };
+const BITMAPS = {
+	'card-back-sunset.bmp': 54,
+	'card-x.bmp': 67,
+	'card-o.bmp': 68,
+	...Object.fromEntries(FACES.map(([stem, resource]) => [`card-${stem}.bmp`, resource])),
+};
 const FELT = [0x1f, 0x25, 0x54];
 
 const sums = (file) =>
@@ -47,15 +79,25 @@ function render() {
 
 test('the card masters match their recorded hashes, keep their licence header and carry no text elements', () => {
 	const recorded = sums('SHA256SUMS.masters');
-	assert.deepEqual(Object.keys(recorded).sort(), [
-		'alternatives/card-back-lattice.svg',
-		'alternatives/card-back-rays.svg',
-		'card-back-sunset.svg',
-		'card-o.svg',
-		'card-x.svg',
-		'gen_cards.py',
-		'render.py',
-	]);
+	assert.deepEqual(
+		Object.keys(recorded).sort(),
+		[
+			'alternatives/card-back-lattice.svg',
+			'alternatives/card-back-rays.svg',
+			'alternatives/faces/horizon.py',
+			'alternatives/faces/pixel.py',
+			'card-back-sunset.svg',
+			'card-o.svg',
+			'card-x.svg',
+			'faces/classic.py',
+			'faces/faces.py',
+			'faces/gen_faces.py',
+			'faces/render_sheets.py',
+			...FACES.map(([stem]) => `faces/${stem}.svg`),
+			'gen_cards.py',
+			'render.py',
+		].sort(),
+	);
 	for (const [name, hash] of Object.entries(recorded)) {
 		const bytes = readFileSync(join(cards, name));
 		assert.equal(sha256(bytes), hash, `${name} changed`);
@@ -125,6 +167,45 @@ test(
 		} finally {
 			rmSync(first, { recursive: true, force: true });
 			rmSync(second, { recursive: true, force: true });
+		}
+	},
+);
+
+test(
+	'every face carries its index at the top left and, turned, at the bottom right',
+	needTools,
+	() => {
+		const out = render();
+		try {
+			for (const [stem] of FACES) {
+				if (stem === '53-free-cell') continue; // an empty cell has no index
+				const bytes = readFileSync(join(out, `card-${stem}.bmp`));
+				const pixel = (x, y) => {
+					const at = 54 + (111 - y) * 72 * 3 + x * 3;
+					return [bytes[at + 2], bytes[at + 1], bytes[at]];
+				};
+				// the rank and small suit sit in rows 4 to 12 from column 4, inside the 16 rows a Solitaire row shows; the joker's word runs down
+				const [rows, columns] =
+					stem === '66-joker'
+						? [
+								[4, 52],
+								[4, 10],
+							]
+						: [
+								[4, 12],
+								[4, 25],
+							];
+				let ink = 0;
+				for (let y = rows[0]; y <= rows[1]; y++) {
+					for (let x = columns[0]; x <= columns[1]; x++) {
+						assert.deepEqual(pixel(x, y), pixel(71 - x, 111 - y), `${stem} ${x}, ${y}`);
+						if (pixel(x, y).reduce((sum, value) => sum + value, 0) < 500) ink++;
+					}
+				}
+				assert.ok(ink >= 20, `${stem} has an index`);
+			}
+		} finally {
+			rmSync(out, { recursive: true, force: true });
 		}
 	},
 );

@@ -278,7 +278,7 @@ function buildReactosDesktop() {
 			copyFileSync(join(desktop, 'dialogs', file), join(dialogs, file));
 		}
 
-		// The card art: the card back and the empty-pile marks for cards.dll, as SVG masters (with the two review-only backs), the BMPs
+		// The card art: the card back, the empty-pile marks and the 54 faces for cards.dll, as SVG masters (with the two review-only backs), the BMPs
 		// rendered from them and the hash lists. The patches into cards.dll and the felt colour in sol.exe and spider.exe happen in the
 		// reactos-liminal build.
 		const cardArt = join(stage, 'cards');
@@ -295,6 +295,12 @@ function buildReactosDesktop() {
 			'SHA256SUMS.masters',
 		]) {
 			copyFileSync(join(desktop, 'cards', file), join(cardArt, file));
+		}
+		mkdirSync(join(cardArt, 'faces'));
+		for (const file of readdirSync(join(desktop, 'cards', 'faces')).filter((name) =>
+			name.endsWith('.svg'),
+		)) {
+			copyFileSync(join(desktop, 'cards', 'faces', file), join(cardArt, 'faces', file));
 		}
 
 		// The icon set and the shortcut arrow: the .ico and PNG renders drawn here, the SVG masters they come from, and the id map

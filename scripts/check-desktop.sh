@@ -16,7 +16,8 @@
 # and its master and palette with desktop/boot/SHA256SUMS.masters, and checks the docs preview PNG by pixels.
 #
 # Also hashes the dialog art masters (desktop/dialogs), renders the five dialog BMPs (desktop/dialogs/render.py, needs rsvg-convert and Pillow),
-# compares them with desktop/dialogs/SHA256SUMS and checks the docs preview PNG by pixels. The card art (desktop/cards) is checked the same way.
+# compares them with desktop/dialogs/SHA256SUMS and checks the docs preview PNG by pixels. The card art (desktop/cards: the back, the
+# empty-pile marks and the faces) is checked the same way, and the faces and the review-only face sets are also written again and compared.
 #
 # Also renders the Start orb and the Start menu banner (desktop/start/render.py, needs rsvg-convert and Pillow), compares the two DIBs with
 # desktop/start/SHA256SUMS and the SVG masters with desktop/start/SHA256SUMS.masters, and checks the docs preview PNG by pixels.
@@ -263,11 +264,27 @@ else
 	status=1
 fi
 
-# The card art: the SVG masters are hashed as they are (gen_cards.py writes them), and the three card BMPs are rendered fresh and hashed.
+# The card art: the SVG masters are hashed as they are (gen_cards.py writes the back and the marks, faces/gen_faces.py the faces), the faces
+# are written again and compared with the committed ones, the two review-only face sets are written again and compared with their hashes,
+# and the BMPs (the back, the marks and the 54 faces) are rendered fresh and hashed.
 if (cd desktop/cards && sha256sum --check --quiet SHA256SUMS.masters); then
 	echo "the card masters in desktop/cards match desktop/cards/SHA256SUMS.masters"
 else
-	echo "a card master in desktop/cards changed: if that is intended, run desktop/cards/gen_cards.py desktop/cards and record the hashes (see docs/reactos-desktop-cards.md)"
+	echo "a card master in desktop/cards changed: if that is intended, run desktop/cards/gen_cards.py desktop/cards and desktop/cards/faces/gen_faces.py desktop/cards/faces and record the hashes (see docs/reactos-desktop-cards.md)"
+	status=1
+fi
+python3 desktop/cards/faces/gen_faces.py "$out/card-faces" >/dev/null
+if diff -r -x '*.py' -x '*.md' -x sheets "$out/card-faces" desktop/cards/faces >/dev/null; then
+	echo "the card face masters in desktop/cards/faces match desktop/cards/faces/gen_faces.py"
+else
+	echo "the card face masters in desktop/cards/faces are out of date: run desktop/cards/faces/gen_faces.py desktop/cards/faces"
+	status=1
+fi
+python3 desktop/cards/faces/gen_faces.py --alternatives "$out/card-faces-alternatives" >/dev/null
+if (cd "$out/card-faces-alternatives" && sha256sum --check --quiet "$root/desktop/cards/alternatives/faces/SHA256SUMS"); then
+	echo "the review-only card faces match desktop/cards/alternatives/faces/SHA256SUMS"
+else
+	echo "the review-only card faces changed: if that is intended, record their hashes (see docs/reactos-desktop-cards.md)"
 	status=1
 fi
 python3 desktop/cards/render.py "$out/cards"
