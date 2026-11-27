@@ -1,6 +1,6 @@
 # Afterglow for ReactOS CD media
 
-The generator, masters and print render for the Afterglow for ReactOS install and live CD: the disc art (three compositions, B · Halo selected), a full-face CD label, the jewel case front insert (its outside and the inside page that faces the disc) and back tray card, and a mock-up. The full specification, the wording rules and how to print are in [`docs/cd-media.md`](../../docs/cd-media.md).
+The generator, masters and print render for the Afterglow for ReactOS install and live CD: the disc art (three compositions, B · Halo selected), a full-face CD label, the jewel case front insert (a four-page booklet folded from one 240 x 120 mm sheet, or a single sheet) and back tray card, and a mock-up. The full specification, the wording rules and how to print are in [`docs/cd-media.md`](../../docs/cd-media.md).
 
 ## Two styles
 
@@ -13,14 +13,16 @@ Only the sky differs between the two; the test checks that the rest of each mast
 
 ## Files
 
-| File                  | What                                                                                                                                                                                                                                             |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `gen_media.py`        | The generator: edit it, never a master. `--style stepped` or `--style smooth` draws one style; without it, both                                                                                                                                  |
-| `render.py`           | Lays the masters out on print pages and writes the PDFs, a complete PDF in print order with bookmarks, and the previews of each style to `OUT_DIR/stepped/` and `OUT_DIR/smooth/` (needs rsvg-convert and qpdf, and numpy and Pillow for smooth) |
-| `stepped/`, `smooth/` | The SVG masters: `disc.svg`, `alternatives/disc-sunrise.svg`, `alternatives/disc-horizon.svg`, `label.svg`, `jewel-front.svg`, `jewel-inside.svg`, `jewel-back.svg`, `mockup.svg`                                                                |
+| File                  | What                                                                                                                                                                                                                                                                                                                       |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gen_media.py`        | The generator: edit it, never a master. `--style stepped` or `--style smooth` draws one style; without it, both                                                                                                                                                                                                            |
+| `render.py`           | Lays the masters out on print pages and writes the PDFs, a complete PDF in print order with bookmarks, and the previews of each style to `OUT_DIR/stepped/` and `OUT_DIR/smooth/`, and `OUT_DIR/Afterglow CD - complete.pdf` with every page of both styles (needs rsvg-convert and qpdf, and numpy and Pillow for smooth) |
+| `stepped/`, `smooth/` | The SVG masters: `disc.svg`, `alternatives/disc-sunrise.svg`, `alternatives/disc-horizon.svg`, `label.svg`, `jewel-front.svg`, `booklet-outside.svg`, `booklet-inside.svg`, `jewel-back.svg`, `mockup.svg`                                                                                                                 |
 
 ```sh
 python3 desktop/cd-media/gen_media.py desktop/cd-media   # both styles' masters (needs Noto Sans)
 python3 desktop/cd-media/render.py dist/cd-media         # both styles' PDFs and previews, and stepped-vs-smooth.png
 node --test scripts/render-cd-media.test.mjs
 ```
+
+The version and every word on the media are constants at the top of `gen_media.py` (`VERSION` is the version); change them there, run the three commands above and commit `gen_media.py` with the regenerated masters. See "Changing the version or the words" in `docs/cd-media.md`.

@@ -10,8 +10,8 @@
 # Draws every piece in two styles, the names the desktop wallpapers use: stepped (flat bands, the retro 16 and 256 colour look of the boot
 # logo) and smooth (the same colours as continuous gradients, with a soft glow round the sun). Writes each style's masters to
 # OUT_DIR/<style>/ (desktop/cd-media/stepped and desktop/cd-media/smooth in the repository), or only the one --style names: disc.svg (the
-# selected composition), alternatives/disc-sunrise.svg, alternatives/disc-horizon.svg, label.svg, jewel-front.svg, jewel-inside.svg (the
-# back of the front insert), jewel-back.svg and mockup.svg. The style changes only the sky, the bands and the glow; the layout, the words and the sizes are the same in both. Each
+# selected composition), alternatives/disc-sunrise.svg, alternatives/disc-horizon.svg, label.svg, jewel-front.svg (the front insert as a
+# single sheet), booklet-outside.svg and booklet-inside.svg (the front insert as a folded four-page booklet), jewel-back.svg and mockup.svg. The style changes only the sky, the bands and the glow; the layout, the words and the sizes are the same in both. Each
 # piece's sky sits in its own scene group (id ending "scene", data-raster giving the box it covers), which render.py turns into a dithered
 # print-resolution image for the smooth PDFs. render.py imports this module for the contact sheet's type. Every length is in millimetres (the viewBox is the artboard in mm). Every colour is an Afterglow palette
 # colour: the 16 entries of desktop/boot/palette.json, read here so the two cannot drift, and the few named in EXTRA_COLOURS. All text is
@@ -58,7 +58,7 @@ LICENCE_PARAGRAPHS = (
 	"source attached to each release.",
 	COPYRIGHT + ". Afterglow © 2026 Liminal HQ, Scott Morris.",
 )
-# The inside of the front insert: the disc's boot menu as rl iso writes it (reactos-liminal isotree.MENU_EDITS) and what the image holds
+# The inside pages of the booklet: the disc's boot menu as rl iso writes it (reactos-liminal isotree.MENU_EDITS) and what the image holds
 INSIDE_HEADING = "AFTERGLOW FOR REACTOS™"
 INSIDE_STEPS = (
 	"Start the computer from this disc, or give it to a virtual machine as its CD.",
@@ -657,68 +657,109 @@ def jewel_back(kind, style, prefix="b-"):
 	return defs, "".join(art) + '<g id="%stext">%s</g>' % (prefix, "".join(text))
 
 
-def jewel_inside(kind, style, prefix="i-"):
-	"""The inside of the front insert, the page that faces the disc when the case is open, in trim coordinates and drawn 2 mm past the
-	trim like the outside: the tray card's sky and sun as a small header, the getting started steps and the contents in two columns,
-	and the notices across the foot. It is printed on the back of the outside, the same way up (flip on the long edge)."""
+# ---- the booklet: the front insert as one sheet folded in half --------------------------------------------------------------------------
+# Four 120 mm pages on a 240 x 120 mm sheet. The outside spread is the back cover (page 4) on the left and the front cover (page 1, the front
+# insert as drawn by jewel_front) on the right; the inside spread is page 2 on the left and page 3 on the right. Each page is drawn in its
+# own trim coordinates (0 to 120) with 2 mm of bleed and clipped at the fold by booklet_spread.
+def small_sky(kind, style, prefix, horizon, sun_radius, radii, margin=7.0):
+	"""The tray card's sky in miniature over a horizon at `horizon`: the scene, the sun, the sheets and the line. Returns (defs, art)."""
 	bleed = BOOKLET_BLEED
-	horizon = 24.0
 	centre_x = BOOKLET / 2
-	margin = 7.0
 	sky, night = prefix + "sky", prefix + "night"
 	defs = ('<clipPath id="%s"><rect x="%s" y="%s" width="%s" height="%s"/></clipPath>' % (sky, number(-bleed), number(-bleed), number(BOOKLET + 2 * bleed), number(horizon + bleed))
 		+ '<clipPath id="%s"><rect x="%s" y="%s" width="%s" height="12"/></clipPath>' % (night, number(-bleed), number(horizon), number(BOOKLET + 2 * bleed)))
-	radii = (66, 58, 50, 43, 36.5, 30.5, 25, 20, 15.5, 11.5)
-	sun_radius = 7
 	band_defs, bands = ring_sky(style, centre_x, horizon, radii, sun_radius, prefix + "bands")
-	defs += band_defs
-	art = [
+	art = "".join([
 		scene(prefix, (-bleed, -bleed, BOOKLET + 2 * bleed, BOOKLET + 2 * bleed),
 			rect(-bleed, -bleed, BOOKLET + 2 * bleed, BOOKLET + 2 * bleed, BACKDROP) + '<g clip-path="url(#%s)">%s</g>' % (sky, bands)),
 		sun(centre_x, horizon, sun_radius, sky),
 		sheets(centre_x, horizon, 58, night),
 		horizon_line(margin, horizon, BOOKLET - 2 * margin, 0.3),
+	])
+	return defs + band_defs, art
+
+
+def booklet_back_cover(kind, style, prefix):
+	"""Page 4, the back cover: a quiet night with a small sun setting on a low horizon, the wordmark, the source and the maker."""
+	defs, art = small_sky(kind, style, prefix, 62.0, 4.5, (34, 30, 26.5, 23, 19.5, 16.5, 13.5, 11, 8.5, 6.5), margin=22.0)
+	centre_x = BOOKLET / 2
+	text = [
+		kind.straight(kind.light, TITLE, 22, CREAM, centre_x, 84, "middle"),
+		kind.straight(kind.medium, SUBTITLE, 7.5, BRIGHT_GOLD, centre_x, 90.5, "middle", tracking=0.9),
+		kind.straight(kind.medium, REPOSITORY, 6.5, PALE_GOLD, centre_x, 104, "middle"),
+		kind.straight(kind.regular, MAKER, 6.5, SOFT_GREY, centre_x, 109, "middle", tracking=0.3),
 	]
+	return defs, art + '<g id="%stext">%s</g>' % (prefix, "".join(text))
+
+
+def booklet_page_two(kind, style, prefix):
+	"""Page 2, the left of the inside spread: the tray card's sky and sun as a small header, then the getting started steps."""
+	margin = 7.0
+	defs, art = small_sky(kind, style, prefix, 24.0, 7, (66, 58, 50, 43, 36.5, 30.5, 25, 20, 15.5, 11.5))
 	text = [
 		kind.straight(kind.medium, INSIDE_HEADING, 7.5, BRIGHT_GOLD, margin, 10, tracking=0.45),
 		kind.straight(kind.regular, VERSION, 7.5, CREAM, BOOKLET - margin, 10, "end"),
+		kind.straight(kind.medium, "GETTING STARTED", 7.5, BRIGHT_GOLD, margin, 42, tracking=0.45),
 	]
-	leading = 2.95
-	# getting started, numbered like the tray card's contents
-	left_width = 50.0
-	text.append(kind.straight(kind.medium, "GETTING STARTED", 7.5, BRIGHT_GOLD, margin, 38, tracking=0.45))
-	baseline = 45.0
+	baseline = 51.0
 	for index, step in enumerate(INSIDE_STEPS, 1):
 		text.append(kind.straight(kind.medium, "%02d" % index, 7.5, BRIGHT_GOLD, margin, baseline))
-		elements, baseline = kind.paragraph(kind.regular, step, 6.5, CREAM, margin + 5.5, baseline, left_width - 5.5, leading)
+		elements, baseline = kind.paragraph(kind.regular, step, 7.5, CREAM, margin + 7, baseline, BOOKLET - 2 * margin - 7, 3.6)
 		text.extend(elements)
-		baseline += 1.9
-	steps_end = baseline
-	# what is on the disc, with a gold dot for each line and afterfetch's stepped sun beside afterfetch
-	column_x = margin + left_width + 5
-	right_width = BOOKLET - margin - column_x
-	text.append(kind.straight(kind.medium, "ON THIS DISC", 7.5, BRIGHT_GOLD, column_x, 38, tracking=0.45))
-	baseline = 45.0
+		baseline += 5.4
+	if baseline > 114:
+		sys.exit("gen_media.py: the getting started steps run off page 2")
+	return defs, art + '<g id="%stext">%s</g>' % (prefix, "".join(text))
+
+
+def booklet_page_three(kind, style, prefix):
+	"""Page 3, the right of the inside spread: what is on the disc, then the licences, credits and notices, as on the tray card."""
+	bleed = BOOKLET_BLEED
+	margin = 7.0
+	art = [scene(prefix, (-bleed, -bleed, BOOKLET + 2 * bleed, BOOKLET + 2 * bleed), rect(-bleed, -bleed, BOOKLET + 2 * bleed, BOOKLET + 2 * bleed, BACKDROP))]
+	text = [kind.straight(kind.medium, "ON THIS DISC", 7.5, BRIGHT_GOLD, margin, 14, tracking=0.45)]
+	baseline = 22.0
 	for item in INSIDE_CONTENTS:
-		art.append(circle(column_x + 0.6, baseline - 0.8, 0.55, BRIGHT_GOLD))
-		elements, after = kind.paragraph(kind.regular, item, 6.5, CREAM, column_x + 2.6, baseline, right_width - 2.6, leading)
+		art.append(circle(margin + 0.7, baseline - 0.95, 0.65, BRIGHT_GOLD))
+		elements, after = kind.paragraph(kind.regular, item, 7.5, CREAM, margin + 3, baseline, BOOKLET - 2 * margin - 3, 3.5)
 		text.extend(elements)
 		if item.startswith("afterfetch"):
-			art.append(stepped_sun(column_x + 2.6 + kind.regular.width(item, 6.5 * POINT) + 1.5, baseline - 2.9, 0.13))
-		baseline = after + 1.4
-	rule_y = 95.5
-	if max(steps_end, baseline) > rule_y - 1:
-		sys.exit("gen_media.py: the inside page's columns run into its notices")
-	# the notices across the foot, as on the tray card
+			art.append(stepped_sun(margin + 3 + kind.regular.width(item, 7.5 * POINT) + 1.8, baseline - 3.4, 0.15))
+		baseline = after + 1.6
+	# the licences and credits sit at the foot of the page: measured once, then set so the source line ends 7 mm above the trim
+	def notices(start):
+		elements, top = [], start
+		for paragraph in INSIDE_LEGAL:
+			lines, top = kind.paragraph(kind.regular, paragraph, 6.5, SOFT_GREY, margin, top, BOOKLET - 2 * margin, 2.95)
+			elements.extend(lines)
+			top += 1.2
+		elements.append(kind.straight(kind.medium, REPOSITORY, 6.5, PALE_GOLD, margin, top + 0.6))
+		return elements, top + 0.6
+	_elements, height = notices(0.0)
+	start = BOOKLET - 7.0 - height
+	rule_y = start - 15.5
+	if rule_y < baseline + 3:
+		sys.exit("gen_media.py: the contents run into the notices on page 3")
 	art.append(rect(margin, rule_y, BOOKLET - 2 * margin, 0.2, NIGHT4))
-	top = rule_y + 5
-	for paragraph in INSIDE_LEGAL:
-		elements, top = kind.paragraph(kind.regular, paragraph, 6.5, SOFT_GREY, margin, top, BOOKLET - 2 * margin, leading)
-		text.extend(elements)
-	text.append(kind.straight(kind.medium, REPOSITORY, 6.5, PALE_GOLD, margin, top))
-	if top > 113.5:
-		sys.exit("gen_media.py: the inside page's notices run past the safe margin")
-	return defs, "".join(art) + '<g id="%stext">%s</g>' % (prefix, "".join(text))
+	text.append(kind.straight(kind.medium, "LICENCES AND CREDITS", 7.5, BRIGHT_GOLD, margin, rule_y + 8, tracking=0.45))
+	elements, _end = notices(start)
+	text.extend(elements)
+	return "", "".join(art) + '<g id="%stext">%s</g>' % (prefix, "".join(text))
+
+
+def booklet_spread(kind, style, left, right):
+	"""Two pages side by side on the 240 x 120 mm sheet, in sheet trim coordinates: each (draw, prefix) is clipped to its half, the
+	outer bleed kept and the two halves meeting at the fold."""
+	bleed = BOOKLET_BLEED
+	defs, body = [], []
+	for (draw, prefix), offset, clip_box in ((left, 0.0, (-bleed, -bleed, BOOKLET + bleed, BOOKLET + 2 * bleed)),
+			(right, BOOKLET, (0.0, -bleed, BOOKLET + bleed, BOOKLET + 2 * bleed))):
+		page_defs, page_body = draw(kind, style, prefix)
+		clip = prefix + "page"
+		x, y, width, height = clip_box
+		defs.append(page_defs + '<clipPath id="%s"><rect x="%s" y="%s" width="%s" height="%s"/></clipPath>' % (clip, number(x), number(y), number(width), number(height)))
+		body.append('<g id="%spage" transform="translate(%s 0)" clip-path="url(#%s)">%s</g>' % (prefix, number(offset), clip, page_body))
+	return "".join(defs), "".join(body)
 
 
 def trim_guides(width, height, folds=()):
@@ -736,14 +777,25 @@ def jewel_front_master(kind, style):
 	return svg("Afterglow for ReactOS jewel case front insert, " + style, note, size, size, defs, content)
 
 
-def jewel_inside_master(kind, style):
-	defs, body = jewel_inside(kind, style)
-	size = BOOKLET + 2 * BOOKLET_BLEED
-	note = ("The inside of the jewel case front insert, printed on the back of jewel-front.svg: a 120 x 120 mm trim with 2 mm of bleed on\n"
-		"every side (a 124 x 124 mm artboard in mm, the trim at 2 mm in), the same way up as the outside, so a double-sided print flips on\n"
-		"the long edge. The guides group marks the trim and is removed before printing. Generated by gen_media.py.\n" + STYLE_NOTES[style])
-	content = '<g transform="translate(%s %s)">%s\n%s</g>' % (number(BOOKLET_BLEED), number(BOOKLET_BLEED), body, trim_guides(BOOKLET, BOOKLET))
-	return svg("Afterglow for ReactOS jewel case front insert, inside, " + style, note, size, size, defs, content)
+BOOKLET_SHEET = 2 * BOOKLET  # the unfolded booklet: two 120 mm pages side by side
+
+
+def booklet_master(kind, style, side):
+	"""One side of the booklet sheet: 240 x 120 mm with 2 mm of bleed (a 244 x 124 mm artboard, the trim at 2 mm in), the fold at
+	120 mm. The outside is the back cover and the front cover; the inside is pages 2 and 3, printed on the back of the outside."""
+	if side == "outside":
+		defs, body = booklet_spread(kind, style, (booklet_back_cover, "bb-"), (jewel_front, "bf-"))
+		title = "Afterglow for ReactOS CD booklet, outside (back cover and front cover), " + style
+	else:
+		defs, body = booklet_spread(kind, style, (booklet_page_two, "bl-"), (booklet_page_three, "br-"))
+		title = "Afterglow for ReactOS CD booklet, inside (pages 2 and 3), " + style
+	note = ("The front insert as a booklet: one 240 x 120 mm sheet folded in half to 120 x 120 mm pages, with 2 mm of bleed (a 244 x 124 mm\n"
+		"artboard in mm, the trim at 2 mm in) and the fold at 120 mm. booklet-outside.svg is the back cover (left) and the front cover\n"
+		"(right); booklet-inside.svg is page 2 (left) and page 3 (right), printed on its back, flipping a landscape sheet on the short edge.\n"
+		"The guides group marks the trim and the fold and is removed before printing. Generated by gen_media.py.\n" + STYLE_NOTES[style])
+	content = '<g transform="translate(%s %s)">%s\n%s</g>' % (number(BOOKLET_BLEED), number(BOOKLET_BLEED), body,
+		trim_guides(BOOKLET_SHEET, BOOKLET, (BOOKLET,)))
+	return svg(title, note, BOOKLET_SHEET + 2 * BOOKLET_BLEED, BOOKLET + 2 * BOOKLET_BLEED, defs, content)
 
 
 def jewel_back_master(kind, style):
@@ -835,7 +887,8 @@ def masters(kind, style):
 		"alternatives/disc-horizon.svg": disc_master(kind, style, "horizon"),
 		"label.svg": label_master(kind, style),
 		"jewel-front.svg": jewel_front_master(kind, style),
-		"jewel-inside.svg": jewel_inside_master(kind, style),
+		"booklet-outside.svg": booklet_master(kind, style, "outside"),
+		"booklet-inside.svg": booklet_master(kind, style, "inside"),
 		"jewel-back.svg": jewel_back_master(kind, style),
 		"mockup.svg": mockup_master(kind, style),
 	}

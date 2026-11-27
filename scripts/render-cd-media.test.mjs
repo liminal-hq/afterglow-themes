@@ -37,7 +37,8 @@ const MASTERS = [
 	...DISCS,
 	'label.svg',
 	'jewel-front.svg',
-	'jewel-inside.svg',
+	'booklet-outside.svg',
+	'booklet-inside.svg',
 	'jewel-back.svg',
 	'mockup.svg',
 ];
@@ -236,21 +237,42 @@ function checkFront(svg) {
 	);
 }
 
-test('the inside of the front insert matches the outside, keeps its text 3 mm inside the trim and carries the notices', () => {
+test('the booklet is a 240 x 120 mm sheet folded at 120 mm, with the front insert as its front cover', () => {
 	for (const style of STYLES) {
-		const svg = read(style, 'jewel-inside.svg');
-		assert.match(svg, /width="124mm" height="124mm" viewBox="0 0 124 124"/);
-		assert.match(svg, /<g transform="translate\(2 2\)">/);
-		assert.match(svg, /<rect x="0" y="0" width="120" height="120" data-guide="trim"\/>/);
-		const lines = texts(svg);
-		for (const line of lines) {
-			for (const [x, y] of line.coordinates) {
-				assert.ok(x >= 3 && x <= 117 && y >= 3 && y <= 117, `"${line.words}" at ${x}, ${y}`);
+		const outside = read(style, 'booklet-outside.svg');
+		const inside = read(style, 'booklet-inside.svg');
+		for (const svg of [outside, inside]) {
+			assert.match(svg, /width="244mm" height="124mm" viewBox="0 0 244 124"/);
+			assert.match(svg, /<rect x="0" y="0" width="240" height="120" data-guide="trim"\/>/);
+			assert.match(svg, /<path d="M120 0V120" data-guide="fold"\/>/);
+			// every text point 3 mm inside the trim and 3 mm clear of the fold, on the sheet's trim coordinates
+			for (const line of texts(svg)) {
+				for (const [x, y] of line.coordinates.map(([x, y]) => [x - 2, y - 2])) {
+					assert.ok(
+						y >= 3 && y <= 117 && ((x >= 3 && x <= 117) || (x >= 123 && x <= 237)),
+						`"${line.words}" at ${x.toFixed(2)}, ${y.toFixed(2)}`,
+					);
+				}
 			}
 		}
-		const all = lines.map((line) => line.words).join(' ');
-		// the first ReactOS on the page carries the trade mark
-		assert.ok(lines[0].words.includes('REACTOS™'), 'the heading marks ReactOS™');
+		// the front cover, on the right of the outside, is the front insert's own art and words
+		const coverWords = (svg) =>
+			texts(svg)
+				.map((line) => line.words)
+				.sort();
+		const front = read(style, 'jewel-front.svg');
+		const cover = outside.match(
+			/<g id="bf-page" transform="translate\(120 0\)"[^>]*>(.*)<\/g><\/g>/s,
+		);
+		assert.ok(cover, 'the front cover is the right page of the outside');
+		assert.deepEqual(
+			coverWords(cover[1]),
+			coverWords(front),
+			'the front cover says what the front insert says',
+		);
+		const words = texts(inside).map((line) => line.words);
+		const all = words.join(' ');
+		assert.ok(words[0].includes('REACTOS™'), 'the inside heading marks ReactOS™');
 		for (const wanted of [
 			'GETTING STARTED',
 			'ReactOS (Afterglow) Boot',
@@ -258,15 +280,24 @@ test('the inside of the front insert matches the outside, keeps its text 3 mm in
 			'The stock “ReactOS” entry stays',
 			'ON THIS DISC',
 			'afterfetch',
-			'Not made, endorsed',
+			'LICENCES AND CREDITS',
+			'not made, endorsed',
 			'ReactOS™ is a trademark of the ReactOS project.',
 			'Copyright © 1996-2026 ReactOS Team &',
 			'Apache-2.0 OR MIT',
 			'github.com/liminal-hq-labs/reactos-liminal',
 		]) {
-			assert.ok(all.toLowerCase().includes(wanted.toLowerCase()), `the inside says "${wanted}"`);
+			assert.ok(all.includes(wanted), `the inside says "${wanted}"`);
 		}
-		assert.ok(!/ISO/.test(all), 'the inside says nothing about an ISO');
+		const back = texts(outside).map((line) => line.words);
+		for (const wanted of [
+			'Afterglow',
+			'FOR REACTOS™',
+			'github.com/liminal-hq-labs/reactos-liminal',
+			'Liminal HQ Labs',
+		])
+			assert.ok(back.includes(wanted), `the back cover says "${wanted}"`);
+		assert.ok(!/ISO/.test(all), 'the booklet says nothing about an ISO');
 	}
 });
 
@@ -406,6 +437,25 @@ test(
 		try {
 			execFileSync('python3', [join(media, 'render.py'), root], { stdio: 'ignore' });
 			assert.ok(existsSync(join(root, 'stepped-vs-smooth.png')), 'the comparison sheet');
+			// one PDF with every piece of both styles, bookmarked by style and then by page
+			const everything = join(root, 'Afterglow CD - complete.pdf');
+			const outline = JSON.parse(
+				execFileSync('qpdf', ['--json', '--json-key=outlines', '--json-key=pages', everything], {
+					encoding: 'utf8',
+				}),
+			);
+			assert.equal(outline.pages.length, 18, 'nine pages a style');
+			assert.deepEqual(
+				outline.outlines.map((group) => [group.title, group.destpageposfrom1, group.kids.length]),
+				[
+					['Stepped (retro)', 1, 9],
+					['Smooth gradients', 10, 9],
+				],
+			);
+			for (const group of outline.outlines) {
+				const inside = group.kids.find((kid) => kid.title.startsWith('Booklet inside, A4'));
+				assert.match(inside.title, /flip on the short edge/);
+			}
 			for (const style of STYLES) checkRender(join(root, style), style);
 		} finally {
 			rmSync(root, { recursive: true, force: true });
@@ -430,9 +480,9 @@ function checkRender(out, style) {
 		'jewel-case-back.pdf': [169, 137],
 		'jewel-case-back-A4.pdf': [210, 297],
 		'jewel-case-back-Letter.pdf': [215.9, 279.4],
-		'jewel-case-inside.pdf': [139, 139],
-		'jewel-case-inside-A4.pdf': [210, 297],
-		'jewel-case-inside-Letter.pdf': [215.9, 279.4],
+		'booklet-outside.pdf': [259, 139],
+		'booklet-outside-A4.pdf': [297, 210],
+		'booklet-outside-Letter.pdf': [279.4, 215.9],
 	};
 	const havePdfinfo = spawnSync('pdfinfo', ['-v'], { stdio: 'ignore' }).status === 0;
 	for (const [name, [width, height]] of Object.entries(expected)) {
@@ -445,9 +495,10 @@ function checkRender(out, style) {
 		// Stepped is vector throughout. Smooth places each sky as one image under the vector text: one image per label
 		// or piece on the page, and the text paths still in the page
 		const images = (pdf.match(/\/Subtype\s*\/Image/g) ?? []).length;
-		const pieces = (page.match(/<use /g) ?? []).length || 1;
+		const pieces =
+			(page.match(/<use /g) ?? []).length || (page.match(/<image /g) ?? []).length || 1;
 		if (style === 'stepped') assert.equal(images, 0, `${style}/${name} is vector`);
-		else assert.equal(images, pieces, `${style}/${name} has one sky image per piece`);
+		else assert.equal(images, pieces, `${style}/${name} has one sky image per piece or page`);
 		if (style === 'smooth')
 			assert.ok(
 				/<image [^>]*href="data:image\/png;base64,/.test(page) && /<path data-text="/.test(page),
@@ -469,14 +520,15 @@ function checkRender(out, style) {
 	}
 	assert.ok(existsSync(join(out, 'preview.png')));
 	assert.ok(existsSync(join(out, 'contact-sheet.png')));
-	assert.ok(existsSync(join(out, 'png', 'jewel-inside.png')));
-	// the inside sits exactly where the outside does, so a double-sided print lines up
+	assert.ok(existsSync(join(out, 'png', 'booklet-outside.png')));
+	assert.ok(existsSync(join(out, 'png', 'booklet-inside.png')));
+	// the inside sits exactly where the outside does, centred across the sheet, so a double-sided print lines up
 	for (const sheet of ['', '-A4', '-Letter']) {
 		const position = (name) =>
 			readFileSync(join(out, 'svg', `${name}${sheet}.svg`), 'utf8').match(
 				/<g transform="translate\(([\d.]+) ([\d.]+)\)">/,
 			)[0];
-		assert.equal(position('jewel-case-inside'), position('jewel-case-front'), `inside${sheet}`);
+		assert.equal(position('booklet-inside'), position('booklet-outside'), `booklet inside${sheet}`);
 	}
 	if (!havePdfinfo) return;
 	const pages = (name) =>
@@ -484,7 +536,7 @@ function checkRender(out, style) {
 			execFileSync('pdfinfo', [join(out, name)], { encoding: 'utf8' }).match(/Pages:\s+(\d+)/)[1],
 		);
 	for (const sheet of ['', '-A4', '-Letter'])
-		assert.equal(pages(`jewel-case-booklet${sheet}.pdf`), 2, `the booklet${sheet} is two pages`);
+		assert.equal(pages(`booklet${sheet}.pdf`), 2, `the booklet${sheet} is two pages`);
 	const complete = `Afterglow CD - ${style === 'stepped' ? 'Stepped (retro)' : 'Smooth gradients'} - complete.pdf`;
 	assert.equal(pages(complete), 5, `${complete} has the five pieces`);
 	const info = execFileSync('pdfinfo', ['-l', '5', join(out, complete)], { encoding: 'utf8' });
@@ -495,8 +547,8 @@ function checkRender(out, style) {
 	assert.deepEqual(sizes, [
 		[120, 120],
 		[138, 138],
-		[139, 139],
-		[139, 139],
+		[259, 139],
+		[259, 139],
 		[169, 137],
 	]);
 	{
@@ -510,8 +562,8 @@ function checkRender(out, style) {
 			[
 				['1 · Disc art', 1],
 				['2 · Disc label', 2],
-				['3 · Front insert, outside', 3],
-				['4 · Front insert, inside', 4],
+				['3 · Booklet, outside', 3],
+				['4 · Booklet, inside', 4],
 				['5 · Tray card', 5],
 			],
 		);
