@@ -2,15 +2,20 @@
 
 ## Chosen and shipped: the device redraws
 
-The owner chose to show the device, without the keyline, for the five icons that showed the medium or a part instead of the device: CD drive, Floppy, Removable drive, RAM disk and My Computer. The first device drawings put the old medium on a generic drive box and did not read, so the four drives were drawn again as the objects themselves: a slim optical drive with a disc on its open tray, a floppy drive with a disk going into its slot, a USB flash drive on the diagonal, and a memory chip with a disk platter on its lid (`docs/reactos-desktop-icons.md` says why each). My Computer stays the monitor with its system unit. They are the masters in `gen_e.py` and `gen_v2.py` under the original ids, each with a hand-tuned 16 px frame. The old art stays in the set under its own ids (`cd-disc`, `floppy-disk`, `usb-key`, `ram-module` and `monitor`), unmapped, for media and storage lists. The keyline variants of the five are the keyline of the shipped art, like the rest of the set.
+The owner chose to show the device for the five icons that showed the medium or a part instead of the device: CD drive, Floppy, Removable drive, RAM disk and My Computer. The first device drawings put the old medium on a generic drive box and did not read, so the four drives were drawn again as the objects themselves: a slim optical drive with a disc on its open tray, a floppy drive with a disk going into its slot, a USB flash drive on the diagonal, and a memory chip with a disk platter on its lid (`docs/reactos-desktop-icons.md` says why each). My Computer stays the monitor with its system unit. They are the masters in `gen_e.py` and `gen_v2.py` under the original ids, each with a hand-tuned 16 px frame. The old art stays in the set under its own ids (`cd-disc`, `floppy-disk`, `usb-key`, `ram-module` and `monitor`), unmapped, for media and storage lists. The keyline variants of the five are the keyline of the shipped art, like the rest of the set.
+
+## Chosen and shipped: the keyline on the drives
+
+Hard disk, Floppy, Removable drive, RAM disk and My Computer ship with the keyline, because ReactOS shows them on light windows and Local Disk read pale there. The keyline is drawn by `gen_e.py` itself (`KEYLINED`, and `KEYLINED_16` for Removable drive's hand-tuned 16 px frame), so their variants in `keyline/` are the shipped drawings. CD drive reaches 3:1 without it. `docs/reactos-desktop-icons.md` has the numbers before and after.
 
 Nothing else in this folder ships. These are alternatives to icons in the Afterglow set, kept for the owner to pick from per icon. They are not in `map.json`, not rendered by `render.py`, not in the release zip and not in the recorded sums. When a pick is made, it moves into the generators (`gen_e.py`, `gen_v2.py`) and the sums are updated there.
 
-`alternatives.py` is the generator: `python3 alternatives.py` rewrites the masters here, and `python3 alternatives.py --review OUT_PNG` renders every frame at 16, 32 and 48 px and draws the review sheet, [`docs/images/afterglow-icons-alternatives.png`](../../../docs/images/afterglow-icons-alternatives.png).
+`alternatives.py` is the generator: `python3 alternatives.py` rewrites the masters here, `python3 alternatives.py --review OUT_PNG` renders every frame at 16, 32 and 48 px and draws the review sheet, [`docs/images/afterglow-icons-alternatives.png`](../../../docs/images/afterglow-icons-alternatives.png), and `python3 alternatives.py --rest OUT_PNG` draws the keyline-rest sheet below.
 
-| Folder     | What                                   |
-| ---------- | -------------------------------------- |
-| `keyline/` | Every icon in the set with the keyline |
+| Folder or file     | What                                                     |
+| ------------------ | -------------------------------------------------------- |
+| `keyline/`         | Every icon in the set with the keyline                   |
+| `keyline-rest.png` | The keyline-rest review sheet (review only, not shipped) |
 
 The folder holds the 48 px master `ID.svg`, the `32/` and `16/` profiles, and a hand-tuned `ID-16.svg` where the icon has one.
 
@@ -21,3 +26,13 @@ The keyline is set E's own clipped inner edge, made opaque and retuned in each m
 ## How contrast is measured
 
 WCAG 2 contrast against the ground, at the edge of the icon's main silhouette: the pixels of at least 50 % alpha, so the soft contact shadow is left out. Each pixel on the silhouette's outer ring is scored with the stronger of itself and the pixel just inside it, because an anti-aliased curve leaves the outermost pixel part ground. The icon's score is the median over the ring, and the sheet shows the worst of its 48, 32 and 16 px frames. Every keyline and device-with-keyline alternative reaches 3:1 on both grounds at every size.
+
+## The rest of the set: review only, not shipped
+
+![Review only, not shipped: the 24 icons furthest below 3:1 that do not ship the keyline, each current and with the keyline, at 48, 32 and 16 px and the 16 px frame at 4x, on cream and on Dusk, with the contrast of each size.](keyline-rest.png)
+
+_The keyline-rest sheet: review only, nothing on it ships._
+
+With the drives keylined, 134 of the 140 icons are still below 3:1 on one ground: 83 on cream (the light paper, device and gold faces) and 51 on Dusk (the dusk plate of the apps and applets). The sheet shows the 24 furthest below it, all on cream: the 14 icons drawn on the page (1.36:1 at 48 px), CD disc, Clock, Views, Paste, Copy, Volume and the battery levels. With the keyline every one reaches at least 3.3:1 on cream (most 3.6:1) and stays above 3:1 on Dusk.
+
+**Recommendation: apply it to a tier, not to all.** On the page icons the keyline reads as the same quiet same-hue edge the drives now have, not as an ink outline, so set E keeps its look; those icons, the Explorer toolbar glyphs on the cream rebar (Views 1.3:1, Folders 1.5:1 at 24 px, both pale in the guest) and the light objects ReactOS lists in its white file windows (Recycle Bin) are the tier to take it next. Leave the tray glyphs (Volume, Clock, the batteries): they sit on the near-black taskbar, where they already pass. Leave the plated apps and applets: they fail only on Dusk, their plates reach 6 to 10:1 on cream and white, and on the desktop the glyph on the plate carries them. The M1 folder family (My Documents is 1.4:1 on cream) is the chosen M1 design, so it is a separate decision.

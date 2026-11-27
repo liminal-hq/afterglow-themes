@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # Review-only alternatives to Afterglow icons: keyline variants that reach 3:1 against both the classic cream window colour and the Dusk
-# desktop colour. Nothing here ships until the owner picks. (The device redraws of the drive icons and My Computer were picked and ship.)
+# desktop colour. Nothing here ships until the owner picks. (The device redraws of the drive icons and My Computer were picked and ship,
+# and the keyline ships on Hard disk, Floppy, Removable drive, RAM disk and My Computer: gen_e.py's KEYLINED, whose variants here are the
+# shipped drawings.)
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -9,6 +11,8 @@
 #                                            hinted ID-16.svg frames where the icon has one)
 #   python3 alternatives.py --review OUT_PNG render every frame at 16, 32 and 48 px and draw the review sheet: current against each
 #                                            alternative at 1x and 4x, on cream and on dusk, with the measured contrast (needs rsvg-convert)
+#   python3 alternatives.py --rest OUT_PNG   draw the keyline-rest sheet: the 24 icons furthest below 3:1 among those that do not ship
+#                                            the keyline, current against keyline, with the contrast of each size (needs rsvg-convert)
 #
 # The keyline variant of an icon is
 # the icon itself with every material edge (the clipped inner edge set E draws at 30 to 60 %) made opaque and retuned, in its own hue, to
@@ -19,7 +23,6 @@
 # soft contact shadow is left out). Each pixel on the silhouette's outer ring is scored with the stronger of itself and the pixel just
 # inside it, because an anti-aliased curve leaves the outermost pixel part ground and the eye finds the edge one pixel in; the icon's
 # score is the median over the ring, and the sheet shows the worst of its 48, 32 and 16 px frames.
-import colorsys
 import importlib.util
 import io
 import math
@@ -34,7 +37,6 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ICONS = os.path.dirname(HERE)
 GROUNDS = (("cream", (212, 208, 200)), ("dusk", (9, 14, 42)))
 TARGET = 3.0
-KEY_LUMINANCE = 0.137
 
 def load_module(name, path):
 	spec = importlib.util.spec_from_file_location(name, path)
@@ -45,6 +47,8 @@ def load_module(name, path):
 
 gen = load_module("gen_e", os.path.join(ICONS, "gen_e.py"))
 MATS, RR, poly, circ, ring, rot, _n, FG = gen.MATS, gen.RR, gen.poly, gen.circ, gen.ring, gen.rot, gen._n, gen.FG
+# The keyline itself lives in gen_e.py, which ships it on the icons in gen.KEYLINED
+KEY_LUMINANCE, KEY_WIDTH, retune = gen.KEY_LUMINANCE, gen.KEY_WIDTH, gen.retune
 
 
 # ---- colour -----------------------------------------------------------------------------------------------------------------------------------
@@ -65,26 +69,9 @@ def contrast(first, second):
 	return (high + 0.05) / (low + 0.05)
 
 
-def retune(colour, target=KEY_LUMINANCE):
-	"""The same hue and saturation at the lightness whose luminance is the target (KEY_LUMINANCE unless given)."""
-	hue, lightness, saturation = colorsys.rgb_to_hls(*(component / 255 for component in rgb(colour)))
-	low, high = 0.0, 1.0
-	for _ in range(40):
-		middle = (low + high) / 2
-		value = tuple(round(component * 255) for component in colorsys.hls_to_rgb(hue, middle, saturation))
-		if luminance(value) < target:
-			low = middle
-		else:
-			high = middle
-	return "#%02x%02x%02x" % tuple(round(component * 255) for component in colorsys.hls_to_rgb(hue, high, saturation))
-
-
 # The dusk plate's rim is set a little lighter: on dusk it is the edge, and on cream the plate's dark body carries the contrast
 PLATE_LUMINANCE = 0.19
 PLATE_KEY = retune(gen.HORIZON, PLATE_LUMINANCE)
-# The keyline's width in screen pixels by profile: one pixel at 48 lands on the grid, but at 32 and below it falls between pixels and
-# blurs, so it is drawn wider there
-KEY_WIDTH = {48: 1.5, 32: 1.67, 24: 1.5, 16: 1.5}
 # At 16 px the plate's rim covers both of its edge pixels, so it takes a luminance that reaches 3:1 on both grounds by itself
 PLATE_KEY_16 = retune(gen.HORIZON, 0.15)
 
@@ -216,19 +203,27 @@ def is_plated(icon_id):
 	return gen.I[icon_id][0] == "tile" or icon_id == "folderopts"
 
 
+def keyline_build(icon_id, size):
+	"""The keyline variant's (defs, body): the shipped drawing itself where gen_e.py already ships the keyline."""
+	defs, body = build_current(icon_id, size, "al-%s-%d" % (icon_id, size))
+	return defs, body if icon_id in gen.KEYLINED else keyline_body(body, size, is_plated(icon_id))
+
+
 # ---- writing ---------------------------------------------------------------------------------------------------------------------------------------
 def variants():
 	"""(folder, id, title, build(size) -> (defs, body), hinted() -> rects or None) for every alternative."""
 	out = []
 	for icon_id in gen.I:
-		if icon_id in KEYLINE_16:
+		if icon_id in gen.KEYLINED_16:
+			hinted = lambda icon_id=icon_id: gen.hinted(icon_id)  # shipped with the keyline already
+		elif icon_id in KEYLINE_16:
 			hinted = lambda icon_id=icon_id: keyline_pixels(device_pixels(icon_id, KEYLINE_16))
 		elif icon_id in gen.HINTED:
 			hinted = lambda icon_id=icon_id: keyline_pixels(gen.hinted(icon_id))
 		else:
 			hinted = None
 		out.append(("keyline", icon_id, "%s, keyline (review only)" % gen.LABEL[icon_id],
-			lambda size, icon_id=icon_id: (lambda built: (built[0], keyline_body(built[1], size, is_plated(icon_id))))(build_current(icon_id, size, "al-%s-%d" % (icon_id, size))),
+			lambda size, icon_id=icon_id: keyline_build(icon_id, size),
 			hinted))
 	return out
 
@@ -358,8 +353,77 @@ def review(out_path):
 	return len(below), len(below), report
 
 
+def rest_review(out_path, count=24):
+	"""The worst icons still below 3:1 (those gen_e.py does not keyline), current against keyline, with each size's contrast."""
+	from PIL import Image, ImageDraw, ImageFont
+	font, small, heading = ImageFont.load_default(size=13), ImageFont.load_default(size=11), ImageFont.load_default(size=20)
+	ink, dim, gold, bad, good = (224, 224, 224), (124, 135, 150), (255, 208, 142), (244, 63, 94), (134, 239, 172)
+	ranked = []
+	for icon_id in gen.I:
+		if icon_id in gen.KEYLINED:
+			continue
+		current = frames(None, icon_id)
+		values = {name: {size: measure(current[size], ground) for size in (48, 32, 16)} for name, ground in GROUNDS}
+		lowest = min(min(by_size.values()) for by_size in values.values())
+		if lowest < TARGET:
+			ranked.append((lowest, icon_id, current, values))
+	ranked.sort(key=lambda item: item[0])
+	shown = ranked[:count]
+	tile_width, tile_height, label_width, gap = 178, 72, 150, 8
+	option_width = 2 * (tile_width + gap)
+	column_width = label_width + 2 * option_width + 24
+	row_height = tile_height + 46
+	margin, columns = 24, 2
+	rows = (len(shown) + columns - 1) // columns
+	width = margin * 2 + columns * column_width
+	height = 150 + rows * row_height + 20
+	sheet = Image.new("RGB", (width, height), (12, 12, 16))
+	draw = ImageDraw.Draw(sheet)
+	draw.text((margin, 18), "Keyline for the rest of the set · review only, NOT SHIPPED", font=heading, fill=gold)
+	lines = [
+		"The %d icons furthest below 3:1, of the %d still below it on cream or Dusk once Hard disk, Floppy, Removable drive, RAM disk and My Computer ship the keyline." % (len(shown), len(ranked)),
+		"Each pair: current (shipped) and keyline (alternatives/keyline), each on cream (212, 208, 200) and on Dusk (9, 14, 42): 48, 32 and 16 px at 1x, then the 16 px frame at 4x.",
+		"Numbers: WCAG 2 contrast of the main silhouette's edge at 48 · 32 · 16 px; green reaches 3:1. Ranked by the lowest number of the current icon.",
+	]
+	for index, line in enumerate(lines):
+		draw.text((margin, 50 + index * 17), line, font=small, fill=dim)
+	for column in range(columns):
+		x = margin + column * column_width + label_width
+		draw.text((x, 118), "current", font=font, fill=ink)
+		draw.text((x + option_width, 118), "keyline (not shipped)", font=font, fill=gold)
+
+	def option(x, y, sizes):
+		for band, (ground_name, ground) in enumerate(GROUNDS):
+			left = x + band * (tile_width + gap)
+			sheet.paste(option_tile(sizes, ground), (left, y))
+			cursor = left
+			for size in (48, 32, 16):
+				value = measure(sizes[size], ground)
+				label = "%dpx %.1f" % (size, value)
+				draw.text((cursor, y + tile_height + 4), label, font=small, fill=good if value >= TARGET else bad)
+				cursor += draw.textlength(label, font=small) + 10
+
+	for index, (lowest, icon_id, current, values) in enumerate(shown):
+		x = margin + (index // rows) * column_width
+		y = 140 + (index % rows) * row_height
+		draw.text((x, y + 20), gen.LABEL[icon_id][:20], font=font, fill=ink)
+		draw.text((x, y + 38), icon_id, font=small, fill=dim)
+		draw.text((x, y + 54), "lowest %.2f:1" % lowest, font=small, fill=bad)
+		option(x + label_width, y, current)
+		option(x + label_width + option_width, y, frames("keyline", icon_id))
+	sheet.save(out_path, optimize=True)
+	return [(icon_id, values, {name: {size: measure(frames("keyline", icon_id)[size], ground) for size in (48, 32, 16)} for name, ground in GROUNDS})
+		for lowest, icon_id, current, values in shown], len(ranked)
+
+
 def main():
-	if len(sys.argv) == 3 and sys.argv[1] == "--review":
+	if len(sys.argv) == 3 and sys.argv[1] == "--rest":
+		shown, below = rest_review(sys.argv[2])
+		print("rest sheet", len(shown), "of", below, "icons below 3:1")
+		for icon_id, current, keyline in shown:
+			print("%-13s" % icon_id, " | ".join("%s %s -> %s" % (name, " ".join("%.2f" % current[name][size] for size in (48, 32, 16)),
+				" ".join("%.2f" % keyline[name][size] for size in (48, 32, 16))) for name, _ in GROUNDS))
+	elif len(sys.argv) == 3 and sys.argv[1] == "--review":
 		rows, below, report = review(sys.argv[2])
 		print("review sheet", rows, "icons,", below, "below 3:1")
 		for name, _ in GROUNDS:
@@ -369,7 +433,7 @@ def main():
 	elif len(sys.argv) == 1:
 		print("alternative masters", write_masters())
 	else:
-		sys.exit("usage: alternatives.py [--review OUT_PNG]")
+		sys.exit("usage: alternatives.py [--review OUT_PNG | --rest OUT_PNG]")
 
 
 if __name__ == "__main__":

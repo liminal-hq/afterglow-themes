@@ -11,6 +11,7 @@
 # tone of the same hue, and a soft contact shadow. No ink outline anywhere. Deterministic: no randomness, no clock, no environment input.
 #
 #   python3 gen_e.py OUT_DIR         writes OUT_DIR/icons/ (the masters and profiles) and OUT_DIR/sheet.svg (text stays text)
+import colorsys
 import importlib.util
 import math
 import os
@@ -89,6 +90,35 @@ SKY = ("sky", SKY1, SKY7)  # the brand sky ramp for screens and the plate: a col
 PROFILE = {48: dict(edge=0.30, soft=True), 32: dict(edge=0.45, soft=True), 24: dict(edge=0.50, soft=True), 16: dict(edge=0.60, soft=False)}
 SHADOW = {"body": 0.30, "tile": 0.30, "lift": 0.20, "flat": 0.0}
 
+# ---- the keyline: set E's own inner edge, opaque and retuned in its own hue so the silhouette reaches 3:1 on cream and on dusk -------------------
+# The classic cream window colour has a luminance of about 0.62 and the Dusk desktop about 0.006; an edge of about 0.137 reaches 3:1
+# against both. The edge is drawn about 1.5 screen pixels wide, because at 32 px and below one pixel falls between pixels and blurs. Only
+# the icons in KEYLINED ship with it (the hard disk, the device drives and My Computer, which ReactOS shows on light windows); every other
+# icon's keyline variant is a review-only alternative in alternatives/.
+KEY_LUMINANCE = 0.137
+KEY_WIDTH = {48: 1.5, 32: 1.67, 24: 1.5, 16: 1.5}
+KEYLINED = {"hdd", "floppy", "removable", "ramdisk", "mycomputer"}
+# Their hand-tuned 16 px frames take the keyline tone on their edge pixels only where the frame is below 3:1 on cream without it
+KEYLINED_16 = {"removable"}
+
+
+def luminance_of(colour):
+	return FG.lum(colour)
+
+
+def retune(colour, target=KEY_LUMINANCE):
+	"""The same hue and saturation at the lightness whose luminance is the target (KEY_LUMINANCE unless given)."""
+	hue, lightness, saturation = colorsys.rgb_to_hls(*(int(colour[index:index + 2], 16) / 255 for index in (1, 3, 5)))
+	low, high = 0.0, 1.0
+	for _ in range(40):
+		middle = (low + high) / 2
+		value = "#%02x%02x%02x" % tuple(round(component * 255) for component in colorsys.hls_to_rgb(hue, middle, saturation))
+		if luminance_of(value) < target:
+			low = middle
+		else:
+			high = middle
+	return "#%02x%02x%02x" % tuple(round(component * 255) for component in colorsys.hls_to_rgb(hue, high, saturation))
+
 
 def circ(cx, cy, r):
 	return "M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(cx - r), _n(cy), _n(r), _n(r), _n(2 * r), _n(r), _n(r), _n(-2 * r))
@@ -126,12 +156,19 @@ def fold_d(x, y, w, f=10):
 class Pen:
 	"""Collects defs with ids unique to one icon and paints faces in the M1 language at one size profile."""
 
-	def __init__(self, pre, size):
+	def __init__(self, pre, size, keyline=False):
 		self.pre, self.size, self.n = pre, size, 0
 		self.u = 48 / size if size < 48 else 1  # one screen pixel in grid units
 		p = PROFILE[size]
 		self.op, self.soft = p["edge"], p["soft"]
+		self.keyline = keyline  # every material edge drawn as the keyline (see KEYLINED)
 		self.defs, self.clips, self.out = {}, {}, []
+
+	def edge_paint(self, m, width):
+		"""The edge tone, opacity and width of a material edge: set E's soft inner edge, or the keyline."""
+		if self.keyline:
+			return retune(m.edge), 1, width * KEY_WIDTH[self.size]
+		return m.edge, self.op, width
 
 	def id(self, k):
 		self.n += 1
@@ -170,7 +207,8 @@ class Pen:
 			s = '<path d="%s" fill="%s" fill-rule="evenodd"/>' % (d, paint)
 		if edge and m is not SKY:
 			cid = self.clip(d)
-			s += '<g clip-path="url(#%s)"><path d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-opacity="%s"/></g>' % (cid, d, m.edge, _n(2 * u), self.op)
+			edge_colour, opacity, width = self.edge_paint(m, 2 * u)
+			s += '<g clip-path="url(#%s)"><path d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-opacity="%s"/></g>' % (cid, d, edge_colour, _n(width), _n(opacity))
 		self.out.append(s)
 
 	def fill(self, d, colour):
@@ -183,8 +221,9 @@ class Pen:
 	def line(self, d, colour, w, m=None):
 		"""A stroked mark. With a material its edge tone is laid underneath, one screen pixel wider at the profile's edge opacity."""
 		if m is not None:
+			edge_colour, opacity, width = self.edge_paint(m, 2 * self.u)
 			self.out.append('<path d="%s" fill="none" stroke="%s" stroke-opacity="%s" stroke-width="%s" stroke-linecap="round" stroke-linejoin="round"/>' % (
-				d, m.edge, self.op, _n(w + 2 * self.u)))
+				d, edge_colour, _n(opacity), _n(w + width)))
 		self.out.append('<path d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-linecap="round" stroke-linejoin="round"/>' % (d, colour, _n(w)))
 
 	def shadow(self, x0, x1, y, op):
@@ -855,7 +894,7 @@ def build(k, size, pre=None):
 		return FG.icon(M1, M1_NAME[k], size, pre)
 	if kind == "built":
 		return f(size, pre)
-	p = Pen(pre, size)
+	p = Pen(pre, size, k in KEYLINED)
 	if kind == "tile":
 		plate(p)
 	f(p)
@@ -1004,7 +1043,7 @@ GRID16 = {
 	".....Ggff4GN....",
 	"....GgfffgG.....",
 	"...GgfffggG.....",
-	"..GgggggggG.....",
+	"..GggggggGG.....",
 	".GggggggG.......",
 	".Gg^gggG........",
 	".GgggGG.........",
@@ -1050,10 +1089,12 @@ GRID16 = {
 }
 
 
-def pixel_grid(rows):
+def pixel_grid(rows, keyline=False):
+	"""The rects of one hand-tuned grid; with the keyline, every material edge pixel (uppercase) takes the keyline tone of its edge."""
 	colours = {}
 	for letter, name in {"g": "gold", "f": "goldl", "p": "paper", "m": "front", "n": "back", "d": "dusk", "v": "violet"}.items():
-		colours[letter], colours[letter.upper()] = G[name].base, G[name].px_edge()
+		edge = G[name].px_edge()
+		colours[letter], colours[letter.upper()] = G[name].base, retune(edge) if keyline else edge
 	colours.update({digit: colour for digit, colour in PXD.items() if digit != "e"})
 	colours.update({"-": VOIDN[300], "#": INDIGO[600], "%": INDIGO[300], "^": ORANGE[400], "~": HORIZON})
 	return "".join('<rect x="%d" y="%d" width="1" height="1" fill="%s"/>' % (x, y, colours[character])
@@ -1080,7 +1121,7 @@ M1_H16 = {"folder": ("closed", None), "folderopen": ("open", None), "mydocs": ("
 
 def hinted(k):
 	if k in GRID16:
-		return pixel_grid(GRID16[k])
+		return pixel_grid(GRID16[k], k in KEYLINED_16)
 	if k in M1_H16:
 		st, em = M1_H16[k]
 		return FG.hint16(M1, st, em)

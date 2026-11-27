@@ -18,7 +18,20 @@ The Afterglow icon set for ReactOS: 140 icons in nine groups (desktop and shell,
 - **RAM disk** says a drive held in memory. It is one black memory chip with its legs, the part people know as memory, with a gold disk platter printed on its lid, its lit sector the usage pie Windows draws for a drive. One chip with a platter is not the `ram-module` stick of three chips, and it needs no drive box around it.
 - **My Computer** says this computer: the monitor with its system unit beside it.
 
-The art that shows the medium or the part on its own is kept under its own ids, for media, storage and hardware lists: `cd-disc` (CD disc), `floppy-disk` (floppy disk), `monitor` (monitor alone), `usb-key` (USB key) and `ram-module` (RAM module). They are in `map.json` as `unmapped`, because no drive, floppy, removable, RAM disk or My Computer slot uses them. Each of the five device icons has a hand-tuned 16 px frame. In the shipped style, without the keyline, every one reaches 3:1 against the Dusk desktop at 48, 32 and 16 px. Against cream, CD drive reaches it at every size (its black tray carries it) and Floppy, RAM disk and My Computer at 16 px; the light and gold faces at 48 and 32 px, and Removable drive's gold at 16 px, stay below it, as they do across the set. Their keyline variants in `desktop/icons/alternatives/` reach 3:1 on both.
+The art that shows the medium or the part on its own is kept under its own ids, for media, storage and hardware lists: `cd-disc` (CD disc), `floppy-disk` (floppy disk), `monitor` (monitor alone), `usb-key` (USB key) and `ram-module` (RAM module). They are in `map.json` as `unmapped`, because no drive, floppy, removable, RAM disk or My Computer slot uses them. Each of the five device icons has a hand-tuned 16 px frame.
+
+**The keyline on the drives.** ReactOS shows the drives and My Computer on light windows (the white file list of My Computer, cream dialogs), where set E's light faces and soft inner edge left them pale: Local Disk read at 1.4:1 against cream. So Hard disk, Floppy, Removable drive, RAM disk and My Computer ship with the keyline (`KEYLINED` in `gen_e.py`): set E's own inner edge, made opaque and retuned in each material's own hue to a luminance of about 0.137, about 1.5 screen pixels wide at 32 and 16 px. It is not an ink outline: the steel body keeps a steel edge, the gold a deeper gold. Removable drive's hand-tuned 16 px frame gives its edge pixels the same tone; the other 16 px frames already reach 3:1. CD drive does not need it, because its black tray carries it. Contrast of the main silhouette's edge (WCAG 2, measured as `desktop/icons/alternatives/README.md` describes), at 48, 32 and 16 px:
+
+| Icon            | Cream before     | Cream now        | Dusk now         | White now        |
+| --------------- | ---------------- | ---------------- | ---------------- | ---------------- |
+| Hard disk       | 1.40, 1.48, 3.04 | 3.63, 3.64, 3.04 | 6.78, 5.27, 14.8 | 5.58, 5.60, 4.68 |
+| Floppy          | 1.36, 1.57, 4.04 | 3.63, 3.64, 4.04 | 6.46, 4.70, 4.90 | 5.58, 5.60, 6.21 |
+| Removable drive | 1.60, 1.81, 2.48 | 3.48, 3.65, 3.65 | 4.16, 4.16, 10.0 | 5.35, 5.61, 5.61 |
+| RAM disk        | 2.12, 2.97, 6.72 | 3.63, 3.63, 6.72 | 3.40, 3.40, 5.89 | 5.58, 5.58, 10.3 |
+| My Computer     | 1.49, 1.79, 4.04 | 3.63, 3.63, 4.04 | 6.28, 4.59, 4.05 | 5.58, 5.58, 6.21 |
+| CD drive        | 6.50, 5.78, 9.46 | unchanged        | 3.14, 5.17, 4.05 | 10.0, 8.76, 14.5 |
+
+The rest of the set does not ship the keyline: 83 icons are below 3:1 on cream and 51 on Dusk, and their keyline variants are review-only alternatives in `desktop/icons/alternatives/`, with a sheet of the 24 furthest below it.
 
 **The tiers and sizes.** Body objects (folders, documents, drives, monitors, bins) get a 30 % contact shadow. Symbols, dialog badges and toolbar glyphs only lift, with a 20 % shadow, and Delete, Undo and Shut Down are flat stroke marks. The edge is 1 px at 30 % at 48, 1 screen pixel at 45 % at 32 and a baked solid tone at 16, where the ramp, lit band and shadow are dropped. 24 px is not drawn because ReactOS never asks for it.
 
