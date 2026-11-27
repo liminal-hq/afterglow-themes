@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Afterglow icon set, variant E: every icon drawn in the language of the M1 folder, with hinted 16 px redraws and the sheet.
+# The icons added in v2 are drawn in gen_v2.py with this file's Pen and registered here.
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -10,10 +11,12 @@
 # tone of the same hue, and a soft contact shadow. No ink outline anywhere. Deterministic: no randomness, no clock, no environment input.
 #
 #   python3 gen_e.py OUT_DIR         writes OUT_DIR/icons/ (the masters and profiles) and OUT_DIR/sheet.svg (text stays text)
+import colorsys
 import importlib.util
 import math
 import os
 import sys
+import types
 
 sys.dont_write_bytecode = True  # importing folders_g.py must not leave a cache beside it
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -84,12 +87,45 @@ MATS = {
 SKY = ("sky", SKY1, SKY7)  # the brand sky ramp for screens and the plate: a colour, not lighting, so it keeps its own two stops
 
 # ---- the profile by size: edge weight, band, ramp and shadow ---------------------------------------------------------------------------------
-PROFILE = {48: dict(edge=0.30, soft=True), 32: dict(edge=0.45, soft=True), 16: dict(edge=0.60, soft=False)}
+PROFILE = {48: dict(edge=0.30, soft=True), 32: dict(edge=0.45, soft=True), 24: dict(edge=0.50, soft=True), 16: dict(edge=0.60, soft=False)}
 SHADOW = {"body": 0.30, "tile": 0.30, "lift": 0.20, "flat": 0.0}
+
+# ---- the keyline: set E's own inner edge, opaque and retuned in its own hue so the silhouette reaches 3:1 on cream and on dusk -------------------
+# The classic cream window colour has a luminance of about 0.62 and the Dusk desktop about 0.006; an edge of about 0.137 reaches 3:1
+# against both. The edge is drawn about 1.5 screen pixels wide, because at 32 px and below one pixel falls between pixels and blurs. Only
+# the icons in KEYLINED ship with it (the hard disk, the device drives and My Computer, which ReactOS shows on light windows); every other
+# icon's keyline variant is a review-only alternative in alternatives/.
+KEY_LUMINANCE = 0.137
+KEY_WIDTH = {48: 1.5, 32: 1.67, 24: 1.5, 16: 1.5}
+KEYLINED = {"hdd", "floppy", "removable", "ramdisk", "mycomputer"}
+# Their hand-tuned 16 px frames take the keyline tone on their edge pixels only where the frame is below 3:1 on cream without it
+KEYLINED_16 = {"removable"}
+
+
+def luminance_of(colour):
+	return FG.lum(colour)
+
+
+def retune(colour, target=KEY_LUMINANCE):
+	"""The same hue and saturation at the lightness whose luminance is the target (KEY_LUMINANCE unless given)."""
+	hue, lightness, saturation = colorsys.rgb_to_hls(*(int(colour[index:index + 2], 16) / 255 for index in (1, 3, 5)))
+	low, high = 0.0, 1.0
+	for _ in range(40):
+		middle = (low + high) / 2
+		value = "#%02x%02x%02x" % tuple(round(component * 255) for component in colorsys.hls_to_rgb(hue, middle, saturation))
+		if luminance_of(value) < target:
+			low = middle
+		else:
+			high = middle
+	return "#%02x%02x%02x" % tuple(round(component * 255) for component in colorsys.hls_to_rgb(hue, high, saturation))
 
 
 def circ(cx, cy, r):
 	return "M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(cx - r), _n(cy), _n(r), _n(r), _n(2 * r), _n(r), _n(r), _n(-2 * r))
+
+
+def ellipse_d(cx, cy, rx, ry):
+	return "M%s %s a%s %s 0 1 0 %s 0 a%s %s 0 1 0 %s 0 Z" % (_n(cx - rx), _n(cy), _n(rx), _n(ry), _n(2 * rx), _n(rx), _n(ry), _n(-2 * rx))
 
 
 def ring(cx, cy, ro, ri):
@@ -120,12 +156,19 @@ def fold_d(x, y, w, f=10):
 class Pen:
 	"""Collects defs with ids unique to one icon and paints faces in the M1 language at one size profile."""
 
-	def __init__(self, pre, size):
+	def __init__(self, pre, size, keyline=False):
 		self.pre, self.size, self.n = pre, size, 0
 		self.u = 48 / size if size < 48 else 1  # one screen pixel in grid units
 		p = PROFILE[size]
 		self.op, self.soft = p["edge"], p["soft"]
+		self.keyline = keyline  # every material edge drawn as the keyline (see KEYLINED)
 		self.defs, self.clips, self.out = {}, {}, []
+
+	def edge_paint(self, m, width):
+		"""The edge tone, opacity and width of a material edge: set E's soft inner edge, or the keyline."""
+		if self.keyline:
+			return retune(m.edge), 1, width * KEY_WIDTH[self.size]
+		return m.edge, self.op, width
 
 	def id(self, k):
 		self.n += 1
@@ -164,7 +207,8 @@ class Pen:
 			s = '<path d="%s" fill="%s" fill-rule="evenodd"/>' % (d, paint)
 		if edge and m is not SKY:
 			cid = self.clip(d)
-			s += '<g clip-path="url(#%s)"><path d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-opacity="%s"/></g>' % (cid, d, m.edge, _n(2 * u), self.op)
+			edge_colour, opacity, width = self.edge_paint(m, 2 * u)
+			s += '<g clip-path="url(#%s)"><path d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-opacity="%s"/></g>' % (cid, d, edge_colour, _n(width), _n(opacity))
 		self.out.append(s)
 
 	def fill(self, d, colour):
@@ -177,8 +221,9 @@ class Pen:
 	def line(self, d, colour, w, m=None):
 		"""A stroked mark. With a material its edge tone is laid underneath, one screen pixel wider at the profile's edge opacity."""
 		if m is not None:
+			edge_colour, opacity, width = self.edge_paint(m, 2 * self.u)
 			self.out.append('<path d="%s" fill="none" stroke="%s" stroke-opacity="%s" stroke-width="%s" stroke-linecap="round" stroke-linejoin="round"/>' % (
-				d, m.edge, self.op, _n(w + 2 * self.u)))
+				d, edge_colour, _n(opacity), _n(w + width)))
 		self.out.append('<path d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-linecap="round" stroke-linejoin="round"/>' % (d, colour, _n(w)))
 
 	def shadow(self, x0, x1, y, op):
@@ -299,7 +344,16 @@ for _k in M1_NAME:
 
 @icon("mycomputer", "bare", "body")
 def _(p):
-	monitor(p)
+	p.shadow(5, 43, 42, SHADOW["body"])
+	p.face(RR(29, 9, 14, 33, 3), G["back"])
+	for y in (14, 18.5):
+		p.fill(RR(32, y, 8, 2.2, 1.1), VOIDN[400])
+	p.face(RR(32.5, 34, 4.5, 3.2, 1.2), G["gold"], band=False)
+	p.face(RR(13, 31, 7, 6, 1.4), G["back"], band=False)
+	p.face(RR(7, 36, 19, 4.5, 2), G["back"])
+	p.face(RR(4, 9, 25, 23, 3.2), G["front"])
+	p.sky(RR(7.5, 12.5, 18, 16, 1.5))
+	p.fill("M%s %s a5.5 5.5 0 0 1 11 0 Z" % (_n(11), _n(28.5)), ORANGE[200])
 
 
 @icon("browser", "tile", "tile")
@@ -577,23 +631,44 @@ def _(p):
 	drive(p)
 
 
-@icon("cd", "bare", "lift")
+@icon("cd", "bare", "body")
 def _(p):
-	p.shadow(7, 41, 43, SHADOW["lift"])
-	p.face(ring(24, 24, 19, 3.2), G["front"])
-	p.fill(ring(24, 24, 9.5, 3.2), VOIDN[300])
-	p.line("M9.5 19 A15 15 0 0 1 19 9.5", ORANGE[300], 2.2)
-	p.line("M38.5 29 A15 15 0 0 1 29 38.5", INDIGO[300], 2.2)
+	# A slim 5.25 in optical drive seen from a little above: its faceplate (tray mouth, light and eject button) at the top, and its black
+	# tray run out toward the viewer with a silver disc seated on it. The disc on the open tray is what says optical, not hard disk.
+	p.shadow(6, 42, 42.5, SHADOW["body"])
+	p.face(RR(8, 5, 32, 9, 3), G["back"])
+	p.face(RR(5, 9, 38, 12, 3), G["front"])
+	p.fill(RR(31, 12.2, 3.2, 2.2, 1), ORANGE[200])
+	p.face(RR(35, 11.8, 5, 3, 1.1), G["back"], band=False)
+	p.fill(RR(8, 16.5, 32, 3.4, 1.5), DARK)
+	tray = poly([(9.5, 18, 1), (38.5, 18, 1), (43, 38, 2.5), (43, 42, 2.5), (5, 42, 2.5), (5, 38, 2.5)])
+	p.face(tray, G["dusk"])
+	p.fill(poly([(5.4, 38.2, 2), (42.6, 38.2, 2), (42.6, 41.6, 2.2), (5.4, 41.6, 2.2)], 1.5), mix(G["dusk"].base, G["dusk"].edge, 0.45))
+	p.face(ellipse_d(24, 29, 15.5, 8.4), G["front"], band=False)
+	p.fill(ellipse_d(24, 29, 5.2, 2.8), VOIDN[300])
+	p.fill(ellipse_d(24, 29, 1.9, 1), SKY1)
+	p.line("M11.6 26.4 C13.6 23.6 17.6 22 22 21.7", ORANGE[300], 1.8)
+	p.line("M36.4 31.6 C34.4 34.4 30.4 36 26 36.3", INDIGO[300], 1.8)
 
 
 @icon("floppy", "bare", "body")
 def _(p):
-	p.shadow(7, 41, 41, SHADOW["body"])
-	p.face(poly([(7, 7, 3), (36, 7, 1.5), (41, 12, 1.5), (41, 41, 3), (7, 41, 3)]), G["violet"])
-	p.face(poly([(15, 7, 0.4), (32, 7, 0.4), (32, 19, 1.5), (15, 19, 1.5)]), G["back"], band=False)
-	p.fill(RR(25, 9.5, 4, 7, 1), INDIGO[600])
-	p.face(poly([(12.5, 41, 0.01), (12.5, 26, 2), (35.5, 26, 2), (35.5, 41, 0.01)]), G["paper"], band=False)
-	bars(p, 16, 30.5, [16, 11], 4.5, 2)
+	# A 3.5 in floppy drive seen from a little above: the narrow faceplate with its slot, light and eject button, and a floppy disk
+	# going into the slot, shutter end first: the disk is in front of the faceplate and its leading edge is lost in the slot.
+	p.shadow(6, 42, 42.5, SHADOW["body"])
+	p.face(RR(7, 7, 34, 10, 3), G["back"])
+	p.face(RR(5, 11, 38, 19, 3), G["front"])
+	p.fill(RR(8, 16, 26, 4, 1.4), DARK)
+	p.fill(RR(36, 15.6, 3.6, 2.2, 1), ORANGE[200])
+	p.face(RR(35, 21.5, 5.5, 3.6, 1.2), G["back"], band=False)
+	disk = poly([(10, 18, 0.6), (32, 18, 0.6), (35.5, 42, 2.5), (6.5, 42, 2.5)])
+	p.face(disk, G["violet"])
+	p.face(poly([(15, 18, 0.3), (26, 18, 0.3), (26.6, 25.5, 1.2), (14.3, 25.5, 1.2)]), G["back"], band=False)
+	p.fill(poly([(21.6, 18.6, 0.4), (24.4, 18.6, 0.4), (24.6, 23.6, 0.6), (21.6, 23.6, 0.6)], 0.4), INDIGO[600])
+	p.face(poly([(11.2, 30, 1.5), (30.3, 30, 1.5), (31.6, 42, 0.01), (9.9, 42, 0.01)]), G["paper"], band=False)
+	p.fill(RR(13.4, 33.4, 15, 2, 1), LINE)
+	p.fill(RR(13.2, 37.2, 10, 2, 1), LINE)
+	p.fill(RR(8, 16, 26, 2.2, 1.1), DARK)
 
 
 @icon("netdrive", "bare", "body")
@@ -817,7 +892,9 @@ def build(k, size, pre=None):
 	kind, tier, f = I[k]
 	if kind == "m1":
 		return FG.icon(M1, M1_NAME[k], size, pre)
-	p = Pen(pre, size)
+	if kind == "built":
+		return f(size, pre)
+	p = Pen(pre, size, k in KEYLINED)
 	if kind == "tile":
 		plate(p)
 	f(p)
@@ -909,11 +986,119 @@ H16["search"] = [
 	(["." * 16] + ["." + r + "." * 6 for r in LENS] + ["." * 16] * 6, False)]
 H16["hdd"] = [(grid(lambda x, y: "n" if 2 <= x <= 13 and 3 <= y <= 7 else "."), True), (grid(lambda x, y: "m" if 1 <= x <= 14 and 5 <= y <= 12 else "."), True),
 	detail([(3, 9, 5, "9"), (11, 8, 2, "2"), (11, 9, 2, "2")])]
-H16["mycomputer"] = [
+H16["monitor"] = [
 	(grid(lambda x, y: "n" if (6 <= x <= 9 and y == 11) or (4 <= x <= 11 and 12 <= y <= 13) else "."), True),
 	(grid(lambda x, y: "m" if 1 <= x <= 14 and 1 <= y <= 11 else "."), True),
 	(grid(lambda x, y: ("5" if y <= 4 else "6" if y <= 6 else "7") if 3 <= x <= 12 and 3 <= y <= 8 else "."), False),
 	detail([(7, 7, 2, "2"), (6, 8, 4, "2")])]
+
+
+# The hand-tuned 16 px frames of the device icons (the drives and My Computer), in the same grid language as the layers above but drawn as
+# one flat grid: lowercase material base, uppercase its 16 px edge, digits and symbols flat details, . transparent
+GRID16 = {
+	"cd": [
+	"................",
+	"................",
+	"...NNNNNNNNNN...",
+	".MMMMMMMMMMMMMM.",
+	".Mmmmmmmmm2mNNM.",
+	".M888888888888M.",
+	"..DddddddddddD..",
+	"..DddMMMMMMddD..",
+	".DdMMm^^mmmMMdD.",
+	".DMm^mm--mmmmMD.",
+	".DMmmm-55-mmmMD.",
+	".DMmmmm--mmm%MD.",
+	".DdMMmmmm%%MMdD.",
+	".DdddMMMMMMdddD.",
+	".DDDDDDDDDDDDDD.",
+	"................",
+	],
+	"floppy": [
+	"................",
+	"...NNNNNNNNNN...",
+	".MMMMMMMMMMMMMM.",
+	".Mmmmmmmmmmm2mM.",
+	".M8888888888mmM.",
+	".M8VvNNNNvV8mmM.",
+	".MmVvNn#NvVmmmM.",
+	".MmVvNNNNvVmNNM.",
+	".MmVvvvvvvVmNNM.",
+	".MVvvvvvvvvVMMM.",
+	"..VvPPPPPPvV....",
+	"..VvP1111PvV....",
+	"..VvPppppPvV....",
+	"..VvP111pPvV....",
+	"..VVPPPPPPVV....",
+	"................",
+	],
+	"removable": [
+	"................",
+	"...........NN...",
+	"..........NnnN..",
+	".........N#n#N..",
+	"........NnnnnN..",
+	".......GNnnnN...",
+	"......GgGNnN....",
+	".....Ggff4GN....",
+	"....GgfffgG.....",
+	"...GgfffggG.....",
+	"..GggggggGG.....",
+	".GggggggG.......",
+	".Gg^gggG........",
+	".GgggGG.........",
+	"..GGG...........",
+	"................",
+	],
+	"ramdisk": [
+	"................",
+	"..-.-.-.-.-.-...",
+	".1111111111111..",
+	".1ddddGGGddddD..",
+	".1dddGgggGdddD..",
+	".1ddGgggffGddD..",
+	".1ddGgg-ffGddD..",
+	".1ddGgggggGddD..",
+	".1dddGgggGdddD..",
+	".1ddddGGGddddD..",
+	".1dddddddddddD..",
+	".DDDDDDDDDDDDD..",
+	"..-.-.-.-.-.-...",
+	"..-.-.-.-.-.-...",
+	"................",
+	"................",
+	],
+	"mycomputer": [
+	"................",
+	"..........NNNNN.",
+	"MMMMMMMMMMNnnnN.",
+	"M55555555MN99nN.",
+	"M66666666MNnnnN.",
+	"M66622666MN99nN.",
+	"M77222277MNnnnN.",
+	"MMMMMMMMMMNnnnN.",
+	"....NN....NnnnN.",
+	"..NNNNNN..NnGnN.",
+	"..........NnnnN.",
+	"..........NNNNN.",
+	"................",
+	"................",
+	"................",
+	"................",
+	],
+}
+
+
+def pixel_grid(rows, keyline=False):
+	"""The rects of one hand-tuned grid; with the keyline, every material edge pixel (uppercase) takes the keyline tone of its edge."""
+	colours = {}
+	for letter, name in {"g": "gold", "f": "goldl", "p": "paper", "m": "front", "n": "back", "d": "dusk", "v": "violet"}.items():
+		edge = G[name].px_edge()
+		colours[letter], colours[letter.upper()] = G[name].base, retune(edge) if keyline else edge
+	colours.update({digit: colour for digit, colour in PXD.items() if digit != "e"})
+	colours.update({"-": VOIDN[300], "#": INDIGO[600], "%": INDIGO[300], "^": ORANGE[400], "~": HORIZON})
+	return "".join('<rect x="%d" y="%d" width="1" height="1" fill="%s"/>' % (x, y, colours[character])
+		for y, row in enumerate(rows) for x, character in enumerate(row) if character != ".")
 
 
 def bin16(full):
@@ -935,13 +1120,16 @@ M1_H16 = {"folder": ("closed", None), "folderopen": ("open", None), "mydocs": ("
 
 
 def hinted(k):
+	if k in GRID16:
+		return pixel_grid(GRID16[k], k in KEYLINED_16)
 	if k in M1_H16:
 		st, em = M1_H16[k]
 		return FG.hint16(M1, st, em)
 	return px_layers(H16[k])
 
 
-HINTED = ["folder", "folderopen", "mydocs", "mypictures", "mymusic", "myvideos", "desktop", "network", "doc", "documents", "warning", "error", "search", "hdd", "mycomputer", "recycle", "recyclefull"]
+HINTED = ["folder", "folderopen", "mydocs", "mypictures", "mymusic", "myvideos", "desktop", "network", "doc", "documents", "warning", "error", "search", "hdd", "cd", "floppy", "removable", "ramdisk", "mycomputer", "monitor", "recycle",
+	"recyclefull"]
 
 # ---- inventory and groups (set D's) ----------------------------------------------------------------------------------------------------------
 GROUPS = [
@@ -964,6 +1152,18 @@ GROUPS = [
 	("Start menu", [("programs", "Programs"), ("documents", "Documents"), ("settings", "Settings"), ("search", "Search"), ("help", "Help"), ("run", "Run"),
 		("shutdown", "Shut Down")]),
 ]
+
+
+def load_v2():
+	spec = importlib.util.spec_from_file_location("gen_v2", os.path.join(HERE, "gen_v2.py"))
+	module = importlib.util.module_from_spec(spec)
+	spec.loader.exec_module(module)
+	return module
+
+
+V2 = load_v2()
+V2.register(types.SimpleNamespace(**globals()))
+TOOLBAR_24 = V2.TOOLBAR_24  # the Explorer toolbar glyphs, which also get a 24 px profile for browseui's 24 px strips
 LABEL = {k: l for _, items in GROUPS for k, l in items}
 
 HEAD = """<!--
@@ -982,13 +1182,17 @@ def standalone(body, defs, vb, title, crisp=False):
 
 
 def write_icons(out):
-	for sub in ("icons", "icons/32", "icons/16"):
+	for sub in ("icons", "icons/32", "icons/24", "icons/16"):
 		os.makedirs(os.path.join(out, sub), exist_ok=True)
 	n = 0
 	for k in I:
 		for size, path in ((48, "icons/%s.svg"), (32, "icons/32/%s.svg"), (16, "icons/16/%s.svg")):
 			d, b = build(k, size)
 			open(os.path.join(out, path % k), "w").write(standalone(b, d, 48, "%s, %s (%s profile)" % (k, LABEL[k], "48 master" if size == 48 else "%d px" % size)))
+			n += 1
+		if k in TOOLBAR_24:
+			d, b = build(k, 24)
+			open(os.path.join(out, "icons/24/%s.svg" % k), "w").write(standalone(b, d, 48, "%s, %s (24 px profile)" % (k, LABEL[k])))
 			n += 1
 	for k in HINTED:
 		open(os.path.join(out, "icons/%s-16.svg" % k), "w").write(standalone(hinted(k), "", 16, "%s, %s (hinted 16 px)" % (k, LABEL[k]), True))
@@ -1035,7 +1239,7 @@ def write_sheet(syms):
 	for line in [
 		"Every icon drawn the way the chosen M1 folder is drawn: a flat two-tone base from Afterglow tokens (a deeper tone behind, a lighter lit tone in front), a very gentle",
 		"top-to-bottom ramp, a 1 px lit band on the top and left, a thin inner edge in a darker tone of the same hue at 30 %, a soft contact shadow and generous radii. No navy ink line,",
-		"no extrusion. Symbols and toolbar glyphs only lift; Delete, Undo and Shut Down stay flat. Apps and applets sit on M1's softly raised dusk plate. Sizes are 48, 32 and 16; 24 is not drawn.",
+		"no extrusion. Symbols and toolbar glyphs only lift; Delete, Undo and Shut Down stay flat. Apps and applets sit on M1's softly raised dusk plate. Sizes are 48, 32 and 16, plus 24 for toolbar glyphs.",
 	]:
 		y += 20
 		out.append(txt(40, y, line, 13, SUB))
@@ -1083,14 +1287,17 @@ def write_sheet(syms):
 	# hinted 16
 	out.append(txt(40, y + 14, "Hinted 16 px redraws · 1 px edge at about 60 % baked to a solid tone, no ramp, no shadow · at 1× on void, cream and dusk, and at 4×", 15, HD, weight=600))
 	y += 24
-	out.append('<rect x="40" y="%d" width="%d" height="112" rx="6" fill="%s"/>' % (y, W - 80, CELL))
-	for i, k in enumerate(HINTED):
-		x = 52 + i * 94
-		for j, bg in enumerate(("#060609", CREAM, SKY4)):
-			out.append('<rect x="%d" y="%d" width="24" height="24" fill="%s"/>' % (x, y + 10 + j * 28, bg) + use(syms.get(k, "h16"), x + 4, y + 14 + j * 28, 16))
-		out.append('<rect x="%d" y="%d" width="72" height="72" fill="%s"/>' % (x + 30, y + 10, CREAM) + use(syms.get(k, "h16"), x + 34, y + 14, 64))
-		out.append(txt(x + 66, y + 104, LABEL[k], 10, SUB, "middle"))
-	y += 112 + 22
+	per_row = (W - 104) // 94  # the hinted redraws wrap onto as many rows as they need
+	for start in range(0, len(HINTED), per_row):
+		out.append('<rect x="40" y="%d" width="%d" height="112" rx="6" fill="%s"/>' % (y, W - 80, CELL))
+		for i, k in enumerate(HINTED[start:start + per_row]):
+			x = 52 + i * 94
+			for j, bg in enumerate(("#060609", CREAM, SKY4)):
+				out.append('<rect x="%d" y="%d" width="24" height="24" fill="%s"/>' % (x, y + 10 + j * 28, bg) + use(syms.get(k, "h16"), x + 4, y + 14 + j * 28, 16))
+			out.append('<rect x="%d" y="%d" width="72" height="72" fill="%s"/>' % (x + 30, y + 10, CREAM) + use(syms.get(k, "h16"), x + 34, y + 14, 64))
+			out.append(txt(x + 66, y + 104, LABEL[k], 10, SUB, "middle"))
+		y += 112 + 6
+	y += 16
 
 	# groups
 	CW, CH, GAP = 200, 88, 4

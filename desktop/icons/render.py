@@ -3,9 +3,11 @@
 # Usage: render.py OUT_DIR
 #
 # Writes OUT_DIR/png/ID-SIZE.png, OUT_DIR/ico/ID.ico, the shortcut arrow as png/arrow-SIZE.png and ico/arrow.ico, the contact sheet
-# afterglow-icons-sheet.png and a preview of the arrow over six icons, afterglow-arrow-preview.png. ReactOS never asks for 24 px, so there
-# is no 24 px frame. Each size draws from the master built for it: 48 from svg/ID.svg, 32 from svg/32/ID.svg (the 32 px profile, still a
-# 48 viewBox), and 16 from the hinted redraw svg/ID-16.svg where one exists, otherwise from svg/16/ID.svg. The arrow draws from
+# afterglow-icons-sheet.png and a preview of the arrow over six icons, afterglow-arrow-preview.png. Icons never get a 24 px frame (the shell
+# never asks for one), but the Explorer toolbar's 24 px bitmap strips do: each toolbar glyph with a 24 px profile (svg/24/ID.svg) is also
+# written as png/ID-24.png and as ico24/ID.ico, a one-frame 24 px .ico in the same layout, so the three-frame .ico stays as it is. Each size
+# draws from the master built for it: 48 from svg/ID.svg, 32 from svg/32/ID.svg (the 32 px profile, still a 48 viewBox), 24 from
+# svg/24/ID.svg, and 16 from the hinted redraw svg/ID-16.svg where one exists, otherwise from svg/16/ID.svg. The arrow draws from
 # arrow/arrow-48.svg, arrow-32.svg and the pixel-drawn arrow-16-hinted.svg. The soft shadows are blurs in the masters, so each size bakes
 # its own when rsvg-convert rasterises it. An .ico holds three uncompressed 32-bit BGRA DIB frames (alpha in the pixels, an all-zero AND
 # mask), the classic layout every Windows since 95 reads, ReactOS included; no PNG-compressed frames, which older icon loaders reject. The
@@ -33,12 +35,18 @@ def ids():
 	return sorted(f[:-4] for f in os.listdir(SVG) if f.endswith(".svg") and not f.endswith("-16.svg"))
 
 
+def toolbar_ids():
+	"""The toolbar glyphs that have a 24 px profile."""
+	folder = os.path.join(SVG, "24")
+	return sorted(f[:-4] for f in os.listdir(folder) if f.endswith(".svg")) if os.path.isdir(folder) else []
+
+
 def master(icon, size):
 	"""The SVG that draws `icon` at `size`."""
 	if icon == "arrow":
 		return os.path.join(ARROW, "arrow-16-hinted.svg" if size == 16 else f"arrow-{size}.svg")
-	if size == 32:
-		return os.path.join(SVG, "32", icon + ".svg")
+	if size in (24, 32):
+		return os.path.join(SVG, str(size), icon + ".svg")
 	if size == 16:
 		hinted = os.path.join(SVG, icon + "-16.svg")
 		return hinted if os.path.exists(hinted) else os.path.join(SVG, "16", icon + ".svg")
@@ -87,6 +95,8 @@ def render(out_dir):
 	ico_dir = os.path.join(out_dir, "ico")
 	os.makedirs(png_dir, exist_ok=True)
 	os.makedirs(ico_dir, exist_ok=True)
+	ico24_dir = os.path.join(out_dir, "ico24")
+	os.makedirs(ico24_dir, exist_ok=True)
 	pixels = {}
 	for icon in ids() + ["arrow"]:
 		frames = []
@@ -101,6 +111,13 @@ def render(out_dir):
 			pixels[icon, size] = image
 		with open(os.path.join(ico_dir, icon + ".ico"), "wb") as f:
 			f.write(ico(frames))
+		if icon in toolbar_ids():
+			data = rsvg(master(icon, 24), 24, 24)
+			with open(os.path.join(png_dir, f"{icon}-24.png"), "wb") as f:
+				f.write(data)
+			image = Image.open(io.BytesIO(data)).convert("RGBA")
+			with open(os.path.join(ico24_dir, icon + ".ico"), "wb") as f:
+				f.write(ico([image]))
 	with open(os.path.join(out_dir, "afterglow-icons-sheet.png"), "wb") as f:
 		f.write(subprocess.run(["rsvg-convert", "--format", "png", os.path.join(HERE, "sheet.svg")], check=True, stdout=subprocess.PIPE).stdout)
 	arrow_preview(pixels).save(os.path.join(out_dir, "afterglow-arrow-preview.png"), optimize=False)

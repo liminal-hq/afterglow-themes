@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): cut, Cut (16 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="e-cut-16-c1"><path d="M6.4 35 a7.6 7.6 0 1 0 15.2 0 a7.6 7.6 0 1 0 -15.2 0 Z M10.6 35 a3.4 3.4 0 1 0 6.8 0 a3.4 3.4 0 1 0 -6.8 0 Z" clip-rule="evenodd"/></clipPath><clipPath id="e-cut-16-c2"><path d="M26.4 35 a7.6 7.6 0 1 0 15.2 0 a7.6 7.6 0 1 0 -15.2 0 Z M30.6 35 a3.4 3.4 0 1 0 6.8 0 a3.4 3.4 0 1 0 -6.8 0 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M18 30 L31 5.5" fill="none" stroke="#1f2230" stroke-opacity="0.6" stroke-width="10.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 30 L31 5.5" fill="none" stroke="#b4bfce" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 30 L17 5.5" fill="none" stroke="#1f2230" stroke-opacity="0.6" stroke-width="10.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 30 L17 5.5" fill="none" stroke="#b4bfce" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.4 35 a7.6 7.6 0 1 0 15.2 0 a7.6 7.6 0 1 0 -15.2 0 Z M10.6 35 a3.4 3.4 0 1 0 6.8 0 a3.4 3.4 0 1 0 -6.8 0 Z" fill="#ffaa40" fill-rule="evenodd"/><g clip-path="url(#e-cut-16-c1)"><path d="M6.4 35 a7.6 7.6 0 1 0 15.2 0 a7.6 7.6 0 1 0 -15.2 0 Z M10.6 35 a3.4 3.4 0 1 0 6.8 0 a3.4 3.4 0 1 0 -6.8 0 Z" fill="none" stroke="#7d5422" stroke-width="6" stroke-opacity="0.6"/></g><path d="M26.4 35 a7.6 7.6 0 1 0 15.2 0 a7.6 7.6 0 1 0 -15.2 0 Z M30.6 35 a3.4 3.4 0 1 0 6.8 0 a3.4 3.4 0 1 0 -6.8 0 Z" fill="#ffaa40" fill-rule="evenodd"/><g clip-path="url(#e-cut-16-c2)"><path d="M26.4 35 a7.6 7.6 0 1 0 15.2 0 a7.6 7.6 0 1 0 -15.2 0 Z M30.6 35 a3.4 3.4 0 1 0 6.8 0 a3.4 3.4 0 1 0 -6.8 0 Z" fill="none" stroke="#7d5422" stroke-width="6" stroke-opacity="0.6"/></g><path d="M22.4 17.3 a1.6 1.6 0 1 0 3.2 0 a1.6 1.6 0 1 0 -3.2 0 Z" fill="#5a6273" fill-rule="evenodd"/>
+</svg>

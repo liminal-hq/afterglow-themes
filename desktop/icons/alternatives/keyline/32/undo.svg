@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): undo, Undo, keyline (review only) (32 px)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="al-undo-32-c1"><path d="M6.167 21.943 C5.525 21.424 5.525 20.576 6.167 20.057 L16.833 11.443 C17.475 10.924 18 11.175 18 12 L18 30 C18 30.825 17.475 31.076 16.833 30.557 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M17 21 H29 a9 9 0 0 1 0 18 H16" fill="none" stroke="#8c5e26" stroke-opacity="1" stroke-width="10.01" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 21 H29 a9 9 0 0 1 0 18 H16" fill="none" stroke="#ffaa40" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.167 21.943 C5.525 21.424 5.525 20.576 6.167 20.057 L16.833 11.443 C17.475 10.924 18 11.175 18 12 L18 30 C18 30.825 17.475 31.076 16.833 30.557 Z" fill="#ffaa40" fill-rule="evenodd"/><g clip-path="url(#al-undo-32-c1)"><path d="M6.167 21.943 C5.525 21.424 5.525 20.576 6.167 20.057 L16.833 11.443 C17.475 10.924 18 11.175 18 12 L18 30 C18 30.825 17.475 31.076 16.833 30.557 Z" fill="none" stroke="#8c5e26" stroke-width="5.01" stroke-opacity="1"/></g>
+</svg>
