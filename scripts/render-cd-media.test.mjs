@@ -33,7 +33,14 @@ const LABEL = { size: 123, cut: 58.5, hole: 20.5, bleed: 3 };
 const SAFE = { inner: 23, outer: 56 };
 const MIN_POINTS = 6;
 const DISCS = ['disc.svg', 'alternatives/disc-sunrise.svg', 'alternatives/disc-horizon.svg'];
-const MASTERS = [...DISCS, 'label.svg', 'jewel-front.svg', 'jewel-back.svg', 'mockup.svg'];
+const MASTERS = [
+	...DISCS,
+	'label.svg',
+	'jewel-front.svg',
+	'jewel-inside.svg',
+	'jewel-back.svg',
+	'mockup.svg',
+];
 
 const palette = new Set(
 	JSON.parse(readFileSync(join(root, 'desktop', 'boot', 'palette.json'), 'utf8')).entries.map(
@@ -229,6 +236,40 @@ function checkFront(svg) {
 	);
 }
 
+test('the inside of the front insert matches the outside, keeps its text 3 mm inside the trim and carries the notices', () => {
+	for (const style of STYLES) {
+		const svg = read(style, 'jewel-inside.svg');
+		assert.match(svg, /width="124mm" height="124mm" viewBox="0 0 124 124"/);
+		assert.match(svg, /<g transform="translate\(2 2\)">/);
+		assert.match(svg, /<rect x="0" y="0" width="120" height="120" data-guide="trim"\/>/);
+		const lines = texts(svg);
+		for (const line of lines) {
+			for (const [x, y] of line.coordinates) {
+				assert.ok(x >= 3 && x <= 117 && y >= 3 && y <= 117, `"${line.words}" at ${x}, ${y}`);
+			}
+		}
+		const all = lines.map((line) => line.words).join(' ');
+		// the first ReactOS on the page carries the trade mark
+		assert.ok(lines[0].words.includes('REACTOS™'), 'the heading marks ReactOS™');
+		for (const wanted of [
+			'GETTING STARTED',
+			'ReactOS (Afterglow) Boot',
+			'Setup (Text Mode)',
+			'The stock “ReactOS” entry stays',
+			'ON THIS DISC',
+			'afterfetch',
+			'Not made, endorsed',
+			'ReactOS™ is a trademark of the ReactOS project.',
+			'Copyright © 1996-2026 ReactOS Team &',
+			'Apache-2.0 OR MIT',
+			'github.com/liminal-hq-labs/reactos-liminal',
+		]) {
+			assert.ok(all.toLowerCase().includes(wanted.toLowerCase()), `the inside says "${wanted}"`);
+		}
+		assert.ok(!/ISO/.test(all), 'the inside says nothing about an ISO');
+	}
+});
+
 test('the tray card is 150 x 118 mm with 6 mm spines, the spine text inside its spine and the rest on the back', () => {
 	for (const style of STYLES) checkTray(read(style, 'jewel-back.svg'));
 });
@@ -352,11 +393,14 @@ test(
 );
 
 const haveRsvg = spawnSync('rsvg-convert', ['--version'], { stdio: 'ignore' }).status === 0;
+const haveQpdfTool = spawnSync('qpdf', ['--version'], { stdio: 'ignore' }).status === 0;
 const haveNumpy =
 	spawnSync('python3', ['-c', 'import numpy, PIL'], { stdio: 'ignore' }).status === 0;
 test(
 	'the print render makes every PDF of both styles at its page size, with no guides left in',
-	haveRsvg && haveNumpy ? {} : { skip: 'rsvg-convert, numpy or Pillow is not installed' },
+	haveRsvg && haveNumpy && haveQpdfTool
+		? {}
+		: { skip: 'rsvg-convert, qpdf, numpy or Pillow is not installed' },
 	() => {
 		const root = mkdtempSync(join(tmpdir(), 'afterglow-cd-media-render-'));
 		try {
@@ -386,6 +430,9 @@ function checkRender(out, style) {
 		'jewel-case-back.pdf': [169, 137],
 		'jewel-case-back-A4.pdf': [210, 297],
 		'jewel-case-back-Letter.pdf': [215.9, 279.4],
+		'jewel-case-inside.pdf': [139, 139],
+		'jewel-case-inside-A4.pdf': [210, 297],
+		'jewel-case-inside-Letter.pdf': [215.9, 279.4],
 	};
 	const havePdfinfo = spawnSync('pdfinfo', ['-v'], { stdio: 'ignore' }).status === 0;
 	for (const [name, [width, height]] of Object.entries(expected)) {
@@ -403,8 +450,7 @@ function checkRender(out, style) {
 		else assert.equal(images, pieces, `${style}/${name} has one sky image per piece`);
 		if (style === 'smooth')
 			assert.ok(
-				/<image [^>]*href="data:image\/png;base64,/.test(page) &&
-					/data-text="Afterglow"/.test(page),
+				/<image [^>]*href="data:image\/png;base64,/.test(page) && /<path data-text="/.test(page),
 				`${style}/${name} keeps its text as vector paths over the sky image`,
 			);
 		if (havePdfinfo) {
@@ -423,4 +469,51 @@ function checkRender(out, style) {
 	}
 	assert.ok(existsSync(join(out, 'preview.png')));
 	assert.ok(existsSync(join(out, 'contact-sheet.png')));
+	assert.ok(existsSync(join(out, 'png', 'jewel-inside.png')));
+	// the inside sits exactly where the outside does, so a double-sided print lines up
+	for (const sheet of ['', '-A4', '-Letter']) {
+		const position = (name) =>
+			readFileSync(join(out, 'svg', `${name}${sheet}.svg`), 'utf8').match(
+				/<g transform="translate\(([\d.]+) ([\d.]+)\)">/,
+			)[0];
+		assert.equal(position('jewel-case-inside'), position('jewel-case-front'), `inside${sheet}`);
+	}
+	if (!havePdfinfo) return;
+	const pages = (name) =>
+		Number(
+			execFileSync('pdfinfo', [join(out, name)], { encoding: 'utf8' }).match(/Pages:\s+(\d+)/)[1],
+		);
+	for (const sheet of ['', '-A4', '-Letter'])
+		assert.equal(pages(`jewel-case-booklet${sheet}.pdf`), 2, `the booklet${sheet} is two pages`);
+	const complete = `Afterglow CD - ${style === 'stepped' ? 'Stepped (retro)' : 'Smooth gradients'} - complete.pdf`;
+	assert.equal(pages(complete), 5, `${complete} has the five pieces`);
+	const info = execFileSync('pdfinfo', ['-l', '5', join(out, complete)], { encoding: 'utf8' });
+	assert.match(info, /Title:\s+Afterglow CD - /);
+	const sizes = [...info.matchAll(/Page\s+\d+ size:\s+([\d.]+) x ([\d.]+) pts/g)].map((match) =>
+		[match[1], match[2]].map((points) => Math.round((Number(points) * 25.4) / 72)),
+	);
+	assert.deepEqual(sizes, [
+		[120, 120],
+		[138, 138],
+		[139, 139],
+		[139, 139],
+		[169, 137],
+	]);
+	{
+		const json = JSON.parse(
+			execFileSync('qpdf', ['--json', '--json-key=outlines', join(out, complete)], {
+				encoding: 'utf8',
+			}),
+		);
+		assert.deepEqual(
+			json.outlines.map((outline) => [outline.title.split(' — ')[0], outline.destpageposfrom1]),
+			[
+				['1 · Disc art', 1],
+				['2 · Disc label', 2],
+				['3 · Front insert, outside', 3],
+				['4 · Front insert, inside', 4],
+				['5 · Tray card', 5],
+			],
+		);
+	}
 }

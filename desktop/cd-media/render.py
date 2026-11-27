@@ -15,11 +15,16 @@
 #   disc-label-single-A4.pdf, -Letter    one label in the top position of the same sheet
 #   disc-label-plain-A4.pdf, -Letter     two labels for plain paper, with the cut circles and a compass centre drawn on
 #   jewel-case-front.pdf, -A4, -Letter   the front insert, on a page cut to it and on A4 and Letter, with crop marks
+#   jewel-case-inside.pdf, -A4, -Letter  the inside of the front insert, placed exactly as the outside
+#   jewel-case-booklet.pdf, -A4, -Letter the outside and inside as two pages, to print double-sided, flipping on the long edge
 #   jewel-case-back.pdf, -A4, -Letter    the tray card, the same, with the spine folds marked
+#   Afterglow CD - <Style> - complete.pdf
+#                                        the set in print order (disc art, label, front outside, front inside, tray card) on pages
+#                                        cut to each piece, with a bookmark and page label for each page and its print instruction
 #   png/*.png                            each master at 150 dpi without its guides, and with them (*-guides.png)
 #   preview.png                          the mock-up, 2400 px wide
 #   contact-sheet.png                    every part at its actual proportions, side by side
-# Needs rsvg-convert, and numpy and Pillow for the smooth style. The contact sheet's captions are outlined with gen_media.py's type when
+# Needs rsvg-convert and qpdf (which adds the complete PDF's bookmarks), and numpy and Pillow for the smooth style. The contact sheet's captions are outlined with gen_media.py's type when
 # Noto Sans is installed and are left out otherwise; nothing else needs a font.
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
@@ -49,6 +54,16 @@ MARK_GAP, MARK_LENGTH, MARK_WIDTH = 1.5, 4.0, 0.2  # crop marks start 1.5 mm pas
 LABEL_RADIUS, HOLE_RADIUS, LABEL_BLEED = 58.5, 20.5, 3.0
 STYLES = ("stepped", "smooth")
 STYLE_CAPTIONS = {"stepped": "Stepped (retro)", "smooth": "Smooth gradients"}
+# The complete PDF of each style, in print order: the page SVG it is made from, its page label, and the bookmark's print instruction
+COMPLETE_PAGES = (
+	("disc-art.svg", "Disc art", "120 mm, for a printable disc or a disc printer's tray software, at 100 %"),
+	("disc-label-single.svg", "Disc label", "one 117 mm label with crop marks; for label stock use the A4 or Letter sheet PDFs"),
+	("jewel-case-front.svg", "Front insert, outside", "120 mm, trim at the crop marks; page 4 is its back"),
+	("jewel-case-inside.svg", "Front insert, inside", "the back of page 3; double-sided, use jewel-case-booklet and flip on the long edge"),
+	("jewel-case-back.svg", "Tray card", "150 x 118 mm, trim at the crop marks and fold the spines at the dashed marks"),
+)
+COMPLETE_SUBJECT = ("Print at 100 % (actual size), with no fit to page. Trim each piece at its crop marks. Pages 3 and 4 are the two sides of "
+	"the front insert: to print them back to back, use jewel-case-booklet and flip on the long edge.")
 RASTER_DPI = 300  # the smooth skies in the PDFs, at the usual print resolution
 DITHER = 1.0  # triangular noise of +-1 8-bit level, as the smooth wallpapers: enough to hide the steps of a dark gradient, too little to see
 SEED = 2026
@@ -228,10 +243,11 @@ def piece_page(master, body_text, trim_width, trim_height, bleed, page_size=None
 
 
 def convert(svg_path, out_path, file_format, extra=(), dither_key=None, columns=None):
-	"""rsvg-convert one page; dither_key adds the smooth style's noise to a PNG at its final size."""
+	"""rsvg-convert one page (or a list of pages into one PDF); dither_key adds the smooth style's noise to a PNG at its final size."""
+	sources = svg_path if isinstance(svg_path, list) else [svg_path]
 	environment = dict(os.environ, SOURCE_DATE_EPOCH=os.environ.get("SOURCE_DATE_EPOCH", "1767225600"))  # 2026-01-01, for repeatable PDFs
 	try:
-		subprocess.run(["rsvg-convert", "--format", file_format, *extra, "--output", out_path, svg_path], check=True, env=environment)
+		subprocess.run(["rsvg-convert", "--format", file_format, *extra, "--output", out_path, *sources], check=True, env=environment)
 	except FileNotFoundError:
 		sys.exit("render.py: rsvg-convert is required (the librsvg2-bin package)")
 	if dither_key:
@@ -239,6 +255,69 @@ def convert(svg_path, out_path, file_format, extra=(), dither_key=None, columns=
 			data = dither_png(handle.read(), dither_key, columns=columns)
 		with open(out_path, "wb") as handle:
 			handle.write(data)
+
+
+def pdf_text(words):
+	"""A PDF text string: UTF-16BE with its byte order mark, as hex."""
+	return "<FEFF%s>" % words.encode("utf-16-be").hex().upper()
+
+
+def qpdf(arguments):
+	try:
+		subprocess.run(["qpdf", "--deterministic-id", *arguments], check=True)
+	except FileNotFoundError:
+		sys.exit("render.py: qpdf is required for the complete PDFs")
+
+
+def add_bookmarks(pdf_path, title, subject, entries):
+	"""Give a PDF a bookmark and a page label for each page, (label, bookmark) in entries, and a title and subject, so a viewer shows
+	what each page is and how to print it without a page that could be printed by accident. qpdf writes the file with a plain cross
+	reference table, the new objects are appended as an incremental update, and qpdf writes the result again as one clean file."""
+	plain = pdf_path + ".plain"
+	updated = pdf_path + ".updated"
+	qpdf(["--object-streams=disable", "--decode-level=none", pdf_path, plain])
+	with open(plain, "rb") as handle:
+		data = handle.read()
+	source = data.decode("latin-1")
+	trailer = source[source.rindex("trailer"):]
+	root = int(re.search(r"/Root (\d+) 0 R", trailer).group(1))
+	size = int(re.search(r"/Size (\d+)", trailer).group(1))
+	previous = int(re.search(r"startxref\s+(\d+)", source[source.rindex("startxref"):]).group(1))
+	pages_object = re.search(r"\d+ 0 obj\s*<<((?:(?!endobj).)*?/Type /Pages(?:(?!endobj).)*?)>>\s*endobj", source, re.S)
+	kids = [int(number_text) for number_text in re.findall(r"(\d+) 0 R", re.search(r"/Kids \[([^\]]*)\]", pages_object.group(1)).group(1))]
+	if len(kids) != len(entries):
+		sys.exit("render.py: %s has %d pages, not %d" % (pdf_path, len(kids), len(entries)))
+	catalog = re.search(r"(?<!\d)%d 0 obj\s*<<(.*?)>>\s*endobj" % root, source, re.S).group(1)
+	outline_root = size
+	items = list(range(size + 1, size + 1 + len(entries)))
+	info = size + 1 + len(entries)
+	objects = {}
+	labels = " ".join("%d << /P %s >>" % (index, pdf_text("%d · %s" % (index + 1, label))) for index, (label, _bookmark) in enumerate(entries))
+	objects[root] = "<<%s /Outlines %d 0 R /PageMode /UseOutlines /PageLabels << /Nums [ %s ] >> >>" % (catalog.rstrip(), outline_root, labels)
+	objects[outline_root] = "<< /Type /Outlines /First %d 0 R /Last %d 0 R /Count %d >>" % (items[0], items[-1], len(items))
+	for index, ((label, bookmark), item, page_object) in enumerate(zip(entries, items, kids)):
+		links = "".join(([" /Prev %d 0 R" % items[index - 1]] if index else []) + ([" /Next %d 0 R" % items[index + 1]] if index + 1 < len(items) else []))
+		objects[item] = "<< /Title %s /Parent %d 0 R%s /Dest [ %d 0 R /Fit ] >>" % (pdf_text("%d · %s — %s" % (index + 1, label, bookmark)), outline_root, links, page_object)
+	objects[info] = "<< /Title %s /Subject %s /Author %s >>" % (pdf_text(title), pdf_text(subject), pdf_text("Liminal HQ Labs"))
+	out = bytearray(data if data.endswith(b"\n") else data + b"\n")
+	offsets = {}
+	for object_number in sorted(objects):
+		offsets[object_number] = len(out)
+		out += ("%d 0 obj\n%s\nendobj\n" % (object_number, objects[object_number])).encode("latin-1")
+	cross_reference = len(out)
+	lines = ["xref"]
+	for object_number in sorted(objects):
+		lines.append("%d 1" % object_number)
+		lines.append("%010d 00000 n " % offsets[object_number])
+	identifier = re.search(r"/ID\s*\[[^\]]*\]", trailer)
+	lines.append("trailer\n<< /Size %d /Root %d 0 R /Info %d 0 R /Prev %d %s >>" % (info + 1, root, info, previous, identifier.group(0) if identifier else ""))
+	lines.append("startxref\n%d\n%%%%EOF\n" % cross_reference)
+	out += ("\n".join(lines)).encode("latin-1")
+	with open(updated, "wb") as handle:
+		handle.write(bytes(out))
+	qpdf(["--object-streams=generate", updated, pdf_path])
+	for leftover in (plain, updated):
+		os.remove(leftover)
 
 
 def write(folder, name, text):
@@ -260,10 +339,11 @@ def contact_sheet(style):
 		("alternatives/disc-sunrise.svg", "A · Sunrise, disc", 150, 30, False),
 		("alternatives/disc-horizon.svg", "C · Horizon, disc", 285, 30, False),
 		("label.svg", "CD label, 117 mm with 3 mm bleed", 15, 182, False),
-		("jewel-front.svg", "Jewel case front, 120 mm with 2 mm bleed", 153, 182, False),
-		("jewel-back.svg", "Tray card, 150 x 118 mm with 2 mm bleed", 292, 182, False),
+		("jewel-front.svg", "Front insert, outside, 120 mm", 153, 182, False),
+		("jewel-inside.svg", "Front insert, inside, 120 mm", 292, 182, False),
+		("jewel-back.svg", "Tray card, 150 x 118 mm", 431, 182, False),
 	)
-	width, height = 461.0, 322.0
+	width, height = 600.0, 322.0
 	defs, body = [], ['<rect width="%s" height="%s" fill="#fbfaf6"/>' % (number(width), number(height))]
 	for index, (name, caption, x, y, selected) in enumerate(items):
 		master = Master(style, name, "c%d" % index)
@@ -285,17 +365,17 @@ def contact_sheet(style):
 
 
 def comparison():
-	"""The two styles side by side: the label and the front insert, stepped on the left and smooth on the right, with captions."""
+	"""The two styles side by side: the label and both sides of the front insert, stepped on the left and smooth on the right."""
 	try:
 		generator = load("gen_media", os.path.join(HERE, "gen_media.py"))
 		kind = generator.Type(generator.find_font_dir(None))
 	except SystemExit:
 		generator, kind = None, None
-	width, height = 286.0, 290.0
+	width, height = 286.0, 420.0
 	defs, body = [], ['<rect width="%s" height="%s" fill="#fbfaf6"/>' % (number(width), number(height))]
 	for column, style in enumerate(STYLES):
 		x = 15 + column * 138
-		for row, (name, y) in enumerate((("label.svg", 30), ("jewel-front.svg", 160))):
+		for row, (name, y) in enumerate((("label.svg", 30), ("jewel-front.svg", 160), ("jewel-inside.svg", 290))):
 			master = Master(style, name, "v%d%d" % (column, row))
 			defs.append(master.defs)
 			body.append('<g transform="translate(%s %s)">%s</g>' % (number(x), number(y), master.body))
@@ -330,19 +410,30 @@ def render(out_dir, style):
 		plain = "".join(label_at(x, y, True) for x, y in centres)
 		convert(write(work, "disc-label-plain-%s.svg" % sheet, page(width, height, defs, plain)), os.path.join(out_dir, "disc-label-plain-%s.pdf" % sheet), "pdf")
 
-	front, back = Master(style, "jewel-front.svg"), Master(style, "jewel-back.svg")
-	pieces = (("jewel-case-front", front, 120.0, 120.0, 2.0, ()), ("jewel-case-back", back, 150.0, 118.0, 2.0, (6.0, 144.0)))
+	front, inside, back = Master(style, "jewel-front.svg"), Master(style, "jewel-inside.svg"), Master(style, "jewel-back.svg")
+	# The inside sits exactly where the outside does on every page, centred across the sheet, so a double-sided print flipped on the
+	# long edge puts it on the back of the outside, the same way up
+	pieces = (("jewel-case-front", front, 120.0, 120.0, 2.0, ()), ("jewel-case-inside", inside, 120.0, 120.0, 2.0, ()),
+		("jewel-case-back", back, 150.0, 118.0, 2.0, (6.0, 144.0)))
 	for name, master, trim_width, trim_height, bleed, folds in pieces:
 		body_text = print_body(master, work)
 		convert(write(work, name + ".svg", piece_page(master, body_text, trim_width, trim_height, bleed, folds=folds)), os.path.join(out_dir, name + ".pdf"), "pdf")
 		for sheet, ((width, height), _centres) in LABEL_SHEETS.items():
 			text = piece_page(master, body_text, trim_width, trim_height, bleed, (width, height), 25.0, folds)
 			convert(write(work, "%s-%s.svg" % (name, sheet), text), os.path.join(out_dir, "%s-%s.pdf" % (name, sheet)), "pdf")
+	for suffix in [""] + ["-" + sheet for sheet in LABEL_SHEETS]:
+		sides = [os.path.join(work, "jewel-case-%s%s.svg" % (side, suffix)) for side in ("front", "inside")]
+		convert(sides, os.path.join(out_dir, "jewel-case-booklet%s.pdf" % suffix), "pdf")
+
+	complete_title = "Afterglow CD - %s - complete" % STYLE_CAPTIONS[style]
+	complete = os.path.join(out_dir, complete_title + ".pdf")
+	convert([os.path.join(work, name) for name, _label, _bookmark in COMPLETE_PAGES], complete, "pdf")
+	add_bookmarks(complete, complete_title, COMPLETE_SUBJECT, [(label, bookmark) for _name, label, bookmark in COMPLETE_PAGES])
 
 	# The previews are drawn from the vector masters and, for smooth, get their noise at their own size: scaling a dithered image down
 	# averages the noise away and brings the bands back.
 	resolution = ("--dpi-x", str(PREVIEW_DPI), "--dpi-y", str(PREVIEW_DPI))
-	for name in ("disc", "alternatives/disc-sunrise", "alternatives/disc-horizon", "label", "jewel-front", "jewel-back"):
+	for name in ("disc", "alternatives/disc-sunrise", "alternatives/disc-horizon", "label", "jewel-front", "jewel-inside", "jewel-back"):
 		base = os.path.basename(name)
 		master = Master(style, name + ".svg")
 		clean = write(work, base + "-print.svg", page(master.width, master.height, master.defs, master.body).replace('<rect width="100%" height="100%" fill="#ffffff"/>', ""))
