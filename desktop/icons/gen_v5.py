@@ -157,11 +157,18 @@ def draw_none(pen):
 
 @icon("delpermanent", "bare", "body", "Delete permanently", "Dialog pictures")
 def draw_delete_permanently(pen):
-	"""A page with the rose cross on its corner: the file goes for good, not to the Recycle Bin."""
-	page(pen, 8, 4, 28, 36, 9)
-	bars(pen, 13, 18, [17, 17, 10], 5.5)
-	pen.face(circ(35, 34, 9), MATS["rose"], band=False)
-	pen.line("M31.2 30.2 L38.8 37.8 M38.8 30.2 L31.2 37.8", GLYPH, 2.6)
+	"""A paper shredder: a page with its lines feeds into the slot of a dusk housing with a rose light, and comes out below as cut strips
+	of uneven length. The file goes for good, not to the Recycle Bin."""
+	pen.shadow(15, 37, 44, SHADOW["body"])
+	strips = (9.5, 12, 8.5, 11.5, 10)
+	for index, length in enumerate(strips):
+		pen.face(RR(16.5 + index * 4.1, 30, 3.4, length + 2, 1), MATS["paper"], band=False)
+	pen.face(poly([(13, 4, 2.5), (29, 4, 0.6), (36, 11, 0.6), (36, 24, 0.01), (13, 24, 0.01)]), MATS["paper"])
+	pen.face(poly([(29, 4, 0.4), (29, 10.5, 1.2), (35.5, 11, 0.4)], 0.4), MATS["fold"], band=False)
+	bars(pen, 17, 12, [10, 14, 14], 4.4)
+	pen.face(RR(7, 21, 36, 11, 3.5), MATS["dusk"])
+	pen.fill(RR(11, 22.6, 28, 2, 1), DARK)
+	pen.fill(circ(38, 28, 1.7), RED[200])
 
 
 # ---- the Explorer address bar's Go button ---------------------------------------------------------------------------------------------------------
@@ -288,20 +295,20 @@ ART16 = {
 	],
 	"delpermanent": [
 		"................",
-		"..PPPPPPPQ......",
-		"..PppppppQQ.....",
-		"..PppppppqqQ....",
-		"..PpppppppppP...",
-		"..Pp1111111pP...",
-		"..PpppppppppP...",
-		"..Pp1111111pP...",
-		"..PpppppppppP...",
-		"..Pp11111ppRRR..",
-		"..PpppppppR4r4R.",
-		"..PpppppppRr4rR.",
-		"..PpppppppR4r4R.",
-		"..PPPPPPPPPRRR..",
-		"................",
+		"...PPPPPPQ......",
+		"...PppppppQ.....",
+		"...Pp1111pP.....",
+		"...PpppppppP....",
+		"...Pp11111pP....",
+		"..DDDDDDDDDDDD..",
+		"..D8888888888D..",
+		"..DddddddddrdD..",
+		"..DddddddddddD..",
+		"..DDDDDDDDDDDD..",
+		"....P.P.P.P.P...",
+		"....P.P.P.P.P...",
+		"....P.P...P.P...",
+		"......P...P.....",
 		"................",
 	],
 }
