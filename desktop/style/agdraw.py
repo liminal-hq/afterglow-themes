@@ -67,7 +67,7 @@ KEY = np.array([255.0, 0.0, 255.0])  # transparent key colour
 # Each colour scheme is data: the seven-step caption ramp (which also drives the frames, scroll thumbs, task buttons, check boxes and the
 # taskbar hairline) and the palette entries it replaces. Hex values are the design canvas's palette tables ("Quill ReactOS Afterglow
 # Theme Boards": the Caption, Taskbar and Desk parts and the colour boards); Dusk is today's look and stays the default (first).
-# Keys: ramp; accent (gold: Start button, ink lines, default ring, tick, pressed rims) with accent_down, accent_light, accent_pale,
+# Keys: ramp; accent (gold: Start button, default ring, tick, pressed rims) with accent_down, accent_light, accent_pale,
 # accent_deep and ink; the near-black surfaces night, panel (taskbar), panel2 (tray), raised (inactive caption, scroll track), raised2,
 # raised3; horizon (button rims); close (the close button) with close_mid, close_deep, close_light; muted (inactive title), text2
 # (scroll glyphs); start_text (the Start label). Entries marked "derived" in SCHEME_NOTES are not on the canvas.
