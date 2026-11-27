@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Afterglow empty-pile mark: the cross
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+
+Master in the bitmap's pixels (72 x 112), drawn at 4x; replaces cards.dll bitmap 67 (XSign, cardlib's CS_EI_X), drawn on
+the proposed dusk felt (#1f2554), so it ships with the felt patch.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="288" height="448" viewBox="0 0 72 112">
+<title>Afterglow empty-pile mark: the cross</title>
+<defs></defs>
+<rect x="0" y="0" width="72" height="112" fill="#1f2554"/><path d="M22 42 L50 70 M50 42 L22 70" fill="none" stroke="#f43f5e" stroke-width="7" stroke-linecap="round"/>
+</svg>

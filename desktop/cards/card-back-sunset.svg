@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Afterglow card back: the sun on the horizon (selected)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+
+Master in the bitmap's pixels (72 x 112), drawn at 4x; replaces cards.dll bitmap 54 (Background_1, the back
+Solitaire and Spider Solitaire start with), the one back that carries the ReactOS logo.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="288" height="448" viewBox="0 0 72 112">
+<title>Afterglow card back: the sun on the horizon (selected)</title>
+<defs><linearGradient id="sky" x1="0" y1="4" x2="0" y2="70" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1f2554"/><stop offset="0.55" stop-color="#42396c"/><stop offset="1" stop-color="#7a4562"/></linearGradient><linearGradient id="water" x1="0" y1="70" x2="0" y2="108" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#262c5e"/><stop offset="1" stop-color="#141634"/></linearGradient><linearGradient id="horizon" x1="6" y1="0" x2="66" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffaa40" stop-opacity="0"/><stop offset="0.5" stop-color="#ffd08e"/><stop offset="1" stop-color="#ffaa40" stop-opacity="0"/></linearGradient><clipPath id="above"><rect x="3.5" y="3.5" width="65" height="66.5"/></clipPath><clipPath id="panel"><rect x="3.5" y="3.5" width="65" height="105" rx="3"/></clipPath></defs>
+<rect x="0" y="0" width="72" height="112" fill="#fbfaf6"/><rect x="3.5" y="3.5" width="65" height="105" rx="3" fill="url(#sky)"/><rect x="5.75" y="5.75" width="60.5" height="100.5" rx="2" fill="none" stroke="#ffd08e" stroke-width="1"/><g clip-path="url(#panel)"><rect x="3.5" y="70" width="65" height="38" fill="url(#water)"/><g clip-path="url(#above)"><circle cx="15" cy="17" r="0.7" fill="#ffe7c4"/><circle cx="25" cy="12" r="0.5" fill="#ffe7c4"/><circle cx="49" cy="15" r="0.8" fill="#ffe7c4"/><circle cx="58" cy="25" r="0.5" fill="#ffe7c4"/><circle cx="12" cy="33" r="0.5" fill="#ffe7c4"/><circle cx="41" cy="26" r="0.5" fill="#ffe7c4"/><circle cx="60" cy="41" r="0.6" fill="#ffe7c4"/><circle cx="21" cy="44" r="0.45" fill="#ffe7c4"/><circle cx="36" cy="70" r="30" fill="#2e3468"/><circle cx="36" cy="70" r="24" fill="#42396c"/><circle cx="36" cy="70" r="18.5" fill="#5a3f6c"/><circle cx="36" cy="70" r="14" fill="#7a4562"/><circle cx="36" cy="70" r="10" fill="#ffaa40"/><ellipse cx="33" cy="65" rx="4" ry="2.2" fill="#ffe7c4" fill-opacity="0.8"/></g><rect x="5" y="69.2" width="62" height="1.6" rx="0.8" fill="url(#horizon)"/><rect x="28" y="74" width="16" height="1" rx="0.5" fill="#ffaa40" fill-opacity="0.85"/><rect x="30.5" y="78.5" width="11" height="1" rx="0.5" fill="#ffaa40" fill-opacity="0.7"/><rect x="32.5" y="83" width="7" height="1" rx="0.5" fill="#ffaa40" fill-opacity="0.55"/><rect x="34" y="87.5" width="4" height="1" rx="0.5" fill="#ffaa40" fill-opacity="0.4"/></g><rect x="5.75" y="5.75" width="60.5" height="100.5" rx="2" fill="none" stroke="#ffd08e" stroke-width="1"/>
+</svg>

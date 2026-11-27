@@ -57,9 +57,9 @@ function render() {
 	return out;
 }
 
-test('the set has 159 icons, 82 hinted 16 px redraws, a 32 and 16 px profile of every icon and a 24 px one of the 18 toolbar glyphs', () => {
-	assert.equal(ids.length, 159);
-	assert.equal(hinted.length, 82);
+test('the set has 185 icons, 86 hinted 16 px redraws, a 32 and 16 px profile of every icon and a 24 px one of the 18 toolbar glyphs', () => {
+	assert.equal(ids.length, 185);
+	assert.equal(hinted.length, 86);
 	for (const id of [
 		'mydocs',
 		'mypictures',
@@ -70,6 +70,10 @@ test('the set has 159 icons, 82 hinted 16 px redraws, a 32 and 16 px profile of 
 		'favorites',
 		'recent',
 		'programsfolder',
+		'user',
+		'user-locked',
+		'group',
+		'showdesktop',
 	]) {
 		assert.ok(hinted.includes(id), `${id} has a hinted redraw`);
 	}
@@ -106,8 +110,8 @@ test('the set has 159 icons, 82 hinted 16 px redraws, a 32 and 16 px profile of 
 
 test('the masters match their recorded hashes and keep their licence header', () => {
 	const recorded = sums('SHA256SUMS.masters');
-	// 159 icons in three profiles, 18 toolbar glyphs at 24 px, 82 hinted redraws, 3 arrow frames, the sheet and 6 generators
-	assert.equal(Object.keys(recorded).length, 159 * 3 + 18 + 82 + 3 + 1 + 6);
+	// 185 icons in three profiles, 18 toolbar glyphs at 24 px, 86 hinted redraws, 3 arrow frames, the sheet and 7 generators
+	assert.equal(Object.keys(recorded).length, 185 * 3 + 18 + 86 + 3 + 1 + 7);
 	for (const [name, hash] of Object.entries(recorded)) {
 		assert.equal(sha256(readFileSync(join(icons, name))), hash, `${name} changed`);
 		if (name.endsWith('.svg') || name.endsWith('.py')) {
@@ -154,14 +158,19 @@ test('map.json names every icon once and the arrow, and records only verified re
 	const map = JSON.parse(readFileSync(join(icons, 'map.json'), 'utf8'));
 	assert.deepEqual(map.icons.map((i) => i.id).sort(), [...ids, 'arrow'].sort());
 	const checkResource = (resource, id) => {
-		assert.match(resource.module, /^[a-z0-9]+\.(dll|exe|cpl)$/, id);
+		assert.match(resource.module, /^[a-z0-9]+\.(dll|exe|cpl|scr)$/, id);
 		assert.ok(resource.evidence.length > 0, id);
 		for (const kind of resource.evidence) assert.ok(['source', 'binary'].includes(kind), id);
 		if (resource.module === 'browseui.dll') {
 			assert.deepEqual(resource.bitmaps, [214, 215, 216, 217], id);
 			assert.ok(Number.isInteger(resource.cell) && resource.cell >= 0 && resource.cell < 47, id);
 		} else {
-			assert.ok(Number.isInteger(resource.group) && resource.group > 0, id);
+			// a group is a number, or a string where the module names the group by string (telnet.exe and logon.scr)
+			assert.ok(
+				(Number.isInteger(resource.group) && resource.group > 0) ||
+					/^[A-Z][A-Z0-9_]*$/.test(resource.group),
+				id,
+			);
 		}
 	};
 	const claimed = new Map();
@@ -256,8 +265,8 @@ test(
 				}
 				assert.deepEqual(seen, SIZES, `${id} frames`);
 			}
-			assert.equal(readdirSync(join(out, 'ico')).length, 160);
-			assert.equal(readdirSync(join(out, 'png')).length, 160 * 3 + toolbar.length);
+			assert.equal(readdirSync(join(out, 'ico')).length, 186);
+			assert.equal(readdirSync(join(out, 'png')).length, 186 * 3 + toolbar.length);
 			// the 24 px toolbar frames: a one-frame .ico each, so the three-frame .ico stays as the shell patchers read it
 			assert.deepEqual(
 				readdirSync(join(out, 'ico24')).sort(),

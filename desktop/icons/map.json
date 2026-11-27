@@ -1,5 +1,5 @@
 {
-	"note": "Maps each Afterglow icon id to the ReactOS icon it replaces. status is named when a ReactOS object is named and unmapped otherwise. resource is the module and icon group id to replace (for the Explorer toolbar, the browseui.dll bitmap strips and the cell index); also lists more groups or cells that take the same icon, each with what uses it. A resource is null unless the id is verified, and evidence says how: source (ReactOS 0.4.16 source, tag 0.4.16-release) and binary (the stock 0.4.16 i386 file holds that group). Every null is unverified, not guessed. bitmaps lists the dialog bitmaps the art in desktop/dialogs (and the logon bar) replaces, by module and bitmap resource id, with the stock size and depth.",
+	"note": "Maps each Afterglow icon id to the ReactOS icon it replaces. status is named when a ReactOS object is named and unmapped otherwise. resource is the module and icon group id to replace (for the Explorer toolbar, the browseui.dll bitmap strips and the cell index); also lists more groups or cells that take the same icon, each with what uses it. A resource is null unless the id is verified, and evidence says how: source (ReactOS 0.4.16 source, tag 0.4.16-release) and binary (the stock 0.4.16 i386 file holds that group). Every null is unverified, not guessed. bitmaps lists the bitmaps the art in desktop/dialogs, desktop/cards (and the logon bar) replaces, by module and bitmap resource id, with the stock size and depth. A group can be a string where the module names it by string (a named resource, not a number). colours lists the colours compiled into code that the art is drawn to match, with where they are.",
 	"kinds": {
 		"shell": "shell32 object icon",
 		"drive": "shell32 drive icon",
@@ -11,7 +11,8 @@
 		"program": "the program's own icon group",
 		"toolbar": "a cell of the Explorer toolbar strips in browseui.dll (24 px strips 214 and 215, 16 px strips 216 and 217)",
 		"tray": "a notification area icon in stobject.dll or the keyboard layout indicator",
-		"picture": "a picture a dialog shows: an icon group the dialog template names or its code loads"
+		"picture": "a picture a dialog shows: an icon group the dialog template names or its code loads",
+		"device-class": "the icon of a device class Device Manager lists, from its class installer"
 	},
 	"icons": [
 		{
@@ -268,6 +269,20 @@
 			}
 		},
 		{
+			"id": "bluetooth",
+			"label": "Bluetooth",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Device Manager: the Bluetooth device class (bthci.dll, the class installer)",
+			"kind": "device-class",
+			"resource": {
+				"module": "bthci.dll",
+				"group": 201,
+				"evidence": ["source", "binary"],
+				"name": "IDI_BLUETOOTH"
+			}
+		},
+		{
 			"id": "browser",
 			"label": "Internet Browser",
 			"group": "Desktop and shell",
@@ -449,6 +464,30 @@
 			"replaces": "Control Panel applet: Console",
 			"kind": "applet",
 			"resource": null
+		},
+		{
+			"id": "console-app",
+			"label": "Console program",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "The title bar and taskbar icon of a console window whose program has no icon of its own (ftp, telnetd, tftpd, roshttpd, ncftp, regexpl, rosperf, gdb2, vfd, wlanconf and the like): consrv's default console icon",
+			"kind": "program",
+			"resource": {
+				"module": "winsrv.dll",
+				"group": 1,
+				"evidence": ["source", "binary"],
+				"name": "IDI_TERMINAL",
+				"use": "consrv's GUI console default window icon (guiterm.c)"
+			},
+			"also": [
+				{
+					"module": "progman.exe",
+					"group": 49,
+					"evidence": ["source", "binary"],
+					"name": "IDI_TERMINAL",
+					"use": "Program Manager's icon for a console program"
+				}
+			]
 		},
 		{
 			"id": "controlpanel",
@@ -890,6 +929,20 @@
 			}
 		},
 		{
+			"id": "group",
+			"label": "Group",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "User Accounts, Groups tab: a group in the list",
+			"kind": "picture",
+			"resource": {
+				"module": "usrmgr.cpl",
+				"group": 43,
+				"evidence": ["source", "binary"],
+				"name": "IDI_GROUP"
+			}
+		},
+		{
 			"id": "hdd",
 			"label": "Hard disk",
 			"group": "Drives and folders",
@@ -1276,6 +1329,21 @@
 			}
 		},
 		{
+			"id": "mmc",
+			"label": "Management Console",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Program: Microsoft Management Console (mmc.exe), the window and taskbar icon",
+			"kind": "program",
+			"resource": {
+				"module": "mmc.exe",
+				"group": 101,
+				"evidence": ["source", "binary"],
+				"name": "IDI_MAINAPP",
+				"language": 1033
+			}
+		},
+		{
 			"id": "monitor",
 			"label": "Monitor",
 			"group": "Desktop and shell",
@@ -1609,6 +1677,20 @@
 			]
 		},
 		{
+			"id": "openglcfg",
+			"label": "OpenGL Configuration",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: OpenGL Configuration",
+			"kind": "applet",
+			"resource": {
+				"module": "openglcfg.cpl",
+				"group": 1,
+				"evidence": ["source", "binary"],
+				"name": "IDI_CPLICON"
+			}
+		},
+		{
 			"id": "osk",
 			"label": "On-Screen Keyboard",
 			"group": "Programs",
@@ -1689,6 +1771,20 @@
 			]
 		},
 		{
+			"id": "progman",
+			"label": "Program Manager",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Program: Program Manager (progman.exe)",
+			"kind": "program",
+			"resource": {
+				"module": "progman.exe",
+				"group": 1,
+				"evidence": ["source", "binary"],
+				"name": "IDI_APPICON"
+			}
+		},
+		{
 			"id": "program",
 			"label": "Program",
 			"group": "File types",
@@ -1720,7 +1816,30 @@
 				"module": "shell32.dll",
 				"group": 326,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "progman.exe",
+					"group": 48,
+					"evidence": ["source", "binary"],
+					"name": "IDI_GROUP_ICON",
+					"use": "Program Manager: a program group"
+				},
+				{
+					"module": "progman.exe",
+					"group": 8,
+					"evidence": ["source", "binary"],
+					"name": "IDI_GROUP_PERSONAL_ICON",
+					"use": "Program Manager: a personal group"
+				},
+				{
+					"module": "progman.exe",
+					"group": 9,
+					"evidence": ["source", "binary"],
+					"name": "IDI_GROUP_COMMON_ICON",
+					"use": "Program Manager: a common group"
+				}
+			]
 		},
 		{
 			"id": "programsfolder",
@@ -1782,6 +1901,62 @@
 				"module": "shell32.dll",
 				"group": 13,
 				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "rdp-colours",
+			"label": "Remote Desktop, colours",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Remote Desktop Connection, Display tab: Colours",
+			"kind": "picture",
+			"resource": {
+				"module": "mstsc.exe",
+				"group": 2004,
+				"evidence": ["source", "binary"],
+				"name": "IDI_COLORS"
+			}
+		},
+		{
+			"id": "rdp-connection",
+			"label": "Remote Desktop, connection settings",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Remote Desktop Connection, General tab: Connection settings (save and open)",
+			"kind": "picture",
+			"resource": {
+				"module": "mstsc.exe",
+				"group": 2002,
+				"evidence": ["source", "binary"],
+				"name": "IDI_CONN"
+			}
+		},
+		{
+			"id": "rdp-display",
+			"label": "Remote Desktop, display size",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Remote Desktop Connection, Display tab: Remote desktop size",
+			"kind": "picture",
+			"resource": {
+				"module": "mstsc.exe",
+				"group": 2003,
+				"evidence": ["source", "binary"],
+				"name": "IDI_REMOTE"
+			}
+		},
+		{
+			"id": "rdp-logon",
+			"label": "Remote Desktop, logon settings",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Remote Desktop Connection, General tab: Logon settings",
+			"kind": "picture",
+			"resource": {
+				"module": "mstsc.exe",
+				"group": 2001,
+				"evidence": ["source", "binary"],
+				"name": "IDI_LOGON"
 			}
 		},
 		{
@@ -1921,6 +2096,146 @@
 			}
 		},
 		{
+			"id": "scr-3dtext",
+			"label": "3D Text",
+			"group": "Screen savers",
+			"status": "named",
+			"replaces": "Screen saver: 3D Text (3dtext.scr), its icon in a file list",
+			"kind": "program",
+			"resource": {
+				"module": "3dtext.scr",
+				"group": 101,
+				"evidence": ["source", "binary"],
+				"name": "IDI_ICON"
+			}
+		},
+		{
+			"id": "scr-blank",
+			"label": "Blank screen",
+			"group": "Screen savers",
+			"status": "named",
+			"replaces": "Screen saver: Blank screen (blankscr.scr), its icon in a file list",
+			"kind": "program",
+			"resource": {
+				"module": "blankscr.scr",
+				"group": 101,
+				"evidence": ["source", "binary"],
+				"name": "IDI_ICON"
+			}
+		},
+		{
+			"id": "scr-butterflies",
+			"label": "Butterflies",
+			"group": "Screen savers",
+			"status": "named",
+			"replaces": "Screen saver: Butterflies (butterflies.scr), its icon in a file list",
+			"kind": "program",
+			"resource": {
+				"module": "butterflies.scr",
+				"group": 106,
+				"evidence": ["source", "binary"],
+				"name": "IDI_ICON"
+			}
+		},
+		{
+			"id": "scr-circles",
+			"label": "Circles",
+			"group": "Screen savers",
+			"status": "named",
+			"replaces": "Screen saver: Circles (circles.scr), its icon in a file list",
+			"kind": "program",
+			"resource": {
+				"module": "circles.scr",
+				"group": 101,
+				"evidence": ["source", "binary"],
+				"name": "IDI_ICON"
+			}
+		},
+		{
+			"id": "scr-cylfrac",
+			"label": "Cylinder fractal",
+			"group": "Screen savers",
+			"status": "named",
+			"replaces": "Screen saver: Cylinder fractal (cylfrac.scr), its icon in a file list",
+			"kind": "program",
+			"resource": {
+				"module": "cylfrac.scr",
+				"group": 101,
+				"evidence": ["source", "binary"],
+				"name": "IDI_ICON"
+			}
+		},
+		{
+			"id": "scr-logon",
+			"label": "Logon",
+			"group": "Screen savers",
+			"status": "named",
+			"replaces": "Screen saver: Logon (logon.scr), its icon in a file list",
+			"kind": "program",
+			"resource": {
+				"module": "logon.scr",
+				"group": "IDI_ICON",
+				"evidence": ["source", "binary"],
+				"use": "a named icon group: logon.rc names it by string"
+			}
+		},
+		{
+			"id": "scr-matrix",
+			"label": "Matrix",
+			"group": "Screen savers",
+			"status": "named",
+			"replaces": "Screen saver: Matrix (matrix.scr), its icon in a file list",
+			"kind": "program",
+			"resource": {
+				"module": "matrix.scr",
+				"group": 106,
+				"evidence": ["source", "binary"],
+				"name": "IDI_ICON1"
+			}
+		},
+		{
+			"id": "scr-maze",
+			"label": "Maze",
+			"group": "Screen savers",
+			"status": "named",
+			"replaces": "Screen saver: Maze (mazescr.scr), its icon in a file list; maze.exe has no icon of its own",
+			"kind": "program",
+			"resource": {
+				"module": "mazescr.scr",
+				"group": 101,
+				"evidence": ["source", "binary"],
+				"name": "IDI_ICON"
+			}
+		},
+		{
+			"id": "scr-ssstars",
+			"label": "Space stars",
+			"group": "Screen savers",
+			"status": "named",
+			"replaces": "Screen saver: Space stars (ssstars.scr), its icon in a file list",
+			"kind": "program",
+			"resource": {
+				"module": "ssstars.scr",
+				"group": 101,
+				"evidence": ["source", "binary"],
+				"name": "IDI_STARFIELD"
+			}
+		},
+		{
+			"id": "scr-starfield",
+			"label": "Starfield",
+			"group": "Screen savers",
+			"status": "named",
+			"replaces": "Screen saver: Starfield (starfield.scr), its icon in a file list",
+			"kind": "program",
+			"resource": {
+				"module": "starfield.scr",
+				"group": 101,
+				"evidence": ["source", "binary"],
+				"name": "IDI_ICON"
+			}
+		},
+		{
 			"id": "search",
 			"label": "Search",
 			"group": "Explorer toolbar",
@@ -1997,6 +2312,21 @@
 			"resource": null
 		},
 		{
+			"id": "showdesktop",
+			"label": "Show Desktop button",
+			"group": "System tray",
+			"status": "named",
+			"replaces": "Taskbar: the Show Desktop/Windows button at the end of the tray",
+			"kind": "tray",
+			"resource": {
+				"module": "imageres.dll",
+				"group": 110,
+				"evidence": ["source"],
+				"name": "IDI_IMAGERES_DESKTOP",
+				"use": "traydeskbtn.cpp loads imageres.dll -110 first and falls back to shell32.dll -35 (IDI_SHELL_DESKTOP, the Desktop folder's icon). ReactOS 0.4.16 ships no imageres.dll, so the button shows the Desktop folder; a resource-only imageres.dll holding group 110 gives it its own icon without touching shell32.dll. Nothing else in 0.4.16 loads imageres.dll."
+			}
+		},
+		{
 			"id": "shutdown",
 			"label": "Shut Down",
 			"group": "Start menu",
@@ -2018,6 +2348,20 @@
 			]
 		},
 		{
+			"id": "snapshot",
+			"label": "SnapShot",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Start menu, System Tools: SnapShot (screenshot.exe)",
+			"kind": "program",
+			"resource": {
+				"module": "screenshot.exe",
+				"group": 1,
+				"evidence": ["source", "binary"],
+				"name": "IDI_ICON"
+			}
+		},
+		{
 			"id": "sndrec32",
 			"label": "Sound Recorder",
 			"group": "Programs",
@@ -2027,7 +2371,7 @@
 			"resource": {
 				"module": "sndrec32.exe",
 				"group": 107,
-				"evidence": ["source"]
+				"evidence": ["source", "binary"]
 			}
 		},
 		{
@@ -2074,7 +2418,7 @@
 			"resource": {
 				"module": "spider.exe",
 				"group": 100,
-				"evidence": ["source"]
+				"evidence": ["source", "binary"]
 			}
 		},
 		{
@@ -2165,6 +2509,20 @@
 			}
 		},
 		{
+			"id": "telnet",
+			"label": "Telnet",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Program: Telnet client (telnet.exe)",
+			"kind": "program",
+			"resource": {
+				"module": "telnet.exe",
+				"group": "IDI_APPICON",
+				"evidence": ["source", "binary"],
+				"use": "a named icon group: telnet.rc names it by string, resource.h gives it no number"
+			}
+		},
+		{
 			"id": "text",
 			"label": "Text",
 			"group": "File types",
@@ -2230,6 +2588,34 @@
 			"replaces": null,
 			"kind": null,
 			"resource": null
+		},
+		{
+			"id": "user",
+			"label": "User account",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "User Accounts, Users tab: an account in the list (Administrator)",
+			"kind": "picture",
+			"resource": {
+				"module": "usrmgr.cpl",
+				"group": 41,
+				"evidence": ["source", "binary"],
+				"name": "IDI_USER"
+			}
+		},
+		{
+			"id": "user-locked",
+			"label": "User account (disabled)",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "User Accounts, Users tab: a disabled account in the list (Guest)",
+			"kind": "picture",
+			"resource": {
+				"module": "usrmgr.cpl",
+				"group": 42,
+				"evidence": ["source", "binary"],
+				"name": "IDI_LOCKED_USER"
+			}
 		},
 		{
 			"id": "usrmgr",
@@ -2335,6 +2721,20 @@
 				"module": "user32.dll",
 				"group": 101,
 				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "wined3dcfg",
+			"label": "WineD3D Options",
+			"group": "Control Panel applets",
+			"status": "named",
+			"replaces": "Control Panel applet: WineD3D Options",
+			"kind": "applet",
+			"resource": {
+				"module": "wined3dcfg.cpl",
+				"group": 1,
+				"evidence": ["source", "binary"],
+				"name": "IDI_CPLICON"
 			}
 		},
 		{
@@ -2481,6 +2881,67 @@
 			"bits": 24,
 			"evidence": ["source", "binary"],
 			"use": "the Log Off dialog's buttons: seven 33 px cells (dialogs.cpp)"
+		},
+		{
+			"id": "card-back-sunset",
+			"file": "desktop/cards/card-back-sunset.svg",
+			"bitmap": "card-back-sunset.bmp",
+			"resource": 54,
+			"name": "Background_1",
+			"use": "the card back Solitaire and Spider Solitaire start with (cardlib nBackCardIdx 53), the one back carrying the ReactOS logo; the art is 24-bit at the stock size, which cardlib copies with BitBlt like the stock 8-bit one",
+			"module": "cards.dll",
+			"size": [72, 112],
+			"bits": 8,
+			"evidence": ["source", "binary"]
+		},
+		{
+			"id": "card-x",
+			"file": "desktop/cards/card-x.svg",
+			"bitmap": "card-x.bmp",
+			"resource": 67,
+			"name": "XSign",
+			"use": "cardlib's CS_EI_X empty-pile mark; drawn on the dusk felt, so it goes with the felt colour",
+			"module": "cards.dll",
+			"size": [72, 112],
+			"bits": 8,
+			"evidence": ["source", "binary"]
+		},
+		{
+			"id": "card-o",
+			"file": "desktop/cards/card-o.svg",
+			"bitmap": "card-o.bmp",
+			"resource": 68,
+			"name": "OSign",
+			"use": "cardlib's CS_EI_CIRC empty-pile mark (Solitaire's empty deck); drawn on the dusk felt, so it goes with the felt colour",
+			"module": "cards.dll",
+			"size": [72, 112],
+			"bits": 8,
+			"evidence": ["source", "binary"]
+		}
+	],
+	"colours": [
+		{
+			"id": "felt",
+			"use": "the card table of Solitaire and Spider Solitaire: cardlib's CardWindow::crBackgnd, from which the empty-pile sinks are also drawn",
+			"stock": "PALETTERGB(0, 80, 0)",
+			"afterglow": "PALETTERGB(0x1f, 0x25, 0x54), the dusk sky's deepest tone (gen_cards.py FELT)",
+			"code": [
+				{
+					"module": "sol.exe",
+					"offset": "0x73c5",
+					"stock_bytes": "00 50 00 02",
+					"afterglow_bytes": "1f 25 54 02",
+					"instruction": "mov dword [ebx+0x144], imm32 (c7 83 44 01 00 00) in CardWindow::CardWindow"
+				},
+				{
+					"module": "spider.exe",
+					"offset": "0x5e09",
+					"stock_bytes": "00 50 00 02",
+					"afterglow_bytes": "1f 25 54 02",
+					"instruction": "mov dword [ebx+0x144], imm32 (c7 83 44 01 00 00) in CardWindow::CardWindow"
+				}
+			],
+			"evidence": ["source", "binary"]
 		}
 	]
 }

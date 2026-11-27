@@ -22,6 +22,7 @@ The generator for the Afterglow visual style for ReactOS 0.4.16: dusk captions, 
 | `boot/boot-logo.svg`, `boot/palette.json`, `boot/render.py`, `boot/SHA256SUMS`, `SHA256SUMS.masters`                                     | The boot logo master and its 16-colour palette, the renderer that makes the 414 × 366 bitmaps, and the hashes of the master and the bitmaps                                                             |
 | `start/*.svg`, `start/render.py`, `start/SHA256SUMS`, `start/SHA256SUMS.masters`                                                         | The Start orb and menu banner masters, the renderer that makes the 25 × 20 and 21 × 233 DIBs, and the hashes of the masters and the DIBs                                                                |
 | `dialogs/gen_dialogs.py`, `dialogs/outline.py`, `dialogs/*.svg`, `dialogs/render.py`, `dialogs/SHA256SUMS`, `dialogs/SHA256SUMS.masters` | The About banner and the Shut Down and Log Off dialogs' background, mark and button strips: the generator (and its font outliner), the masters, the renderer that makes the 24-bit BMPs, and the hashes |
+| `cards/gen_cards.py`, `cards/*.svg`, `cards/render.py`, `cards/SHA256SUMS`, `cards/SHA256SUMS.masters`                                   | The card back and the empty-pile marks for `cards.dll`: the generator, the masters (with two review-only backs), the renderer that makes the 24-bit BMPs, and the hashes                                |
 | `SHA256SUMS`                                                                                                                             | The hashes of the default build (731,136 bytes) and of the `--scrollbars` build (824,320 bytes)                                                                                                         |
 
 ## Build and check
@@ -70,7 +71,7 @@ python3 desktop/pointers/patch-user32.py USER32_COPY desktop/build/pointers USER
 
 ## Icons
 
-`icons/gen_e.py` (with `icons/folders_g.py`, the folder family it imports, `icons/gen_v2.py` and `icons/gen_v3.py`, the icons added in v2 and the dialog pictures of v3, and `icons/hint16_v2.py`, the 62 hand-tuned 16 px frames) draws the 159 Afterglow icons as SVG masters (`icons/svg/`, committed; `icons/sheet.svg` is the contact sheet), `icons/arrows.py` draws the shortcut arrow masters (`icons/arrow/`), and `icons/render.py` renders them to `.ico` files with 16, 32 and 48 px frames, one-frame 24 px `.ico` files for the 18 Explorer toolbar glyphs (`ico24/`) and PNGs (needs `rsvg-convert` and Pillow). `icons/contact.py` draws the system contact sheet from the render, and `icons/compare16.py` the before-and-after sheet of the hand-tuned 16 px frames. `icons/map.json` maps each icon id to the ReactOS icon group or toolbar cell it replaces, with only verified ids filled in. `icons/SHA256SUMS` records the `.ico` files and `icons/SHA256SUMS.masters` the masters, and `bun run check:desktop` checks both. See `docs/reactos-desktop-icons.md`.
+`icons/gen_e.py` (with `icons/folders_g.py`, the folder family it imports, `icons/gen_v2.py`, `icons/gen_v3.py` and `icons/gen_v4.py`, the icons added in v2, the dialog pictures of v3 and the full image's art of v4, and `icons/hint16_v2.py`, the hand-tuned 16 px frames) draws the 185 Afterglow icons as SVG masters (`icons/svg/`, committed; `icons/sheet.svg` is the contact sheet), `icons/arrows.py` draws the shortcut arrow masters (`icons/arrow/`), and `icons/render.py` renders them to `.ico` files with 16, 32 and 48 px frames, one-frame 24 px `.ico` files for the 18 Explorer toolbar glyphs (`ico24/`) and PNGs (needs `rsvg-convert` and Pillow). `icons/contact.py` draws the system contact sheet from the render, and `icons/compare16.py` the before-and-after sheet of the hand-tuned 16 px frames. `icons/map.json` maps each icon id to the ReactOS icon group or toolbar cell it replaces, with only verified ids filled in. `icons/SHA256SUMS` records the `.ico` files and `icons/SHA256SUMS.masters` the masters, and `bun run check:desktop` checks both. See `docs/reactos-desktop-icons.md`.
 
 ```sh
 python3 desktop/icons/render.py desktop/build/icons
@@ -110,4 +111,14 @@ _The vector masters, rendered by your browser (not the shipped raster)._
 
 ```sh
 python3 desktop/dialogs/render.py desktop/build/dialogs
+```
+
+## Card art
+
+`cards/gen_cards.py` draws the masters of the card back that replaces the one carrying the ReactOS logo (`cards.dll` 54) and of the empty-pile marks on the proposed dusk felt (67 and 68), all 72 × 112, and `cards/render.py` renders them to the 24-bit BMPs (needs `rsvg-convert` and Pillow). `icons/map.json`'s `bitmaps` list names each resource and its `colours` list the felt colour in `sol.exe` and `spider.exe`. See `docs/reactos-desktop-cards.md`.
+
+![The Solitaire table on the dusk felt with the Afterglow card back, at twice its size.](../docs/images/afterglow-cards.png)
+
+```sh
+python3 desktop/cards/render.py desktop/build/cards
 ```

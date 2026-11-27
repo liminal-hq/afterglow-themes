@@ -78,7 +78,8 @@ test('the dialog masters match their recorded hashes, keep their licence header 
 test('map.json names each dialog bitmap with its stock resource, size and depth', () => {
 	const map = JSON.parse(readFileSync(join(root, 'desktop', 'icons', 'map.json'), 'utf8'));
 	const claimed = new Set();
-	for (const entry of map.bitmaps) {
+	// the card bitmaps are render-cards.test.mjs's
+	for (const entry of map.bitmaps.filter((bitmap) => !bitmap.file.startsWith('desktop/cards/'))) {
 		assert.ok(existsSync(join(root, entry.file)), entry.file);
 		assert.match(entry.module, /^[a-z0-9]+\.(dll|exe)$/, entry.id);
 		assert.ok(Number.isInteger(entry.resource) && entry.resource > 0, entry.id);

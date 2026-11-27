@@ -16,7 +16,7 @@
 # and its master and palette with desktop/boot/SHA256SUMS.masters, and checks the docs preview PNG by pixels.
 #
 # Also hashes the dialog art masters (desktop/dialogs), renders the five dialog BMPs (desktop/dialogs/render.py, needs rsvg-convert and Pillow),
-# compares them with desktop/dialogs/SHA256SUMS and checks the docs preview PNG by pixels.
+# compares them with desktop/dialogs/SHA256SUMS and checks the docs preview PNG by pixels. The card art (desktop/cards) is checked the same way.
 #
 # Also renders the Start orb and the Start menu banner (desktop/start/render.py, needs rsvg-convert and Pillow), compares the two DIBs with
 # desktop/start/SHA256SUMS and the SVG masters with desktop/start/SHA256SUMS.masters, and checks the docs preview PNG by pixels.
@@ -205,8 +205,8 @@ else
 	status=1
 fi
 
-# The icon set: gen_e.py (with gen_v2.py, gen_v3.py and hint16_v2.py) redraws every SVG master and the contact sheet, and arrows.py the three shortcut arrow masters
-# (all compared byte for byte, and with SHA256SUMS.masters), then render.py draws the 160 .ico files and the 18 one-frame 24 px toolbar
+# The icon set: gen_e.py (with gen_v2.py, gen_v3.py, hint16_v2.py and gen_v4.py) redraws every SVG master and the contact sheet, and arrows.py the three shortcut arrow masters
+# (all compared byte for byte, and with SHA256SUMS.masters), then render.py draws the 186 .ico files and the 18 one-frame 24 px toolbar
 # .ico files, which are compared with SHA256SUMS. The .ico bytes were identical with rsvg-convert 2.58 and 2.63.
 mkdir -p "$out/icons-gen"
 python3 desktop/icons/gen_e.py "$out/icons-gen" >/dev/null
@@ -229,7 +229,7 @@ else
 fi
 python3 desktop/icons/render.py "$out/icons"
 if (cd "$out/icons" && sha256sum --check --quiet "$root/desktop/icons/SHA256SUMS"); then
-	echo "the 160 Afterglow .ico files and the 18 toolbar frames match desktop/icons/SHA256SUMS"
+	echo "the 186 Afterglow .ico files and the 18 toolbar frames match desktop/icons/SHA256SUMS"
 else
 	echo "the .ico files do not match desktop/icons/SHA256SUMS: a master or the renderer changed, so look at $out/icons, then record the new hashes with (cd OUT_DIR && sha256sum ico/*.ico ico24/*.ico > desktop/icons/SHA256SUMS)"
 	status=1
@@ -263,5 +263,32 @@ else
 	status=1
 fi
 
-[ "$status" -eq 0 ] && echo "Desktop style, pointers, logon, boot, Start, icon and dialog art are reproducible."
+# The card art: the SVG masters are hashed as they are (gen_cards.py writes them), and the three card BMPs are rendered fresh and hashed.
+if (cd desktop/cards && sha256sum --check --quiet SHA256SUMS.masters); then
+	echo "the card masters in desktop/cards match desktop/cards/SHA256SUMS.masters"
+else
+	echo "a card master in desktop/cards changed: if that is intended, run desktop/cards/gen_cards.py desktop/cards and record the hashes (see docs/reactos-desktop-cards.md)"
+	status=1
+fi
+python3 desktop/cards/render.py "$out/cards"
+if (cd "$out/cards" && sha256sum --check --quiet "$root/desktop/cards/SHA256SUMS"); then
+	echo "the card BMPs match desktop/cards/SHA256SUMS"
+else
+	echo "a card BMP does not match desktop/cards/SHA256SUMS: a master or the renderer changed, so look at $out/cards, then record the new hashes (see docs/reactos-desktop-cards.md)"
+	status=1
+fi
+if python3 - "$out/cards/afterglow-cards-preview.png" docs/images/afterglow-cards.png <<'PY'
+import sys
+from PIL import Image, ImageChops
+fresh, committed = (Image.open(path).convert("RGB") for path in sys.argv[1:3])
+sys.exit(0 if fresh.size == committed.size and ImageChops.difference(fresh, committed).getbbox() is None else 1)
+PY
+then
+	echo "the card preview docs/images/afterglow-cards.png matches the renderer"
+else
+	echo "the card preview docs/images/afterglow-cards.png is out of date: copy afterglow-cards-preview.png from desktop/cards/render.py's output over it"
+	status=1
+fi
+
+[ "$status" -eq 0 ] && echo "Desktop style, pointers, logon, boot, Start, icon, dialog and card art are reproducible."
 exit "$status"
