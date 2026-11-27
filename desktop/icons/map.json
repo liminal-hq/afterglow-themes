@@ -1,5 +1,5 @@
 {
-	"note": "Maps each Afterglow icon id to the ReactOS icon it replaces. status is named when a ReactOS object is named and unmapped otherwise. resource is the module and icon group id to replace (for the Explorer toolbar, the browseui.dll bitmap strips and the cell index); also lists more groups or cells that take the same icon, each with what uses it. A resource is null unless the id is verified, and evidence says how: source (ReactOS 0.4.16 source, tag 0.4.16-release) and binary (the stock 0.4.16 i386 file holds that group). Every null is unverified, not guessed. bitmaps lists the bitmaps the art in desktop/dialogs, desktop/cards (the back, the empty-pile marks and the faces) and the logon bar replaces, by module and bitmap resource id, with the stock size and depth. A group can be a string where the module names it by string (a named resource, not a number). colours lists the colours compiled into code that the art is drawn to match, with where they are.",
+	"note": "Maps each Afterglow icon id to the ReactOS icon it replaces. status is named when a ReactOS object is named and unmapped otherwise. resource is the module and icon group id to replace (for the Explorer toolbar, the browseui.dll bitmap strips and the cell index); also lists more groups or cells that take the same icon, each with what uses it. A resource is null unless the id is verified, and evidence says how: source (ReactOS 0.4.16 source, tag 0.4.16-release) and binary (the stock 0.4.16 i386 file holds that group). Every null is unverified, not guessed. bitmaps lists the bitmaps the art in desktop/dialogs, desktop/cards (the back, the empty-pile marks and the faces), the logon bar and the Go button (desktop/icons, rendered to bmp/go.bmp) replaces, by module and bitmap resource id, with the stock size and depth. A group can be a string where the module names it by string (a named resource, not a number). colours lists the colours compiled into code that the art is drawn to match, with where they are.",
 	"kinds": {
 		"shell": "shell32 object icon",
 		"drive": "shell32 drive icon",
@@ -12,7 +12,8 @@
 		"toolbar": "a cell of the Explorer toolbar strips in browseui.dll (24 px strips 214 and 215, 16 px strips 216 and 217)",
 		"tray": "a notification area icon in stobject.dll or the keyboard layout indicator",
 		"picture": "a picture a dialog shows: an icon group the dialog template names or its code loads",
-		"device-class": "the icon of a device class Device Manager lists, from its class installer"
+		"device-class": "the icon of a device class Device Manager lists, from its class installer",
+		"bitmap": "a bitmap of its own in the module, not an icon group or a strip cell: the art is in bitmaps"
 	},
 	"icons": [
 		{
@@ -585,6 +586,20 @@
 			}
 		},
 		{
+			"id": "delpermanent",
+			"label": "Delete permanently",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "The confirmation before a file, folder or selection is deleted for good (shlfileop.cpp, ASK_DELETE_*)",
+			"kind": "picture",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 161,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SHELL_CONFIRM_DELETE"
+			}
+		},
+		{
 			"id": "desktop",
 			"label": "Desktop",
 			"group": "Drives and folders",
@@ -683,7 +698,15 @@
 				"module": "shell32.dll",
 				"group": 327,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 133,
+					"evidence": ["source", "binary"],
+					"use": "Properties of several files at once (IDI_SHELL_MULTIPLE_FILES)"
+				}
+			]
 		},
 		{
 			"id": "dxdiag",
@@ -798,6 +821,18 @@
 					"group": 605,
 					"evidence": ["source", "binary"],
 					"use": "Mouse Properties, Button tab: the double-click test folder, closed (IDI_FOLDER_CLOSED)"
+				},
+				{
+					"module": "shell32.dll",
+					"group": 256,
+					"evidence": ["source", "binary"],
+					"use": "the confirmation before a file or folder is replaced (ASK_OVERWRITE_*, IDI_SHELL_FOLDER_MOVE2)"
+				},
+				{
+					"module": "ntobjshex.dll",
+					"group": 2,
+					"evidence": ["source", "binary"],
+					"use": "NT Object Namespace: a directory object (IDI_NTOBJECTDIR)"
 				}
 			]
 		},
@@ -820,6 +855,12 @@
 					"group": 606,
 					"evidence": ["source", "binary"],
 					"use": "Mouse Properties, Button tab: the double-click test folder, open (IDI_FOLDER_OPEN)"
+				},
+				{
+					"module": "ntobjshex.dll",
+					"group": 3,
+					"evidence": ["source", "binary"],
+					"use": "NT Object Namespace: a directory object, open (IDI_NTOBJECTDIROPEN)"
 				}
 			]
 		},
@@ -927,6 +968,15 @@
 				"cell": 1,
 				"evidence": ["source", "binary"]
 			}
+		},
+		{
+			"id": "go",
+			"label": "Go",
+			"group": "Explorer toolbar",
+			"status": "named",
+			"replaces": "Explorer address bar: the Go button, a 20 x 20 bitmap of its own (see bitmaps: browseui.dll 230 and 231)",
+			"kind": "bitmap",
+			"resource": null
 		},
 		{
 			"id": "group",
@@ -1677,6 +1727,76 @@
 			]
 		},
 		{
+			"id": "none",
+			"label": "None",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Display Properties, Desktop tab: the (None) entry of the wallpaper list",
+			"kind": "picture",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 200,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SHELL_NO"
+			}
+		},
+		{
+			"id": "ntdevice",
+			"label": "NT device",
+			"group": "Namespaces and the registry",
+			"status": "named",
+			"replaces": "NT Object Namespace: a device object",
+			"kind": "shell",
+			"resource": {
+				"module": "ntobjshex.dll",
+				"group": 5,
+				"evidence": ["source", "binary"],
+				"name": "IDI_NTOBJECTDEVICE"
+			}
+		},
+		{
+			"id": "ntnamespace",
+			"label": "NT Object Namespace",
+			"group": "Namespaces and the registry",
+			"status": "named",
+			"replaces": "My Computer: the NT Object Namespace folder (its CLSID's DefaultIcon is the module's first group)",
+			"kind": "shell",
+			"resource": {
+				"module": "ntobjshex.dll",
+				"group": 1,
+				"evidence": ["source", "binary"],
+				"name": "IDI_NTOBJECTFOLDER"
+			}
+		},
+		{
+			"id": "ntobject",
+			"label": "NT object",
+			"group": "Namespaces and the registry",
+			"status": "named",
+			"replaces": "NT Object Namespace and System Registry: an object of any other type (events, sections, symbolic links)",
+			"kind": "shell",
+			"resource": {
+				"module": "ntobjshex.dll",
+				"group": 4,
+				"evidence": ["source", "binary"],
+				"name": "IDI_NTOBJECTITEM"
+			}
+		},
+		{
+			"id": "ntport",
+			"label": "NT port",
+			"group": "Namespaces and the registry",
+			"status": "named",
+			"replaces": "NT Object Namespace: a port object (ALPC port)",
+			"kind": "shell",
+			"resource": {
+				"module": "ntobjshex.dll",
+				"group": 6,
+				"evidence": ["source", "binary"],
+				"name": "IDI_NTOBJECTPORT"
+			}
+		},
+		{
 			"id": "openglcfg",
 			"label": "OpenGL Configuration",
 			"group": "Control Panel applets",
@@ -1802,6 +1922,18 @@
 					"group": 100,
 					"evidence": ["source", "binary"],
 					"use": "IDI_APPLICATION"
+				},
+				{
+					"module": "taskmgr.exe",
+					"group": 137,
+					"evidence": ["source", "binary"],
+					"use": "Task Manager, Applications tab: a window with no icon, large (IDI_WINDOW)"
+				},
+				{
+					"module": "taskmgr.exe",
+					"group": 138,
+					"evidence": ["source", "binary"],
+					"use": "Task Manager, Applications tab: a window with no icon, small (IDI_WINDOWSM)"
 				}
 			]
 		},
@@ -2015,7 +2147,38 @@
 				"group": 33,
 				"evidence": ["source", "binary"]
 			},
-			"note": "Registry DefaultIcon values Empty and Full say shell32.dll,31 and shell32.dll,32, the zero-based indexes of groups 32 and 33."
+			"note": "Registry DefaultIcon values Empty and Full say shell32.dll,31 and shell32.dll,32, the zero-based indexes of groups 32 and 33.",
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 142,
+					"evidence": ["source", "binary"],
+					"use": "the confirmation before a file goes to the Recycle Bin (ASK_TRASH_*, IDI_SHELL_TRASH_FILE)"
+				}
+			]
+		},
+		{
+			"id": "regbinary",
+			"label": "Registry value, binary",
+			"group": "Namespaces and the registry",
+			"status": "named",
+			"replaces": "Registry Editor: a binary, number or other value in the list",
+			"kind": "picture",
+			"resource": {
+				"module": "regedit.exe",
+				"group": 136,
+				"evidence": ["source", "binary"],
+				"name": "IDI_BIN"
+			},
+			"also": [
+				{
+					"module": "ntobjshex.dll",
+					"group": 8,
+					"evidence": ["source", "binary"],
+					"name": "IDI_REGISTRYVALUE",
+					"use": "System Registry: a value inside a key"
+				}
+			]
 		},
 		{
 			"id": "regedit",
@@ -2057,6 +2220,34 @@
 			}
 		},
 		{
+			"id": "regkey",
+			"label": "System Registry (registry key)",
+			"group": "Namespaces and the registry",
+			"status": "named",
+			"replaces": "My Computer: the System Registry folder (DefaultIcon ntobjshex.dll,-7), and every registry key and key object inside the two folders",
+			"kind": "shell",
+			"resource": {
+				"module": "ntobjshex.dll",
+				"group": 7,
+				"evidence": ["source", "binary"],
+				"name": "IDI_REGISTRYKEY"
+			}
+		},
+		{
+			"id": "regstring",
+			"label": "Registry value, string",
+			"group": "Namespaces and the registry",
+			"status": "named",
+			"replaces": "Registry Editor: a string value in the list (REG_SZ, REG_EXPAND_SZ, REG_MULTI_SZ)",
+			"kind": "picture",
+			"resource": {
+				"module": "regedit.exe",
+				"group": 135,
+				"evidence": ["source", "binary"],
+				"name": "IDI_STRING"
+			}
+		},
+		{
 			"id": "removable",
 			"label": "Removable drive",
 			"group": "Drives and folders",
@@ -2093,7 +2284,15 @@
 				"module": "shell32.dll",
 				"group": 328,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 25,
+					"evidence": ["source", "binary"],
+					"use": "the Run dialog's picture (RunFileDlg, IDI_SHELL_RUN)"
+				}
+			]
 		},
 		{
 			"id": "scr-3dtext",
@@ -3565,6 +3764,30 @@
 			"size": [72, 112],
 			"bits": 8,
 			"evidence": ["source", "binary"]
+		},
+		{
+			"id": "go",
+			"file": "desktop/icons/svg/24/go.svg",
+			"bitmap": "go.bmp",
+			"module": "browseui.dll",
+			"resource": 230,
+			"name": "IDB_SHELL_GO",
+			"size": [20, 20],
+			"bits": 32,
+			"evidence": ["source", "binary"],
+			"use": "the Go button beside the Explorer address bar"
+		},
+		{
+			"id": "go",
+			"file": "desktop/icons/svg/24/go.svg",
+			"bitmap": "go.bmp",
+			"module": "browseui.dll",
+			"resource": 231,
+			"name": "IDB_SHELL_GO_HOT",
+			"size": [20, 20],
+			"bits": 32,
+			"evidence": ["source", "binary"],
+			"use": "the Go button beside the Explorer address bar, under the pointer (Afterglow draws no hot state)"
 		}
 	],
 	"colours": [

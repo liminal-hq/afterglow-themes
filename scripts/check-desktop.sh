@@ -206,9 +206,9 @@ else
 	status=1
 fi
 
-# The icon set: gen_e.py (with gen_v2.py, gen_v3.py, hint16_v2.py and gen_v4.py) redraws every SVG master and the contact sheet, and arrows.py the three shortcut arrow masters
-# (all compared byte for byte, and with SHA256SUMS.masters), then render.py draws the 186 .ico files and the 18 one-frame 24 px toolbar
-# .ico files, which are compared with SHA256SUMS. The .ico bytes were identical with rsvg-convert 2.58 and 2.63.
+# The icon set: gen_e.py (with gen_v2.py, gen_v3.py, hint16_v2.py, gen_v4.py and gen_v5.py) redraws every SVG master and the contact sheet, and arrows.py the three shortcut arrow masters
+# (all compared byte for byte, and with SHA256SUMS.masters), then render.py draws the 196 .ico files, the 19 one-frame 24 px toolbar
+# .ico files and the 20 px Go bitmap, which are compared with SHA256SUMS. The .ico bytes were identical with rsvg-convert 2.58 and 2.63.
 mkdir -p "$out/icons-gen"
 python3 desktop/icons/gen_e.py "$out/icons-gen" >/dev/null
 python3 -B desktop/icons/arrows.py --variant A1 --out "$out/icons-gen/arrow" >/dev/null
@@ -230,9 +230,9 @@ else
 fi
 python3 desktop/icons/render.py "$out/icons"
 if (cd "$out/icons" && sha256sum --check --quiet "$root/desktop/icons/SHA256SUMS"); then
-	echo "the 186 Afterglow .ico files and the 18 toolbar frames match desktop/icons/SHA256SUMS"
+	echo "the 196 Afterglow .ico files, the 19 toolbar frames and the Go bitmap match desktop/icons/SHA256SUMS"
 else
-	echo "the .ico files do not match desktop/icons/SHA256SUMS: a master or the renderer changed, so look at $out/icons, then record the new hashes with (cd OUT_DIR && sha256sum ico/*.ico ico24/*.ico > desktop/icons/SHA256SUMS)"
+	echo "the .ico files do not match desktop/icons/SHA256SUMS: a master or the renderer changed, so look at $out/icons, then record the new hashes with (cd OUT_DIR && sha256sum ico/*.ico ico24/*.ico bmp/*.bmp > desktop/icons/SHA256SUMS)"
 	status=1
 fi
 

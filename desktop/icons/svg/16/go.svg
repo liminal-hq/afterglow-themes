@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): go, Go (16 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="e-go-16-c1"><path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" fill="#8a73ce" fill-rule="evenodd"/><g clip-path="url(#e-go-16-c1)"><path d="M5 24 a19 19 0 1 0 38 0 a19 19 0 1 0 -38 0 Z" fill="none" stroke="#6d5da3" stroke-width="9" stroke-opacity="1"/></g><path d="M12.5 21.7 C12.5 21.04 13.04 20.5 13.7 20.5 L23.4 20.5 C23.73 20.5 24 20.23 24 19.9 L24 14.2 C24 13.54 24.405 13.357 24.901 13.793 L35.299 22.943 C35.959 23.524 35.959 24.476 35.299 25.057 L24.901 34.207 C24.405 34.643 24 34.46 24 33.8 L24 28.1 C24 27.77 23.73 27.5 23.4 27.5 L13.7 27.5 C13.04 27.5 12.5 26.96 12.5 26.3 Z" fill="#ffd08e" fill-rule="evenodd"/>
+</svg>
