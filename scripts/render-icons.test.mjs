@@ -57,9 +57,9 @@ function render() {
 	return out;
 }
 
-test('the set has 140 icons, 25 hinted 16 px redraws, a 32 and 16 px profile of every icon and a 24 px one of the 18 toolbar glyphs', () => {
+test('the set has 140 icons, 81 hinted 16 px redraws, a 32 and 16 px profile of every icon and a 24 px one of the 18 toolbar glyphs', () => {
 	assert.equal(ids.length, 140);
-	assert.equal(hinted.length, 25);
+	assert.equal(hinted.length, 81);
 	for (const id of [
 		'mydocs',
 		'mypictures',
@@ -106,8 +106,8 @@ test('the set has 140 icons, 25 hinted 16 px redraws, a 32 and 16 px profile of 
 
 test('the masters match their recorded hashes and keep their licence header', () => {
 	const recorded = sums('SHA256SUMS.masters');
-	// 140 icons in three profiles, 18 toolbar glyphs at 24 px, 25 hinted redraws, 3 arrow frames, the sheet and 4 generators
-	assert.equal(Object.keys(recorded).length, 140 * 3 + 18 + 25 + 3 + 1 + 4);
+	// 140 icons in three profiles, 18 toolbar glyphs at 24 px, 81 hinted redraws, 3 arrow frames, the sheet and 5 generators
+	assert.equal(Object.keys(recorded).length, 140 * 3 + 18 + 81 + 3 + 1 + 5);
 	for (const [name, hash] of Object.entries(recorded)) {
 		assert.equal(sha256(readFileSync(join(icons, name))), hash, `${name} changed`);
 		if (name.endsWith('.svg') || name.endsWith('.py')) {
@@ -115,6 +115,17 @@ test('the masters match their recorded hashes and keep their licence header', ()
 			assert.match(text, /\(c\) Copyright 2026 Liminal HQ, Scott Morris/, name);
 			assert.match(text, /SPDX-License-Identifier: Apache-2\.0 OR MIT/, name);
 		}
+	}
+});
+
+test('the hinted 16 px redraws are pixel art: crisp, whole-pixel rects only, no blur or gradient', () => {
+	for (const id of hinted) {
+		const svg = readFileSync(join(svgDir, `${id}-16.svg`), 'utf8');
+		assert.ok(svg.includes('shape-rendering="crispEdges"'), id);
+		assert.ok(
+			!/filter|Gradient|opacity/.test(svg.split('</defs>')[1]),
+			`${id} has no blur, ramp or opacity`,
+		);
 	}
 });
 

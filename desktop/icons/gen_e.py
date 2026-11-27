@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Afterglow icon set, variant E: every icon drawn in the language of the M1 folder, with hinted 16 px redraws and the sheet.
-# The icons added in v2 are drawn in gen_v2.py with this file's Pen and registered here.
+# The icons added in v2 are drawn in gen_v2.py with this file's Pen and registered here; hint16_v2.py holds the hand-tuned 16 px frames.
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -993,114 +993,6 @@ H16["monitor"] = [
 	detail([(7, 7, 2, "2"), (6, 8, 4, "2")])]
 
 
-# The hand-tuned 16 px frames of the device icons (the drives and My Computer), in the same grid language as the layers above but drawn as
-# one flat grid: lowercase material base, uppercase its 16 px edge, digits and symbols flat details, . transparent
-GRID16 = {
-	"cd": [
-	"................",
-	"................",
-	"...NNNNNNNNNN...",
-	".MMMMMMMMMMMMMM.",
-	".Mmmmmmmmm2mNNM.",
-	".M888888888888M.",
-	"..DddddddddddD..",
-	"..DddMMMMMMddD..",
-	".DdMMm^^mmmMMdD.",
-	".DMm^mm--mmmmMD.",
-	".DMmmm-55-mmmMD.",
-	".DMmmmm--mmm%MD.",
-	".DdMMmmmm%%MMdD.",
-	".DdddMMMMMMdddD.",
-	".DDDDDDDDDDDDDD.",
-	"................",
-	],
-	"floppy": [
-	"................",
-	"...NNNNNNNNNN...",
-	".MMMMMMMMMMMMMM.",
-	".Mmmmmmmmmmm2mM.",
-	".M8888888888mmM.",
-	".M8VvNNNNvV8mmM.",
-	".MmVvNn#NvVmmmM.",
-	".MmVvNNNNvVmNNM.",
-	".MmVvvvvvvVmNNM.",
-	".MVvvvvvvvvVMMM.",
-	"..VvPPPPPPvV....",
-	"..VvP1111PvV....",
-	"..VvPppppPvV....",
-	"..VvP111pPvV....",
-	"..VVPPPPPPVV....",
-	"................",
-	],
-	"removable": [
-	"................",
-	"...........NN...",
-	"..........NnnN..",
-	".........N#n#N..",
-	"........NnnnnN..",
-	".......GNnnnN...",
-	"......GgGNnN....",
-	".....Ggff4GN....",
-	"....GgfffgG.....",
-	"...GgfffggG.....",
-	"..GggggggGG.....",
-	".GggggggG.......",
-	".Gg^gggG........",
-	".GgggGG.........",
-	"..GGG...........",
-	"................",
-	],
-	"ramdisk": [
-	"................",
-	"..-.-.-.-.-.-...",
-	".1111111111111..",
-	".1ddddGGGddddD..",
-	".1dddGgggGdddD..",
-	".1ddGgggffGddD..",
-	".1ddGgg-ffGddD..",
-	".1ddGgggggGddD..",
-	".1dddGgggGdddD..",
-	".1ddddGGGddddD..",
-	".1dddddddddddD..",
-	".DDDDDDDDDDDDD..",
-	"..-.-.-.-.-.-...",
-	"..-.-.-.-.-.-...",
-	"................",
-	"................",
-	],
-	"mycomputer": [
-	"................",
-	"..........NNNNN.",
-	"MMMMMMMMMMNnnnN.",
-	"M55555555MN99nN.",
-	"M66666666MNnnnN.",
-	"M66622666MN99nN.",
-	"M77222277MNnnnN.",
-	"MMMMMMMMMMNnnnN.",
-	"....NN....NnnnN.",
-	"..NNNNNN..NnGnN.",
-	"..........NnnnN.",
-	"..........NNNNN.",
-	"................",
-	"................",
-	"................",
-	"................",
-	],
-}
-
-
-def pixel_grid(rows, keyline=False):
-	"""The rects of one hand-tuned grid; with the keyline, every material edge pixel (uppercase) takes the keyline tone of its edge."""
-	colours = {}
-	for letter, name in {"g": "gold", "f": "goldl", "p": "paper", "m": "front", "n": "back", "d": "dusk", "v": "violet"}.items():
-		edge = G[name].px_edge()
-		colours[letter], colours[letter.upper()] = G[name].base, retune(edge) if keyline else edge
-	colours.update({digit: colour for digit, colour in PXD.items() if digit != "e"})
-	colours.update({"-": VOIDN[300], "#": INDIGO[600], "%": INDIGO[300], "^": ORANGE[400], "~": HORIZON})
-	return "".join('<rect x="%d" y="%d" width="1" height="1" fill="%s"/>' % (x, y, colours[character])
-		for y, row in enumerate(rows) for x, character in enumerate(row) if character != ".")
-
-
 def bin16(full):
 	body = grid(lambda x, y: "n" if 5 <= y <= 14 and (3 + (1 if y >= 10 else 0)) <= x <= (12 - (1 if y >= 10 else 0)) else ".")
 	lid = grid(lambda x, y: "m" if 2 <= x <= 13 and 3 <= y <= 4 else ".")
@@ -1120,16 +1012,15 @@ M1_H16 = {"folder": ("closed", None), "folderopen": ("open", None), "mydocs": ("
 
 
 def hinted(k):
-	if k in GRID16:
-		return pixel_grid(GRID16[k], k in KEYLINED_16)
+	if k in V16.ART:
+		return V16.pixels(k, k in KEYLINED_16)
 	if k in M1_H16:
 		st, em = M1_H16[k]
 		return FG.hint16(M1, st, em)
 	return px_layers(H16[k])
 
 
-HINTED = ["folder", "folderopen", "mydocs", "mypictures", "mymusic", "myvideos", "desktop", "network", "doc", "documents", "warning", "error", "search", "hdd", "cd", "floppy", "removable", "ramdisk", "mycomputer", "monitor", "recycle",
-	"recyclefull"]
+HINTED = ["folder", "folderopen", "mydocs", "mypictures", "mymusic", "myvideos", "desktop", "network", "doc", "documents", "warning", "error", "search", "hdd", "mycomputer", "monitor", "recycle", "recyclefull"]
 
 # ---- inventory and groups (set D's) ----------------------------------------------------------------------------------------------------------
 GROUPS = [
@@ -1154,15 +1045,17 @@ GROUPS = [
 ]
 
 
-def load_v2():
-	spec = importlib.util.spec_from_file_location("gen_v2", os.path.join(HERE, "gen_v2.py"))
+def load_module(name):
+	spec = importlib.util.spec_from_file_location(name, os.path.join(HERE, name + ".py"))
 	module = importlib.util.module_from_spec(spec)
 	spec.loader.exec_module(module)
 	return module
 
 
-V2 = load_v2()
+V2 = load_module("gen_v2")
 V2.register(types.SimpleNamespace(**globals()))
+V16 = load_module("hint16_v2")  # the hand-tuned 16 px frames
+V16.register(types.SimpleNamespace(**globals()))
 TOOLBAR_24 = V2.TOOLBAR_24  # the Explorer toolbar glyphs, which also get a 24 px profile for browseui's 24 px strips
 LABEL = {k: l for _, items in GROUPS for k, l in items}
 
