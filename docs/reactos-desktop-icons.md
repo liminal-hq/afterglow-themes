@@ -1,10 +1,10 @@
 # ReactOS desktop icons
 
-![The Afterglow icon sheet: the construction keylines and materials, proof strips at 48, 32 and 16 px on a dark, a cream and a dusk ground, the hinted 16 px redraws, then all 185 icons in their eleven groups.](images/afterglow-icons.png)
+![The Afterglow icon sheet: the construction keylines and materials, proof strips at 48, 32 and 16 px on a dark, a cream and a dusk ground, the hinted 16 px redraws, then all 195 icons in their twelve groups.](images/afterglow-icons.png)
 
 _The contact sheet, rendered from the vector masters._
 
-The Afterglow icon set for ReactOS: 185 icons in eleven groups (desktop and shell, programs, Control Panel applets, Explorer toolbar, drives and folders, file types, dialogs, dialog pictures, screen savers, system tray and the Start menu) and the shortcut arrow, drawn on a 48 px grid as vector masters and rendered down by script to 16, 32 and 48 px. The whole set is drawn in the language of the folder (variant E, after the folder called G-M1). Quill's own icons are not part of it.
+The Afterglow icon set for ReactOS: 195 icons in twelve groups (desktop and shell, programs, Control Panel applets, Explorer toolbar, drives and folders, file types, dialogs, dialog pictures, screen savers, namespaces and the registry, system tray and the Start menu) and the shortcut arrow, drawn on a 48 px grid as vector masters and rendered down by script to 16, 32 and 48 px. The whole set is drawn in the language of the folder (variant E, after the folder called G-M1). Quill's own icons are not part of it.
 
 ## Design rules
 
@@ -99,10 +99,10 @@ Every icon ships at 16, 32 and 48 px, drawn from the master built for that size:
 | ----- | --------------------------------------------------------------------------------------------- |
 | 48 px | `svg/ID.svg`, the master                                                                      |
 | 32 px | `svg/32/ID.svg`, the 32 px profile (still a 48 viewBox, with its own edge)                    |
-| 24 px | `svg/24/ID.svg`, the 24 px profile, for the 18 Explorer toolbar glyphs only                   |
-| 16 px | `svg/ID-16.svg`, the hinted redraw, for the 86 icons that have one; otherwise `svg/16/ID.svg` |
+| 24 px | `svg/24/ID.svg`, the 24 px profile, for the 18 Explorer toolbar glyphs and the Go button only |
+| 16 px | `svg/ID-16.svg`, the hinted redraw, for the 95 icons that have one; otherwise `svg/16/ID.svg` |
 
-The hinted 16 px redraws are pixel drawings: Folder, Folder (open), My Documents, My Pictures, My Music, My Videos, Desktop, My Network Places, Document, Documents, Warning, Error, Search, Hard disk, My Computer, Monitor, both Recycle Bins, Favourites, Recent and the Programs folder, and the 66 hand-tuned frames below. `desktop/icons/render.py OUT_DIR` runs `rsvg-convert` on each, which bakes each size's own blur for the shadows, and writes `png/ID-SIZE.png` (576 files), one `ico/ID.ico` per icon (186 files with the arrow) and, for each toolbar glyph, `ico24/ID.ico` with its one 24 px frame (18 files). An `.ico` holds the three frames, smallest first, as uncompressed 32-bit BGRA DIB frames with alpha and an all-zero AND mask: the classic layout that old icon loaders read, with no PNG-compressed frames. The output has no dates, so the same masters and the same `rsvg-convert` give the same bytes. The `.ico` bytes were identical with `rsvg-convert` 2.58 and 2.63; the PNG files are written as `rsvg-convert` makes them and are not hashed. The files are named by the icon ids, so a build recipe can pick `ico/folder.ico` by id. The `.ico` hashes are in `desktop/icons/SHA256SUMS`, and `bun run check:desktop` renders them again and compares.
+The hinted 16 px redraws are pixel drawings: Folder, Folder (open), My Documents, My Pictures, My Music, My Videos, Desktop, My Network Places, Document, Documents, Warning, Error, Search, Hard disk, My Computer, Monitor, both Recycle Bins, Favourites, Recent, the Programs folder, NT Object Namespace and System Registry, and the 73 hand-tuned frames below. `desktop/icons/render.py OUT_DIR` runs `rsvg-convert` on each, which bakes each size's own blur for the shadows, and writes `png/ID-SIZE.png` (607 files), one `ico/ID.ico` per icon (196 files with the arrow), for each toolbar glyph and the Go button `ico24/ID.ico` with its one 24 px frame (19 files), and `bmp/go.bmp`, the Go button's 20 × 20 bitmap. An `.ico` holds the three frames, smallest first, as uncompressed 32-bit BGRA DIB frames with alpha and an all-zero AND mask: the classic layout that old icon loaders read, with no PNG-compressed frames. The output has no dates, so the same masters and the same `rsvg-convert` give the same bytes. The `.ico` bytes were identical with `rsvg-convert` 2.58 and 2.63; the PNG files are written as `rsvg-convert` makes them and are not hashed. The files are named by the icon ids, so a build recipe can pick `ico/folder.ico` by id. The `.ico` and `.bmp` hashes are in `desktop/icons/SHA256SUMS`, and `bun run check:desktop` renders them again and compares.
 
 ```sh
 python3 desktop/icons/render.py desktop/build/icons    # ico/, ico24/, png/, afterglow-icons-sheet.png and afterglow-arrow-preview.png
@@ -171,16 +171,42 @@ The fourth pass draws the art the full image (nothing trimmed) still showed in s
 
 The pictures and the screen savers sit on the grey dialog face or a white file list, so they ship with the keyline, like v3's pictures; the programs and applets sit on the plate. The mains-power plug in the tray, which looked off-palette in the full image, is `acpower`, already set E's gold and already patched. The card backs and the felt are not icons; they are in [the card art](reactos-desktop-cards.md).
 
+## Icons v5: the first screens
+
+The fifth pass draws what a visitor still met in stock art on the first screens they open once v4 was patched: My Computer, the folders inside it, the Explorer address bar, Registry Editor and the confirmation dialogs. They were found by the reactos-liminal icon survey of round 3, which set every icon group and bitmap of the stock 0.4.16 files against what the pinned map patches and ranked what is left by where a visitor meets it. The new art is in `desktop/icons/gen_v5.py`, with set E's Pen, materials, profiles and the M1 folder, and every icon of set E and v2 to v4 is byte for byte what it was.
+
+- **My Computer (2).** NT Object Namespace (`ntobjshex.dll` 1, which its CLSID's `DefaultIcon` names as the module's first group) and System Registry (`ntobjshex.dll` 7, `IDI_REGISTRYKEY`, which also marks every registry key inside it): the M1 folder with an embossed emblem, a small hierarchy for the namespace and Registry Editor's three stacked cubes for the registry, each with its 16 px emblem in `folders_g.py`'s pixel form.
+- **Inside the two folders (3).** An NT object of any other type (`ntobjshex.dll` 4): one cube seen from a corner, in Registry Editor's gold, light and violet. A device (5): a chip, its dark body on gold legs with a light die. A port (6): a socket, a light faceplate with a dark keyed opening and gold contacts. A directory takes `folder` and `folderopen` (2 and 3), and a registry value `regbinary` (8), through `also`.
+- **Registry Editor (2).** A string value (`regedit.exe` 135, `IDI_STRING`) and a binary or other value (136, `IDI_BIN`): a light card with a gold or violet tab and the letters ab or the digits 01. Registry Editor asks for them only at 16 px, so their hand-tuned 16 px frames are the ones the list shows.
+- **The Go button (1).** The button beside the Explorer address bar is not an icon but two 20 × 20 bitmaps, `browseui.dll` 230 and 231 (`IDB_SHELL_GO` and `_HOT`), 32-bit with straight alpha. `go` is a gold arrow on a violet disc, a button rather than a second Forward arrow, drawn with a 24 px profile like the toolbar glyphs; `render.py` renders that profile at 20 px as `bmp/go.bmp`, laid out like the stock resource, and the map lists it under `bitmaps` for both ids (Afterglow draws no hot state).
+- **Dialogs (2).** None (`shell32.dll` 200, `IDI_SHELL_NO`): the (None) entry of the wallpaper list, a paper disc in a struck-through rose ring. Delete permanently (`shell32.dll` 161, `IDI_SHELL_CONFIRM_DELETE`): the confirmation before something is deleted for good, a paper shredder: a page feeding into the slot of a dusk housing with a rose light, and cut strips of uneven length coming out below. Group 161 holds only two 32 px frames, so the patch fits it to 32 and 16 px.
+
+Existing icons were also given the pictures that show the same thing: the Run dialog's picture (`shell32.dll` 25) takes `run`, the confirmation before a file goes to the Recycle Bin (142) `recyclefull`, the confirmation before a file or folder is replaced (256) `folder`, Properties of several files (133) `documents`, and Task Manager's window without an icon (`taskmgr.exe` 137 and 138) `program`.
+
+Every bare icon here sits on the white file list, the cream toolbar or a grey dialog, so it ships with the keyline and reaches 3:1 on cream and white at 48, 32 and 16 px; on Dusk, where none of them is shown, the chip, the shredder and the Go disc are at 2.7 to 2.9. The two folders are the M1 folder exactly, like the special folders, so they carry M1's edge and not the keyline. Contrast at 48, 32 and 16 px, measured as `desktop/icons/alternatives/README.md` describes:
+
+| Icon                 | Cream            | White            | Dusk              |
+| -------------------- | ---------------- | ---------------- | ----------------- |
+| NT object            | 3.63, 3.64, 3.64 | 5.58, 5.60, 5.60 | 3.59, 3.38, 10.65 |
+| NT device            | 3.65, 3.65, 3.65 | 5.61, 5.61, 5.61 | 2.72, 2.77, 2.73  |
+| NT port              | 3.64, 3.64, 3.65 | 5.60, 5.60, 5.61 | 6.14, 4.53, 11.90 |
+| Registry value, both | 3.64, 3.64, 3.65 | 5.60, 5.60, 5.61 | 6.43, 3.53, 13.38 |
+| None                 | 3.63, 3.63, 3.64 | 5.58, 5.58, 5.60 | 3.40, 3.35, 4.15  |
+| Delete permanently   | 3.64, 3.64, 3.65 | 5.60, 5.60, 5.61 | 4.06, 2.80, 2.73  |
+| Go                   | 3.65, 3.65, 3.65 | 5.61, 5.61, 5.61 | 2.98, 2.91, 3.07  |
+
+**Left for the next pass.** The survey's next tier is not drawn here: the Applications Manager's category and toolbar icons (`rapps.exe`), Device Manager's device classes (`setupapi.dll`), the Folder Options pictures (`shell32.dll` 182 to 187), the Taskbar Properties previews (`explorer.exe` bitmaps) and Registry Editor's 12 px address button (`regedit.exe` 102, a size the icon render does not make). The ReactOS logo art stays out, as before.
+
 ## Vector masters
 
-All the art is vector. `desktop/icons/gen_e.py` is the canonical source for the icons: it draws every icon and the sheet, and writes `icons/` (the 48 px masters, the `32/`, `24/` and `16/` profiles and the hinted `ID-16.svg` redraws, 659 files) and `sheet.svg`. It imports `folders_g.py` beside it for the folder family, and `gen_v2.py`, `gen_v3.py` and `gen_v4.py` for the icons added in v2, v3 and v4. `desktop/icons/arrows.py` is the canonical source for the arrow (`arrows.py --variant A1 --out DIR` writes the three masters in `desktop/icons/arrow/`); the copy keeps its other variants and its own sheet code, which this repository does not use. The committed [`desktop/icons/svg/`](../desktop/icons/svg/), `desktop/icons/sheet.svg` and `desktop/icons/arrow/` are their output, kept so the masters can be opened and diffed without running anything. Edit the generators, not the SVGs: `bun run check:desktop` regenerates them and fails when they differ from the committed files, and `desktop/icons/SHA256SUMS.masters` records their hashes. Rasters are always rendered from the masters and never edited by hand.
+All the art is vector. `desktop/icons/gen_e.py` is the canonical source for the icons: it draws every icon and the sheet, and writes `icons/` (the 48 px masters, the `32/`, `24/` and `16/` profiles and the hinted `ID-16.svg` redraws, 699 files) and `sheet.svg`. It imports `folders_g.py` beside it for the folder family, and `gen_v2.py`, `gen_v3.py`, `gen_v4.py` and `gen_v5.py` for the icons added in v2, v3, v4 and v5. `desktop/icons/arrows.py` is the canonical source for the arrow (`arrows.py --variant A1 --out DIR` writes the three masters in `desktop/icons/arrow/`); the copy keeps its other variants and its own sheet code, which this repository does not use. The committed [`desktop/icons/svg/`](../desktop/icons/svg/), `desktop/icons/sheet.svg` and `desktop/icons/arrow/` are their output, kept so the masters can be opened and diffed without running anything. Edit the generators, not the SVGs: `bun run check:desktop` regenerates them and fails when they differ from the committed files, and `desktop/icons/SHA256SUMS.masters` records their hashes. Rasters are always rendered from the masters and never edited by hand.
 
 ```sh
 python3 desktop/icons/gen_e.py OUT_DIR    # writes OUT_DIR/icons/ and OUT_DIR/sheet.svg
 python3 -B desktop/icons/arrows.py --variant A1 --out OUT_DIR/arrow
 cp -r OUT_DIR/icons/. desktop/icons/svg/ && cp OUT_DIR/sheet.svg desktop/icons/sheet.svg
 cp OUT_DIR/arrow/arrow-48.svg OUT_DIR/arrow/arrow-32.svg OUT_DIR/arrow/arrow-16-hinted.svg desktop/icons/arrow/
-(cd desktop/icons && find svg arrow -type f | LC_ALL=C sort | xargs sha256sum > SHA256SUMS.masters && sha256sum sheet.svg gen_e.py gen_v2.py gen_v3.py gen_v4.py hint16_v2.py folders_g.py arrows.py >> SHA256SUMS.masters)
+(cd desktop/icons && find svg arrow -type f | LC_ALL=C sort | xargs sha256sum > SHA256SUMS.masters && sha256sum sheet.svg gen_e.py gen_v2.py gen_v3.py gen_v4.py gen_v5.py hint16_v2.py folders_g.py arrows.py >> SHA256SUMS.masters)
 ```
 
 The sheet's text uses whatever sans-serif the renderer finds, so the contact sheet PNG in `docs/images/` is a picture for the docs and is not compared byte for byte.

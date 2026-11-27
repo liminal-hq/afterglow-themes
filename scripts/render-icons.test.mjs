@@ -57,9 +57,9 @@ function render() {
 	return out;
 }
 
-test('the set has 185 icons, 86 hinted 16 px redraws, a 32 and 16 px profile of every icon and a 24 px one of the 18 toolbar glyphs', () => {
-	assert.equal(ids.length, 185);
-	assert.equal(hinted.length, 86);
+test('the set has 195 icons, 95 hinted 16 px redraws, a 32 and 16 px profile of every icon and a 24 px one of the 18 toolbar glyphs and Go', () => {
+	assert.equal(ids.length, 195);
+	assert.equal(hinted.length, 95);
 	for (const id of [
 		'mydocs',
 		'mypictures',
@@ -74,6 +74,15 @@ test('the set has 185 icons, 86 hinted 16 px redraws, a 32 and 16 px profile of 
 		'user-locked',
 		'group',
 		'showdesktop',
+		'ntnamespace',
+		'regkey',
+		'ntobject',
+		'ntdevice',
+		'ntport',
+		'regstring',
+		'regbinary',
+		'none',
+		'delpermanent',
 	]) {
 		assert.ok(hinted.includes(id), `${id} has a hinted redraw`);
 	}
@@ -87,6 +96,7 @@ test('the set has 185 icons, 86 hinted 16 px redraws, a 32 and 16 px profile of 
 		'folderopts',
 		'folders',
 		'forward',
+		'go',
 		'mapdrive',
 		'move',
 		'paste',
@@ -110,8 +120,8 @@ test('the set has 185 icons, 86 hinted 16 px redraws, a 32 and 16 px profile of 
 
 test('the masters match their recorded hashes and keep their licence header', () => {
 	const recorded = sums('SHA256SUMS.masters');
-	// 185 icons in three profiles, 18 toolbar glyphs at 24 px, 86 hinted redraws, 3 arrow frames, the sheet and 7 generators
-	assert.equal(Object.keys(recorded).length, 185 * 3 + 18 + 86 + 3 + 1 + 7);
+	// 195 icons in three profiles, 18 toolbar glyphs and Go at 24 px, 95 hinted redraws, 3 arrow frames, the sheet and 8 generators
+	assert.equal(Object.keys(recorded).length, 195 * 3 + 19 + 95 + 3 + 1 + 8);
 	for (const [name, hash] of Object.entries(recorded)) {
 		assert.equal(sha256(readFileSync(join(icons, name))), hash, `${name} changed`);
 		if (name.endsWith('.svg') || name.endsWith('.py')) {
@@ -194,7 +204,8 @@ test('map.json names every icon once and the arrow, and records only verified re
 			assert.equal(icon.kind, null, icon.id);
 			assert.equal(icon.resource, null, icon.id);
 		}
-		if (toolbar.includes(icon.id)) {
+		// a toolbar glyph names one cell of the strips, unless its art is a bitmap of its own (the Go button)
+		if (toolbar.includes(icon.id) && !map.bitmaps.some((bitmap) => bitmap.id === icon.id)) {
 			const cells = [icon.resource, ...(icon.also ?? [])].filter(
 				(r) => r?.module === 'browseui.dll',
 			);
@@ -265,8 +276,8 @@ test(
 				}
 				assert.deepEqual(seen, SIZES, `${id} frames`);
 			}
-			assert.equal(readdirSync(join(out, 'ico')).length, 186);
-			assert.equal(readdirSync(join(out, 'png')).length, 186 * 3 + toolbar.length);
+			assert.equal(readdirSync(join(out, 'ico')).length, 196);
+			assert.equal(readdirSync(join(out, 'png')).length, 196 * 3 + toolbar.length);
 			// the 24 px toolbar frames: a one-frame .ico each, so the three-frame .ico stays as the shell patchers read it
 			assert.deepEqual(
 				readdirSync(join(out, 'ico24')).sort(),
@@ -376,6 +387,7 @@ test('two renders give the same .ico bytes, and they match the recorded hashes',
 			[
 				...[...ids, 'arrow'].map((id) => `ico/${id}.ico`),
 				...toolbar.map((id) => `ico24/${id}.ico`),
+				'bmp/go.bmp',
 			].sort(),
 		);
 		for (const id of [...ids, 'arrow']) {
@@ -388,8 +400,46 @@ test('two renders give the same .ico bytes, and they match the recorded hashes',
 			assert.deepEqual(first, readFileSync(join(b, 'ico24', `${id}.ico`)), `${id} 24 px differs`);
 			assert.equal(sha256(first), recorded[`ico24/${id}.ico`], `${id} 24 px hash`);
 		}
+		const go = readFileSync(join(a, 'bmp', 'go.bmp'));
+		assert.deepEqual(go, readFileSync(join(b, 'bmp', 'go.bmp')), 'go.bmp differs');
+		assert.equal(sha256(go), recorded['bmp/go.bmp'], 'go.bmp hash');
 	} finally {
 		rmSync(a, { recursive: true, force: true });
 		rmSync(b, { recursive: true, force: true });
 	}
 });
+
+test(
+	'the Go button is a 20 x 20 32-bit bitmap with straight alpha, laid out like the stock browseui.dll 230 and 231',
+	needTools,
+	() => {
+		const map = JSON.parse(readFileSync(join(icons, 'map.json'), 'utf8'));
+		const entries = map.bitmaps.filter((entry) => entry.id === 'go');
+		assert.deepEqual(
+			entries.map((entry) => [entry.module, entry.resource, entry.size, entry.bits]),
+			[
+				['browseui.dll', 230, [20, 20], 32],
+				['browseui.dll', 231, [20, 20], 32],
+			],
+		);
+		const out = render();
+		try {
+			const bmp = readFileSync(join(out, 'bmp', 'go.bmp'));
+			assert.equal(bmp.toString('latin1', 0, 2), 'BM');
+			assert.equal(bmp.readUInt32LE(10), 54, 'pixels follow the info header');
+			assert.equal(bmp.length, 54 + 20 * 20 * 4);
+			// the info header of the stock resource: 40 bytes, 20 x 20 bottom-up, one plane, 32 bits, BI_RGB, no size or resolution
+			assert.deepEqual(
+				[0, 4, 8, 12, 14, 16, 20, 24, 28, 32, 36].map((at, index) =>
+					index === 3 || index === 4 ? bmp.readUInt16LE(14 + at) : bmp.readInt32LE(14 + at),
+				),
+				[40, 20, 20, 1, 32, 0, 0, 0, 0, 0, 0],
+			);
+			const alpha = [];
+			for (let p = 54 + 3; p < bmp.length; p += 4) alpha.push(bmp[p]);
+			assert.ok(alpha.includes(0) && alpha.includes(255), 'see-through corners and an opaque disc');
+		} finally {
+			rmSync(out, { recursive: true, force: true });
+		}
+	},
+);

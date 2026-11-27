@@ -2,7 +2,7 @@
 # Render the Afterglow icon masters to PNG at 16, 32 and 48 px and pack one .ico per icon with those three frames.
 # Usage: render.py OUT_DIR
 #
-# Writes OUT_DIR/png/ID-SIZE.png, OUT_DIR/ico/ID.ico, the shortcut arrow as png/arrow-SIZE.png and ico/arrow.ico, the contact sheet
+# Writes OUT_DIR/png/ID-SIZE.png, OUT_DIR/ico/ID.ico, OUT_DIR/bmp/go.bmp, the shortcut arrow as png/arrow-SIZE.png and ico/arrow.ico, the contact sheet
 # afterglow-icons-sheet.png and a preview of the arrow over six icons, afterglow-arrow-preview.png. Icons never get a 24 px frame (the shell
 # never asks for one), but the Explorer toolbar's 24 px bitmap strips do: each toolbar glyph with a 24 px profile (svg/24/ID.svg) is also
 # written as png/ID-24.png and as ico24/ID.ico, a one-frame 24 px .ico in the same layout, so the three-frame .ico stays as it is. Each size
@@ -12,7 +12,10 @@
 # its own when rsvg-convert rasterises it. An .ico holds three uncompressed 32-bit BGRA DIB frames (alpha in the pixels, an all-zero AND
 # mask), the classic layout every Windows since 95 reads, ReactOS included; no PNG-compressed frames, which older icon loaders reject. The
 # ico bytes carry no dates and depend only on the rendered pixels, so the same masters and the same rsvg-convert give the same files; the
-# PNGs and the two preview images are written as rsvg-convert and Pillow make them. Needs rsvg-convert and Pillow.
+# PNGs and the two preview images are written as rsvg-convert and Pillow make them. The Explorer address bar's Go button is not an icon but
+# a 20 x 20 bitmap (browseui.dll 230 and 231), so the glyphs in BITMAPS are also written as bmp/ID.bmp, drawn from their 24 px profile at
+# the bitmap's size: a 32-bit BI_RGB bitmap with straight alpha and bottom-up rows, its info header laid out like the stock one (no image
+# size, no resolution), so the bitmap without its 14-byte file header is the resource. Needs rsvg-convert and Pillow.
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -28,6 +31,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SVG = os.path.join(HERE, "svg")
 ARROW = os.path.join(HERE, "arrow")
 SIZES = (16, 32, 48)
+BITMAPS = {"go": 20}  # glyphs a resource holds as a bitmap of its own, and that bitmap's size
 
 
 def ids():
@@ -90,6 +94,19 @@ def ico(frames):
 	return b"".join(out) + b"".join(blobs)
 
 
+def bitmap(image):
+	"""A 32-bit BI_RGB .bmp with straight alpha: the file header, a BITMAPINFOHEADER with no image size or resolution, bottom-up BGRA rows."""
+	width, height = image.size
+	rgba = image.tobytes()
+	rows = []
+	for y in range(height - 1, -1, -1):
+		row = rgba[y * width * 4 : (y + 1) * width * 4]
+		rows.append(b"".join(row[x + 2 : x + 3] + row[x + 1 : x + 2] + row[x : x + 1] + row[x + 3 : x + 4] for x in range(0, len(row), 4)))
+	info = struct.pack("<IiiHHIIiiII", 40, width, height, 1, 32, 0, 0, 0, 0, 0, 0)
+	pixels = b"".join(rows)
+	return b"BM" + struct.pack("<IHHI", 14 + len(info) + len(pixels), 0, 0, 14 + len(info)) + info + pixels
+
+
 def render(out_dir):
 	png_dir = os.path.join(out_dir, "png")
 	ico_dir = os.path.join(out_dir, "ico")
@@ -118,6 +135,12 @@ def render(out_dir):
 			image = Image.open(io.BytesIO(data)).convert("RGBA")
 			with open(os.path.join(ico24_dir, icon + ".ico"), "wb") as f:
 				f.write(ico([image]))
+	bmp_dir = os.path.join(out_dir, "bmp")
+	os.makedirs(bmp_dir, exist_ok=True)
+	for icon, size in BITMAPS.items():
+		image = Image.open(io.BytesIO(rsvg(master(icon, 24), size, size))).convert("RGBA")
+		with open(os.path.join(bmp_dir, icon + ".bmp"), "wb") as f:
+			f.write(bitmap(image))
 	with open(os.path.join(out_dir, "afterglow-icons-sheet.png"), "wb") as f:
 		f.write(subprocess.run(["rsvg-convert", "--format", "png", os.path.join(HERE, "sheet.svg")], check=True, stdout=subprocess.PIPE).stdout)
 	arrow_preview(pixels).save(os.path.join(out_dir, "afterglow-arrow-preview.png"), optimize=False)
