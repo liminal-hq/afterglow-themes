@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Render the three proposed card-face directions to review sheets: a contact sheet per direction and an overview comparing them.
+# Render the card faces to review sheets: a contact sheet for the selected set and for each alternative, and an overview comparing them.
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -9,11 +9,13 @@
 # Draws every master of every direction (gen_faces.py's, in memory) with rsvg-convert at four times the bitmap and averages each 4 x 4
 # block into one pixel, as desktop/cards/render.py does for the shipped art, then lays out OUT_DIR/card-faces-<direction>.png: the
 # representative cards (A, 2, 5, 7, 10, J, Q, K of every suit, the joker and the free cell) at 1x, 2x and 4x on the dusk felt and the stock
-# green, a Solitaire table and Spider tables (one, two and four suits) as cardlib lays them out, and a colour-blind strip (deuteranopia,
+# green, both corner indices with what cardlib's overlaps leave showing, a Solitaire table and Spider tables (one, two and four suits) laid
+# out by desktop/cards/render.py as the games lay them out, and a colour-blind strip (deuteranopia,
 # protanopia and tritanopia after Machado, Oliveira and Fernandes 2009 at full severity, and greyscale). OUT_DIR/card-faces-overview.png
 # puts the three side by side. Cards on the tables get cardlib's black border and cut corners, and the backs are card-back-sunset.svg.
 # With --stock, a folder of the stock cards.dll bitmaps as NN.bmp, the overview adds them as a reference column; they are only shown, never
-# drawn from. Needs rsvg-convert, Pillow and numpy; the sheets are review images and are not committed.
+# drawn from. Needs rsvg-convert, Pillow and numpy. The sheets are review images (their text depends on the fonts installed), so they are
+# not checked by pixels; the copies in desktop/cards/faces/sheets are the ones the README shows.
 import io
 import os
 import subprocess
@@ -38,12 +40,14 @@ REPRESENTATIVE_RANKS = (0, 1, 4, 6, 9, 10, 11, 12)
 SUIT_ROWS = ("hearts", "spades", "diamonds", "clubs")
 FONT_DIR = "/usr/share/fonts/noto"
 DESCRIPTIONS = {
-	"classic": ("A. Classic dusk", "The traditional layout on a cream face in a thin gold border. Rose hearts and diamonds, dusk-indigo spades and clubs. "
-		"The ace is its suit in a gold sun ring. Double-ended courts are drawn once and coloured by suit; the king wears a rising-sun crown."),
-	"horizon": ("B. Horizon", "Every face is a window onto the sunset back's horizon. The pips sit on a faint dawn sky with a gold horizon line, and "
+	"classic": ("A. Classic dusk (selected)", "The traditional layout on a cream face in a thin gold border. Rose hearts and diamonds, dusk-indigo "
+		"spades and clubs, the index at the top left and turned at the bottom right. The ace is its suit in a gold sun ring. Double-ended courts "
+		"are drawn once and coloured by suit; the king wears a rising-sun crown. The joker is a double-ended jester, and the free cell carries the "
+		"Afterglow sun on its horizon under the dusk arcs."),
+	"horizon": ("B. Horizon (alternative)", "Every face is a window onto the sunset back's horizon. The pips sit on a faint dawn sky with a gold horizon line, and "
 		"the ace is its suit rising as the sun over the dusk arcs. The courts are night panels: the king is the crowned sun, the queen the moon, "
 		"the jack the evening star, each reflected in the water."),
-	"pixel": ("C. Pixel set E", "The cards in the icon set's language. Pips are hand-hinted pixel shapes in set E's rose and dusk materials, with "
+	"pixel": ("C. Pixel set E (alternative)", "The cards in the icon set's language. Pips are hand-hinted pixel shapes in set E's rose and dusk materials, with "
 		"the keyline on their edge and a lit step at the top left. Courts are icon tiles on the dusk plate, drawn with set E's Pen. The border "
 		"is a stepped gold ring."),
 }
@@ -95,8 +99,13 @@ class Deck:
 				self.cards[(rank_index, suit)] = self.bordered(rasterise(module.face(rank_index, suit)))
 		self.cards["joker"] = self.bordered(rasterise(module.joker()))
 		self.cards["free"] = self.bordered(rasterise(module.free_card()))
-		with open(os.path.join(os.path.dirname(HERE), "card-back-sunset.svg")) as handle:
-			self.cards["back"] = self.bordered(rasterise(handle.read()))
+		for name in ("card-back-sunset", "card-o"):
+			with open(os.path.join(os.path.dirname(HERE), name + ".svg")) as handle:
+				self.cards[name] = self.bordered(rasterise(handle.read()))
+		self.named = {name: card for name, card in self.cards.items() if isinstance(name, str)}
+		for suit in F.SUITS:
+			for rank_index in range(13):
+				self.named[CARD_RENDER.face_key(rank_index, suit)] = self.cards[(rank_index, suit)]
 
 	@staticmethod
 	def bordered(card):
@@ -133,64 +142,19 @@ def card_grid(rows, scale, felt, gap=None):
 	return canvas
 
 
-# ---- the tables, laid out as the games lay them out ------------------------------------------------------------------------------------------
-def solitaire_table(deck, felt):
-	"""Solitaire mid-game: X_BORDER 20, Y_BORDERWITHFRAME 20, the waste fanned by CS_DEFXOFF (12), the rows 32 below the deck and stacked by
-	__cardheight / 6.7 (16), face-down cards included, the foundations centred over the four right-hand rows, 82 pixels apart."""
+def corner_demo(deck):
+	"""A row of six face-up cards stacked by Solitaire's 16 rows, a waste fan of three by 12 columns, and one whole card, at 4x."""
 	offset = int(HEIGHT / 6.7)
-	width, height = 20 + 7 * (WIDTH + 10) + 10, 20 + HEIGHT + 32 + 12 * offset + HEIGHT + 20
-	table = Image.new("RGB", (width, height), felt)
-	sink = CARD_RENDER.sink(felt)
-	for step in range(3):
-		place(table, deck["back"], 20 + step * 2, 20 + step)
-	for step, card in enumerate([(4, "clubs"), (11, "diamonds"), (8, "spades")]):
-		place(table, deck[card], 20 + WIDTH + 18 + step * 12, 20)
-	columns = [20 + index * (WIDTH + 10) for index in range(7)]
-	foundations = [(2, "hearts"), (0, "spades"), None, (1, "diamonds")]
-	for index, top in enumerate(foundations):
-		x = columns[3 + index]
-		if top is None:
-			table.paste(sink, (x, 20))
-		else:
-			place(table, deck[top], x, 20)
-	rows = [
-		[(12, "spades"), (11, "hearts"), (10, "clubs"), (9, "diamonds")],
-		[(6, "hearts")],
-		[(9, "clubs"), (8, "hearts"), (7, "spades")],
-		[(4, "diamonds"), (3, "clubs")],
-		[(11, "spades"), (10, "diamonds"), (9, "spades"), (8, "diamonds"), (7, "clubs"), (6, "diamonds")],
-		[(12, "hearts")],
-		[(6, "spades"), (5, "hearts"), (4, "clubs"), (3, "hearts"), (2, "spades")],
-	]
-	top_y = 20 + HEIGHT + 32
-	for index, face_up in enumerate(rows):
-		cards = ["back"] * index + face_up
-		for step, card in enumerate(cards):
-			place(table, deck[card], columns[index], top_y + step * offset)
-	return table
-
-
-def spider_table(deck, felt, suits):
-	"""Spider mid-game: ten rows 77 pixels apart from x 39, stacked by __cardheight / 6.4 (17), the deck at the bottom right."""
-	offset = int(HEIGHT / 6.4)
-	width = 10 * WIDTH + 13 * 5 + 12 + 30
-	height = 2 * 5 + 3 * HEIGHT + 6 * offset  # the game's own minimum client height
-	table = Image.new("RGB", (width, height), felt)
-	runs = [
-		[12, 11, 10, 9], [5, 4], [8, 7, 6, 5, 4, 3, 2], [0], [11, 10], [9, 8, 7, 6], [3, 2, 1], [12], [6, 5, 4, 3, 2, 1, 0], [10, 9],
-	]
-	for index, run in enumerate(runs):
-		x = index * (WIDTH + 5) + 6 * 6 + 3
-		face_down = 5 if index < 4 else 4
-		cards = ["back"] * face_down
-		for step, rank_index in enumerate(run):
-			suit = suits[(index + step // 3) % len(suits)] if len(suits) > 1 else suits[0]
-			cards.append((rank_index, suit))
-		for step, card in enumerate(cards):
-			place(table, deck[card], x, 5 + step * offset)
-	for step in range(4):
-		place(table, deck["back"], width - 5 - WIDTH - 12 - step * 10, height - 5 - HEIGHT)
-	return table
+	stack = [(12, "spades"), (11, "hearts"), (10, "clubs"), (9, "diamonds"), (8, "spades"), (7, "hearts")]
+	width = 16 + WIDTH + 24 + 2 * 12 + WIDTH + 24 + WIDTH + 16
+	height = 16 + (len(stack) - 1) * offset + HEIGHT + 16
+	canvas = Image.new("RGB", (width, height), DUSK_FELT)
+	for step, card in enumerate(stack):
+		place(canvas, deck[card], 16, 16 + step * offset)
+	for step, card in enumerate([(4, "clubs"), (11, "diamonds"), (6, "spades")]):
+		place(canvas, deck[card], 16 + WIDTH + 24 + step * 12, 16)
+	place(canvas, deck[(9, "hearts")], 16 + WIDTH + 24 + 2 * 12 + WIDTH + 24, 16)
+	return canvas.resize((width * 4, height * 4), Image.NEAREST)
 
 
 # ---- colour-blind simulation -----------------------------------------------------------------------------------------------------------------
@@ -270,6 +234,8 @@ class Sheet:
 
 def contact_sheet(direction, deck, path):
 	title, description = DESCRIPTIONS[direction]
+	if direction != gen_faces.SELECTED.NAME:
+		description += " Review only: not shipped."
 	sheet = Sheet(2560)
 	sheet.space(36)
 	sheet.text("Afterglow card faces, direction " + title, 48, bold=True)
@@ -287,15 +253,19 @@ def contact_sheet(direction, deck, path):
 	sheet.row([card_grid(rows[0:2], 4, DUSK_FELT)], labels=["hearts and spades on the dusk felt"])
 	sheet.row([card_grid(rows[2:4], 4, STOCK_FELT)], labels=["diamonds and clubs on the stock green"])
 	sheet.row([card_grid(rows[4:5], 4, DUSK_FELT)], labels=["the joker (66) and the free cell (53)"])
+	sheet.text("Both corners, and what cardlib's overlaps leave showing (4x)", 30, bold=True)
+	sheet.text("A Solitaire row shows each card's top 16 rows, the waste fan each card's left 12 columns, and the top card of a pile all of it, "
+		"with the turned index at the bottom right.", 22, colour=MUTED, wrap=2400)
+	sheet.row([corner_demo(deck)])
 	sheet.text("Solitaire, as cardlib lays it out", 30, bold=True)
-	dusk_table = solitaire_table(deck, DUSK_FELT)
-	sheet.row([dusk_table.resize((dusk_table.width * 2, dusk_table.height * 2), Image.NEAREST), solitaire_table(deck, STOCK_FELT)],
+	dusk_table = CARD_RENDER.solitaire_table(deck.named, DUSK_FELT)
+	sheet.row([dusk_table.resize((dusk_table.width * 2, dusk_table.height * 2), Image.NEAREST), CARD_RENDER.solitaire_table(deck.named, STOCK_FELT)],
 		labels=["2x on the dusk felt", "1x on the stock green"])
 	sheet.text("Spider Solitaire at 1x", 30, bold=True)
-	sheet.row([spider_table(deck, DUSK_FELT, ("spades",)), spider_table(deck, DUSK_FELT, ("spades", "hearts")),
-		spider_table(deck, STOCK_FELT, ("spades", "hearts", "clubs", "diamonds"))], gap=20, x=20,
+	sheet.row([CARD_RENDER.spider_table(deck.named, DUSK_FELT, ("spades",)), CARD_RENDER.spider_table(deck.named, DUSK_FELT, ("spades", "hearts")),
+		CARD_RENDER.spider_table(deck.named, STOCK_FELT, ("spades", "hearts", "clubs", "diamonds"))], gap=20, x=20,
 		labels=["one suit (dusk felt)", "two suits (dusk felt)", "four suits (stock green)"])
-	two_suit = spider_table(deck, DUSK_FELT, ("spades", "hearts"))
+	two_suit = CARD_RENDER.spider_table(deck.named, DUSK_FELT, ("spades", "hearts"))
 	sheet.row([two_suit.resize((two_suit.width * 2, two_suit.height * 2), Image.NEAREST)], labels=["two suits at 2x on the dusk felt"])
 	sheet.text("Colour-blind simulation (Machado 2009, full severity) at 2x", 30, bold=True)
 	for name, image in colour_blind_strip(deck):
@@ -306,14 +276,14 @@ def contact_sheet(direction, deck, path):
 def overview(decks, path, stock_dir=None):
 	sheet = Sheet(2900)
 	sheet.space(36)
-	sheet.text("Afterglow card faces: three directions", 48, bold=True)
+	sheet.text("Afterglow card faces: the selected set and two alternatives", 48, bold=True)
 	sheet.text("Each column: the same eight cards at 2x on the dusk felt, then Solitaire at 1x. The back is card-back-sunset in all three.", 26, colour=MUTED)
 	sheet.space(20)
 	picks = [(0, "hearts"), (6, "clubs"), (9, "diamonds"), (0, "spades"), (10, "spades"), (11, "hearts"), (12, "clubs"), (12, "diamonds")]
 	columns = []
 	for direction, deck in decks.items():
 		grid = card_grid([[deck[pick] for pick in picks[:4]], [deck[pick] for pick in picks[4:]]], 2, DUSK_FELT)
-		columns.append((DESCRIPTIONS[direction][0], grid, solitaire_table(deck, DUSK_FELT)))
+		columns.append((DESCRIPTIONS[direction][0], grid, CARD_RENDER.solitaire_table(deck.named, DUSK_FELT)))
 	if stock_dir:
 		stock = {}
 		for rank_index, suit in picks:

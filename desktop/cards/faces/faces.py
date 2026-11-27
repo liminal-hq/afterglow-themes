@@ -310,9 +310,12 @@ def card_title(direction, rank_index, suit):
 	return "Afterglow card face, %s: %s of %s" % (direction, RANK_NAMES[rank_index], suit)
 
 
-def card_note(direction, resource):
-	return ("Proposal (%s), not shipped. Master in the bitmap's pixels (72 x 112), drawn at 4x; would replace cards.dll bitmap %d.\n"
-		"Written by desktop/cards/faces/gen_faces.py, never by hand.") % (direction, resource)
+def card_note(direction, resource, selected=False):
+	if selected:
+		return ("Master in the bitmap's pixels (72 x 112), drawn at 4x; replaces cards.dll bitmap %d.\n"
+			"Written by desktop/cards/faces/gen_faces.py, never by hand.") % resource
+	return ("Review only (%s), not shipped. Master in the bitmap's pixels (72 x 112), drawn at 4x; an alternative for cards.dll bitmap %d.\n"
+		"Written by desktop/cards/faces/gen_faces.py (its alternatives option), never by hand.") % (direction, resource)
 
 
 def vertical(gradient_id, top, bottom, stops):

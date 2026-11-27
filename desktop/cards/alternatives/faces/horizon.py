@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Card-face direction B, "Horizon": every face is a window onto the same horizon as the sunset back. The pips sit on a faint dawn sky with
+# Review-only card-face alternative B, "Horizon": every face is a window onto the same horizon as the sunset back. The pips sit on a faint dawn sky with
 # a gold horizon line, the ace is its suit rising as the sun over the dusk arcs, and the courts are night panels with a celestial emblem
 # above the water and its reflection below: the king the crowned sun, the queen the moon, the jack the evening star.
 #
@@ -14,7 +14,7 @@ import os
 import sys
 
 sys.dont_write_bytecode = True
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "faces"))
 import faces as F  # noqa: E402
 
 NAME = "horizon"

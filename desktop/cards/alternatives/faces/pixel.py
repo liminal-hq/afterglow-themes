@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Card-face direction C, "Pixel set E": the cards in the icon set's own language. Pips are hand-hinted pixel shapes in set E's materials
+# Review-only card-face alternative C, "Pixel set E": the cards in the icon set's own language. Pips are hand-hinted pixel shapes in set E's materials
 # with the keyline on their edge pixels and a lit step at the top left, as the hinted 16 px icons are; the courts are icon tiles on set E's
 # dusk plate, drawn with its Pen (crown and rising sun, crescent, evening star); the border is a stepped gold ring.
 #
@@ -13,7 +13,7 @@ import os
 import sys
 
 sys.dont_write_bytecode = True
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "faces"))
 import faces as F  # noqa: E402
 
 E = F.ICONS
