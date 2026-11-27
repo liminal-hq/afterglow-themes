@@ -1,0 +1,24 @@
+<!--
+Afterglow panel: Display Properties monitor
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+
+Drawn by desktop/icons/gen_panels.py at the bitmap's own size; render.py writes it as a 24-bit bitmap with magenta keyed out, 160 x 120. The icons are the Afterglow icon set's own
+drawings and the words are outlined from DejaVu Sans, so no font is needed to render it.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="120" viewBox="0 0 160 120">
+<title>Display Properties monitor</title>
+<defs></defs>
+<rect x="0" y="0" width="160" height="120" fill="#ff00ff"/>
+<rect x="64" y="98" width="32" height="12" fill="#b4bfce"/>
+<rect x="64" y="98" width="32" height="2" fill="#8d97a8"/>
+<rect x="40" y="108" width="80" height="9" rx="4" fill="#b4bfce"/>
+<rect x="40" y="108" width="80" height="2" rx="1" fill="#f4f4f8"/>
+<rect x="12" y="0" width="136" height="100" rx="7" fill="#e4e2ec"/>
+<rect x="12" y="0" width="136" height="2" rx="1" fill="#fbfaf6"/>
+<rect x="13" y="1" width="134" height="98" rx="6" fill="none" stroke="#66619b" stroke-width="2"/>
+<rect x="19" y="7" width="122" height="86" fill="#2a2840"/>
+<rect x="20" y="8" width="120" height="84" fill="#1a1828"/>
+<rect x="134" y="94" width="6" height="3" rx="1.5" fill="#ffaa40"/>
+</svg>

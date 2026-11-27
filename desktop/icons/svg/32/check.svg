@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): check, Check (32 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs></defs>
+<path d="M8 25 L19 36 L40 11" fill="none" stroke="#8c5e26" stroke-opacity="1" stroke-width="11.01" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 25 L19 36 L40 11" fill="none" stroke="#ffaa40" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

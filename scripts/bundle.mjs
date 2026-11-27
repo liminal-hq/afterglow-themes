@@ -310,6 +310,7 @@ function buildReactosDesktop() {
 		rmSync(join(icons, 'afterglow-arrow-preview.png'));
 		cpSync(join(desktop, 'icons', 'svg'), join(icons, 'svg'), { recursive: true });
 		cpSync(join(desktop, 'icons', 'arrow'), join(icons, 'arrow'), { recursive: true });
+		cpSync(join(desktop, 'icons', 'panels'), join(icons, 'panels'), { recursive: true });
 		for (const file of ['map.json', 'SHA256SUMS', 'SHA256SUMS.masters']) {
 			copyFileSync(join(desktop, 'icons', file), join(icons, file));
 		}

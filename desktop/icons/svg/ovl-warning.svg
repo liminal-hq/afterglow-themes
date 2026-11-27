@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): ovl-warning, Overlay, device problem (48 master profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><linearGradient id="e-ovl-warning-48-gffb55af7a53e" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb55a"/><stop offset="1" stop-color="#f7a53e"/></linearGradient><clipPath id="e-ovl-warning-48-c1"><path d="M8.223 29.399 C8.65 28.629 9.35 28.629 9.777 29.399 L18.223 44.601 C18.65 45.371 18.28 46 17.4 46 L0.6 46 C-0.28 46 -0.65 45.371 -0.223 44.601 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M8.223 29.399 C8.65 28.629 9.35 28.629 9.777 29.399 L18.223 44.601 C18.65 45.371 18.28 46 17.4 46 L0.6 46 C-0.28 46 -0.65 45.371 -0.223 44.601 Z" fill="url(#e-ovl-warning-48-gffb55af7a53e)" fill-rule="evenodd"/><g clip-path="url(#e-ovl-warning-48-c1)"><path d="M8.223 29.399 C8.65 28.629 9.35 28.629 9.777 29.399 L18.223 44.601 C18.65 45.371 18.28 46 17.4 46 L0.6 46 C-0.28 46 -0.65 45.371 -0.223 44.601 Z" fill="none" stroke="#8c5e26" stroke-width="3" stroke-opacity="1"/></g><path d="M8 34.6 C8 33.995 8.495 33.5 9.1 33.5 L9.1 33.5 C9.705 33.5 10.2 33.995 10.2 34.6 L10.2 39.4 C10.2 40.005 9.705 40.5 9.1 40.5 L9.1 40.5 C8.495 40.5 8 40.005 8 39.4 Z" fill="#583b1a" fill-rule="evenodd"/><path d="M7.7 43.2 a1.4 1.4 0 1 0 2.8 0 a1.4 1.4 0 1 0 -2.8 0 Z" fill="#583b1a" fill-rule="evenodd"/>
+</svg>

@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): play, Play (16 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="e-play-16-c1"><path d="M11 9 C11 7.35 12.158 6.695 13.572 7.543 L38.428 22.457 C39.842 23.305 39.842 24.695 38.428 25.543 L13.572 40.457 C12.158 41.305 11 40.65 11 39 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M11 9 C11 7.35 12.158 6.695 13.572 7.543 L38.428 22.457 C39.842 23.305 39.842 24.695 38.428 25.543 L13.572 40.457 C12.158 41.305 11 40.65 11 39 Z" fill="#ffaa40" fill-rule="evenodd"/><g clip-path="url(#e-play-16-c1)"><path d="M11 9 C11 7.35 12.158 6.695 13.572 7.543 L38.428 22.457 C39.842 23.305 39.842 24.695 38.428 25.543 L13.572 40.457 C12.158 41.305 11 40.65 11 39 Z" fill="none" stroke="#8c5e26" stroke-width="9" stroke-opacity="1"/></g>
+</svg>

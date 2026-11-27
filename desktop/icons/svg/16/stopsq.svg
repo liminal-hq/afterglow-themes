@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): stopsq, Stop (16 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="e-stopsq-16-c1"><path d="M8 12 C8 9.8 9.8 8 12 8 L36 8 C38.2 8 40 9.8 40 12 L40 36 C40 38.2 38.2 40 36 40 L12 40 C9.8 40 8 38.2 8 36 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M8 12 C8 9.8 9.8 8 12 8 L36 8 C38.2 8 40 9.8 40 12 L40 36 C40 38.2 38.2 40 36 40 L12 40 C9.8 40 8 38.2 8 36 Z" fill="#f43f5e" fill-rule="evenodd"/><g clip-path="url(#e-stopsq-16-c1)"><path d="M8 12 C8 9.8 9.8 8 12 8 L36 8 C38.2 8 40 9.8 40 12 L40 36 C40 38.2 38.2 40 36 40 L12 40 C9.8 40 8 38.2 8 36 Z" fill="none" stroke="#bd344d" stroke-width="9" stroke-opacity="1"/></g>
+</svg>

@@ -13,7 +13,9 @@
 		"tray": "a notification area icon in stobject.dll or the keyboard layout indicator",
 		"picture": "a picture a dialog shows: an icon group the dialog template names or its code loads",
 		"device-class": "the icon of a device class Device Manager lists, from its class installer",
-		"bitmap": "a bitmap of its own in the module, not an icon group or a strip cell: the art is in bitmaps"
+		"bitmap": "a bitmap of its own in the module, not an icon group or a strip cell: the art is in bitmaps",
+		"strip": "a cell of a toolbar strip or a small toolbar bitmap a program or comctl32.dll loads: the art is composed by strips.py (see bitmaps)",
+		"panel": "a larger picture of its own, drawn as a panel by gen_panels.py (see bitmaps)"
 	},
 	"icons": [
 		{
@@ -40,7 +42,23 @@
 				"module": "stobject.dll",
 				"group": 413,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "powercfg.cpl",
+					"group": 102,
+					"evidence": ["source", "binary"],
+					"name": "IDI_ACDC",
+					"use": "Power Options: plugged in"
+				},
+				{
+					"module": "powercfg.cpl",
+					"group": 121,
+					"evidence": ["source", "binary"],
+					"name": "IDI_BAT_NONE",
+					"use": "Power Meter: no battery"
+				}
+			]
 		},
 		{
 			"id": "addhw",
@@ -87,7 +105,16 @@
 				"module": "main.cpl",
 				"group": 500,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 63,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_TOOLS",
+					"use": "Applications Manager category: Tools"
+				}
+			]
 		},
 		{
 			"id": "appmanager",
@@ -100,7 +127,16 @@
 				"module": "rapps.exe",
 				"group": 10,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 61,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_OTHER",
+					"use": "Applications Manager category: Other"
+				}
+			]
 		},
 		{
 			"id": "archive",
@@ -113,7 +149,16 @@
 				"module": "cabview.dll",
 				"group": 1,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "zipfldr.dll",
+					"group": 1,
+					"evidence": ["source", "binary"],
+					"name": "IDI_ZIPFLDR",
+					"use": "File Types and Explorer: Compressed (zipped) Folder, .zip (DefaultIcon %MODULE%), and the extraction wizard"
+				}
+			]
 		},
 		{
 			"id": "arrow",
@@ -141,7 +186,16 @@
 				"module": "shell32.dll",
 				"group": 225,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 50,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_AUDIO",
+					"use": "Applications Manager category: Audio"
+				}
+			]
 		},
 		{
 			"id": "back",
@@ -181,7 +235,16 @@
 				"module": "stobject.dll",
 				"group": 400,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "powercfg.cpl",
+					"group": 115,
+					"evidence": ["source", "binary"],
+					"name": "IDI_BAT_DISCHRG_CRIT",
+					"use": "Power Meter: on battery, critical"
+				}
+			]
 		},
 		{
 			"id": "battery1",
@@ -194,7 +257,16 @@
 				"module": "stobject.dll",
 				"group": 401,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "powercfg.cpl",
+					"group": 116,
+					"evidence": ["source", "binary"],
+					"name": "IDI_BAT_DISCHRG_LOW",
+					"use": "Power Meter: on battery, low"
+				}
+			]
 		},
 		{
 			"id": "battery2",
@@ -220,7 +292,16 @@
 				"module": "stobject.dll",
 				"group": 403,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "powercfg.cpl",
+					"group": 117,
+					"evidence": ["source", "binary"],
+					"name": "IDI_BAT_DISCHRG_HALF",
+					"use": "Power Meter: on battery, half"
+				}
+			]
 		},
 		{
 			"id": "battery4",
@@ -233,7 +314,16 @@
 				"module": "stobject.dll",
 				"group": 404,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "powercfg.cpl",
+					"group": 118,
+					"evidence": ["source", "binary"],
+					"name": "IDI_BAT_DISCHRG_HIGH",
+					"use": "Power Meter: on battery, high"
+				}
+			]
 		},
 		{
 			"id": "battery5",
@@ -253,6 +343,27 @@
 					"group": 200,
 					"evidence": ["source", "binary"],
 					"use": "IDI_BATTERY"
+				},
+				{
+					"module": "powercfg.cpl",
+					"group": 101,
+					"evidence": ["source", "binary"],
+					"name": "IDI_DC",
+					"use": "Power Options: running on batteries"
+				},
+				{
+					"module": "powercfg.cpl",
+					"group": 119,
+					"evidence": ["source", "binary"],
+					"name": "IDI_BAT_DISCHRG_FULL",
+					"use": "Power Meter: on battery, full"
+				},
+				{
+					"module": "batt.dll",
+					"group": 2,
+					"evidence": ["source", "binary"],
+					"name": "IDI_BATTERY",
+					"use": "Device Manager: Batteries (battery.inf Icon 2)"
 				}
 			]
 		},
@@ -267,7 +378,16 @@
 				"module": "stobject.dll",
 				"group": 412,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "powercfg.cpl",
+					"group": 120,
+					"evidence": ["source", "binary"],
+					"name": "IDI_BAT_UNKNOWN",
+					"use": "Power Meter: battery state unknown"
+				}
+			]
 		},
 		{
 			"id": "bluetooth",
@@ -294,7 +414,30 @@
 				"module": "iexplore.exe",
 				"group": 1,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 58,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_INTERNET",
+					"use": "Applications Manager category: Internet and Network"
+				},
+				{
+					"module": "inetcpl.cpl",
+					"group": 1313,
+					"evidence": ["source", "binary"],
+					"name": "ICO_INTERNET",
+					"use": "Internet Options, Security: the Internet zone (urlmon ZICON_INTERNET)"
+				},
+				{
+					"module": "netcfgx.dll",
+					"group": 101,
+					"evidence": ["source", "binary"],
+					"name": "IDI_INTERNET",
+					"use": "TCP/IP, Alternate Configuration, and the network component sheets"
+				}
+			]
 		},
 		{
 			"id": "calc",
@@ -307,7 +450,16 @@
 				"module": "calc.exe",
 				"group": 110,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 55,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_FINANCE",
+					"use": "Applications Manager category: Finance"
+				}
+			]
 		},
 		{
 			"id": "cd",
@@ -320,7 +472,29 @@
 				"module": "shell32.dll",
 				"group": 12,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 51,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_CDROM",
+					"use": "Device Manager: DVD/CD-ROM drives (Icon -51)"
+				},
+				{
+					"module": "setupapi.dll",
+					"group": 54,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_NEEDSNAME3",
+					"use": "setupapi's optical drive picture"
+				},
+				{
+					"module": "comdlg32.dll",
+					"group": "CDROM",
+					"evidence": ["source", "binary"],
+					"use": "The Windows 3.1 file dialog's drive list: CD drive"
+				}
+			]
 		},
 		{
 			"id": "cd-disc",
@@ -330,6 +504,49 @@
 			"replaces": null,
 			"kind": null,
 			"resource": null
+		},
+		{
+			"id": "certificate",
+			"label": "Certificate",
+			"group": "Folder Options pictures",
+			"status": "named",
+			"replaces": "File Types: Security Certificate, .cer and .crt (cryptext.dll,-1)",
+			"kind": "file-type",
+			"resource": {
+				"module": "cryptext.dll",
+				"group": 1,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 40,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_SIGNED_DRV",
+					"use": "setupapi's signed driver picture"
+				},
+				{
+					"module": "inetcpl.cpl",
+					"group": 1314,
+					"evidence": ["source", "binary"],
+					"name": "ICO_CERTIFICATES",
+					"use": "Internet Options, Content: Certificates"
+				},
+				{
+					"module": "sysdm.cpl",
+					"group": 54,
+					"evidence": ["source", "binary"],
+					"name": "IDI_LICENSE",
+					"use": "System Properties: the licence dialog"
+				},
+				{
+					"module": "certmgr.exe",
+					"group": 100,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CERTMGR",
+					"use": "Certificate Manager"
+				}
+			]
 		},
 		{
 			"id": "charging0",
@@ -342,7 +559,16 @@
 				"module": "stobject.dll",
 				"group": 406,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "powercfg.cpl",
+					"group": 110,
+					"evidence": ["source", "binary"],
+					"name": "IDI_BAT_CHARGE_CRIT",
+					"use": "Power Meter: charging, critical"
+				}
+			]
 		},
 		{
 			"id": "charging1",
@@ -355,7 +581,16 @@
 				"module": "stobject.dll",
 				"group": 407,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "powercfg.cpl",
+					"group": 111,
+					"evidence": ["source", "binary"],
+					"name": "IDI_BAT_CHARGE_LOW",
+					"use": "Power Meter: charging, low"
+				}
+			]
 		},
 		{
 			"id": "charging2",
@@ -368,7 +603,16 @@
 				"module": "stobject.dll",
 				"group": 408,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "powercfg.cpl",
+					"group": 112,
+					"evidence": ["source", "binary"],
+					"name": "IDI_BAT_CHARGE_HALF",
+					"use": "Power Meter: charging, half"
+				}
+			]
 		},
 		{
 			"id": "charging3",
@@ -381,7 +625,16 @@
 				"module": "stobject.dll",
 				"group": 409,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "powercfg.cpl",
+					"group": 113,
+					"evidence": ["source", "binary"],
+					"name": "IDI_BAT_CHARGE_HIGH",
+					"use": "Power Meter: charging, high"
+				}
+			]
 		},
 		{
 			"id": "charging4",
@@ -394,7 +647,16 @@
 				"module": "stobject.dll",
 				"group": 410,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "powercfg.cpl",
+					"group": 114,
+					"evidence": ["source", "binary"],
+					"name": "IDI_BAT_CHARGE_FULL",
+					"use": "Power Meter: charging, full"
+				}
+			]
 		},
 		{
 			"id": "charmap",
@@ -408,6 +670,29 @@
 				"group": 100,
 				"evidence": ["source", "binary"]
 			}
+		},
+		{
+			"id": "check",
+			"label": "Check",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Applications Manager toolbar: Select all",
+			"kind": "picture",
+			"resource": {
+				"module": "rapps.exe",
+				"group": 21,
+				"evidence": ["source", "binary"],
+				"name": "IDI_CHECK_ALL"
+			},
+			"also": [
+				{
+					"module": "inetcpl.cpl",
+					"group": 4480,
+					"evidence": ["source", "binary"],
+					"name": "ICO_TRUSTED",
+					"use": "Internet Options, Security: Trusted sites"
+				}
+			]
 		},
 		{
 			"id": "clicklock",
@@ -487,6 +772,19 @@
 					"evidence": ["source", "binary"],
 					"name": "IDI_TERMINAL",
 					"use": "Program Manager's icon for a console program"
+				},
+				{
+					"module": "rapps.exe",
+					"group": 51,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_DEVEL",
+					"use": "Applications Manager category: Development"
+				},
+				{
+					"module": "ntvdm.exe",
+					"group": 1,
+					"evidence": ["source", "binary"],
+					"use": "NTVDM, the DOS console"
 				}
 			]
 		},
@@ -542,7 +840,16 @@
 				"bitmaps": [214, 215, 216, 217],
 				"cell": 6,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "eventvwr.exe",
+					"group": 21,
+					"evidence": ["source", "binary"],
+					"name": "IDI_COPY",
+					"use": "Event Properties: copy"
+				}
+			]
 		},
 		{
 			"id": "cut",
@@ -613,6 +920,64 @@
 			}
 		},
 		{
+			"id": "devcard",
+			"label": "Expansion card",
+			"group": "Devices",
+			"status": "named",
+			"replaces": "setupapi's expansion card picture",
+			"kind": "device-class",
+			"resource": {
+				"module": "setupapi.dll",
+				"group": 11,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SETUPAPI_CARD"
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 22,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_SATELLITE",
+					"use": "setupapi's satellite receiver picture"
+				},
+				{
+					"module": "setupapi.dll",
+					"group": 25,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_NEEDSNAME1",
+					"use": "setupapi's spare device picture"
+				},
+				{
+					"module": "setupapi.dll",
+					"group": 43,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_DEVICES",
+					"use": "setupapi's devices picture"
+				},
+				{
+					"module": "rapps.exe",
+					"group": 52,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_DRIVERS",
+					"use": "Applications Manager category: Drivers"
+				}
+			]
+		},
+		{
+			"id": "devdisplay",
+			"label": "Display adapter",
+			"group": "Devices",
+			"status": "named",
+			"replaces": "Display Properties, Settings, Advanced: the Adapter tab",
+			"kind": "picture",
+			"resource": {
+				"module": "deskadp.dll",
+				"group": 209,
+				"evidence": ["source", "binary"],
+				"name": "IDC_DESK_ADAPTER"
+			}
+		},
+		{
 			"id": "devmgmt",
 			"label": "Device Manager",
 			"group": "Programs",
@@ -640,6 +1005,57 @@
 			]
 		},
 		{
+			"id": "devmouse",
+			"label": "Mouse",
+			"group": "Devices",
+			"status": "named",
+			"replaces": "Device Manager: Mice and other pointing devices (Icon -2)",
+			"kind": "device-class",
+			"resource": {
+				"module": "setupapi.dll",
+				"group": 2,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SETUPAPI_MOUSE"
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 24,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_HID",
+					"use": "Device Manager: Human Interface Devices (Icon -24)"
+				}
+			]
+		},
+		{
+			"id": "devnetcard",
+			"label": "Network adapter",
+			"group": "Devices",
+			"status": "named",
+			"replaces": "Device Manager: Network adapters (Icon -5)",
+			"kind": "device-class",
+			"resource": {
+				"module": "setupapi.dll",
+				"group": 5,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SETUPAPI_NETCARD"
+			}
+		},
+		{
+			"id": "devunknown",
+			"label": "Unknown device",
+			"group": "Devices",
+			"status": "named",
+			"replaces": "Device Manager: Other devices, and any class without an icon (UNKNOWN_ICON_INDEX)",
+			"kind": "device-class",
+			"resource": {
+				"module": "setupapi.dll",
+				"group": 18,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SETUPAPI_UNKNOWN"
+			}
+		},
+		{
 			"id": "disconnect",
 			"label": "Disconnect network drive",
 			"group": "Explorer toolbar",
@@ -651,7 +1067,16 @@
 				"bitmaps": [214, 215, 216, 217],
 				"cell": 30,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "netplwiz.dll",
+					"group": 4400,
+					"evidence": ["source", "binary"],
+					"name": "IDI_DISCONNECT_NET_DRIVES",
+					"use": "Disconnect Network Drives"
+				}
+			]
 		},
 		{
 			"id": "display",
@@ -671,6 +1096,19 @@
 					"group": 100,
 					"evidence": ["source", "binary"],
 					"use": "theme-compatibility id"
+				},
+				{
+					"module": "themeui.dll",
+					"group": 1,
+					"evidence": ["source", "binary"],
+					"use": "File Types: Theme and Visual Style, .theme and .msstyles (themeui.dll,-1)"
+				},
+				{
+					"module": "rapps.exe",
+					"group": 65,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_THEMES",
+					"use": "Applications Manager category: Themes"
 				}
 			]
 		},
@@ -685,7 +1123,16 @@
 				"module": "shell32.dll",
 				"group": 1,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 60,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_OFFICE",
+					"use": "Applications Manager category: Office"
+				}
+			]
 		},
 		{
 			"id": "documents",
@@ -705,6 +1152,43 @@
 					"group": 133,
 					"evidence": ["source", "binary"],
 					"use": "Properties of several files at once (IDI_SHELL_MULTIPLE_FILES)"
+				}
+			]
+		},
+		{
+			"id": "dot",
+			"label": "Default item",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Text Services and Input Languages: the default layout's mark",
+			"kind": "picture",
+			"resource": {
+				"module": "input.dll",
+				"group": 1504,
+				"evidence": ["source", "binary"],
+				"name": "IDI_DOT"
+			}
+		},
+		{
+			"id": "down",
+			"label": "Down",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Hardware Profiles: move down",
+			"kind": "picture",
+			"resource": {
+				"module": "sysdm.cpl",
+				"group": 2501,
+				"evidence": ["source", "binary"],
+				"name": "IDI_DOWN"
+			},
+			"also": [
+				{
+					"module": "eventvwr.exe",
+					"group": 19,
+					"evidence": ["source", "binary"],
+					"name": "IDI_NEXT",
+					"use": "Event Properties: next event"
 				}
 			]
 		},
@@ -732,6 +1216,50 @@
 				"module": "user32.dll",
 				"group": 103,
 				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 161,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_ERROR",
+					"use": "setupapi's error picture"
+				},
+				{
+					"module": "comctl32.dll",
+					"group": 28,
+					"evidence": ["source", "binary"],
+					"name": "IDI_TT_ERROR_SM",
+					"use": "Balloon tips: error"
+				},
+				{
+					"module": "inetcpl.cpl",
+					"group": 4481,
+					"evidence": ["source", "binary"],
+					"name": "ICO_RESTRICTED",
+					"use": "Internet Options, Security: Restricted sites"
+				},
+				{
+					"module": "eventvwr.exe",
+					"group": 16,
+					"evidence": ["source", "binary"],
+					"name": "IDI_ERRORICON",
+					"use": "Event Viewer list: error"
+				}
+			]
+		},
+		{
+			"id": "eventlog",
+			"label": "Event log",
+			"group": "Folder Options pictures",
+			"status": "named",
+			"replaces": "File Types: Event log, .evt (eventvwr.exe,1), and every log in Event Viewer's tree",
+			"kind": "file-type",
+			"resource": {
+				"module": "eventvwr.exe",
+				"group": 11,
+				"evidence": ["source", "binary"],
+				"name": "IDI_EVENTLOG"
 			}
 		},
 		{
@@ -782,6 +1310,29 @@
 			]
 		},
 		{
+			"id": "fit",
+			"label": "Best fit",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
+		},
+		{
+			"id": "flask",
+			"label": "Science",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Applications Manager category: Science",
+			"kind": "program",
+			"resource": {
+				"module": "rapps.exe",
+				"group": 62,
+				"evidence": ["source", "binary"],
+				"name": "IDI_CAT_SCIENCE"
+			}
+		},
+		{
 			"id": "floppy",
 			"label": "Floppy",
 			"group": "Drives and folders",
@@ -792,7 +1343,29 @@
 				"module": "shell32.dll",
 				"group": 7,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 50,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_FLOPPY",
+					"use": "Device Manager: Floppy disk drives (Icon -50)"
+				},
+				{
+					"module": "setupapi.dll",
+					"group": 105,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_314FLOP",
+					"use": "setupapi's 3.5 in floppy picture"
+				},
+				{
+					"module": "comdlg32.dll",
+					"group": "FLOPPY",
+					"evidence": ["source", "binary"],
+					"use": "The Windows 3.1 file dialog's drive list: floppy"
+				}
+			]
 		},
 		{
 			"id": "floppy-disk",
@@ -802,6 +1375,90 @@
 			"replaces": null,
 			"kind": null,
 			"resource": null
+		},
+		{
+			"id": "fo-classic",
+			"label": "Use Windows classic folders",
+			"group": "Folder Options pictures",
+			"status": "named",
+			"replaces": "Folder Options, General: Use Windows classic folders",
+			"kind": "picture",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 183,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SHELL_CLASSIC_FOLDERS"
+			}
+		},
+		{
+			"id": "fo-doubleclick",
+			"label": "Double-click to open an item",
+			"group": "Folder Options pictures",
+			"status": "named",
+			"replaces": "Folder Options, General: Double-click to open an item",
+			"kind": "picture",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 187,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SHELL_DOUBLE_CLICK_TO_OPEN"
+			}
+		},
+		{
+			"id": "fo-newwindow",
+			"label": "Open each folder in its own window",
+			"group": "Folder Options pictures",
+			"status": "named",
+			"replaces": "Folder Options, General: Open each folder in its own window",
+			"kind": "picture",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 185,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SHELL_OPEN_IN_NEW_WINDOW"
+			}
+		},
+		{
+			"id": "fo-samewindow",
+			"label": "Open each folder in the same window",
+			"group": "Folder Options pictures",
+			"status": "named",
+			"replaces": "Folder Options, General: Open each folder in the same window",
+			"kind": "picture",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 184,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SHELL_OPEN_IN_SOME_WINDOW"
+			}
+		},
+		{
+			"id": "fo-singleclick",
+			"label": "Single-click to open an item",
+			"group": "Folder Options pictures",
+			"status": "named",
+			"replaces": "Folder Options, General: Single-click to open an item",
+			"kind": "picture",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 186,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SHELL_SINGLE_CLICK_TO_OPEN"
+			}
+		},
+		{
+			"id": "fo-tasks",
+			"label": "Show common tasks in folders",
+			"group": "Folder Options pictures",
+			"status": "named",
+			"replaces": "Folder Options, General: Show common tasks in folders",
+			"kind": "picture",
+			"resource": {
+				"module": "shell32.dll",
+				"group": 182,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SHELL_SHOW_COMMON_TASKS"
+			}
 		},
 		{
 			"id": "folder",
@@ -833,6 +1490,26 @@
 					"group": 2,
 					"evidence": ["source", "binary"],
 					"use": "NT Object Namespace: a directory object (IDI_NTOBJECTDIR)"
+				},
+				{
+					"module": "rapps.exe",
+					"group": 19,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CATEGORY",
+					"use": "Applications Manager tree: Installed and Available for installation"
+				},
+				{
+					"module": "eventvwr.exe",
+					"group": 12,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CLOSED_CATEGORY",
+					"use": "Event Viewer tree: a closed group"
+				},
+				{
+					"module": "comdlg32.dll",
+					"group": "FOLDER",
+					"evidence": ["source", "binary"],
+					"use": "The Windows 3.1 file dialog's folder list: a folder"
 				}
 			]
 		},
@@ -861,6 +1538,19 @@
 					"group": 3,
 					"evidence": ["source", "binary"],
 					"use": "NT Object Namespace: a directory object, open (IDI_NTOBJECTDIROPEN)"
+				},
+				{
+					"module": "eventvwr.exe",
+					"group": 13,
+					"evidence": ["source", "binary"],
+					"name": "IDI_OPENED_CATEGORY",
+					"use": "Event Viewer tree: an open group"
+				},
+				{
+					"module": "comdlg32.dll",
+					"group": "FOLDER2",
+					"evidence": ["source", "binary"],
+					"use": "The Windows 3.1 file dialog's folder list: an open folder"
 				}
 			]
 		},
@@ -918,6 +1608,13 @@
 					"group": 156,
 					"evidence": ["source", "binary"],
 					"use": "TrueType and OpenType font files"
+				},
+				{
+					"module": "fontview.exe",
+					"group": 800,
+					"evidence": ["source", "binary"],
+					"name": "IDI_TT",
+					"use": "Font Viewer"
 				}
 			]
 		},
@@ -1003,7 +1700,29 @@
 				"module": "shell32.dll",
 				"group": 9,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 53,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_HARDDRIVE",
+					"use": "Device Manager: Disk drives and Storage volumes (Icon -53)"
+				},
+				{
+					"module": "frag.exe",
+					"group": 114,
+					"evidence": ["source", "binary"],
+					"name": "IDI_ICON",
+					"use": "Fraginator"
+				},
+				{
+					"module": "comdlg32.dll",
+					"group": "HDISK",
+					"evidence": ["source", "binary"],
+					"use": "The Windows 3.1 file dialog's drive list: hard disk"
+				}
+			]
 		},
 		{
 			"id": "help",
@@ -1035,8 +1754,29 @@
 					"group": 3840,
 					"evidence": ["source", "binary"],
 					"use": "Help viewer"
+				},
+				{
+					"module": "hhctrl.ocx",
+					"group": 100,
+					"evidence": ["source", "binary"],
+					"name": "IDI_HHICON",
+					"use": "HTML Help window"
 				}
 			]
+		},
+		{
+			"id": "home",
+			"label": "Home",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Internet Options, General: Home page",
+			"kind": "picture",
+			"resource": {
+				"module": "inetcpl.cpl",
+				"group": 1316,
+				"evidence": ["source", "binary"],
+				"name": "ICO_HOME"
+			}
 		},
 		{
 			"id": "hotplug",
@@ -1056,6 +1796,13 @@
 					"group": 210,
 					"evidence": ["source", "binary"],
 					"use": "IDI_EXTRACT"
+				},
+				{
+					"module": "hotplug.dll",
+					"group": 100,
+					"evidence": ["source", "binary"],
+					"name": "IDI_HOTPLUG",
+					"use": "Safely Remove Hardware window"
 				}
 			]
 		},
@@ -1083,7 +1830,21 @@
 				"module": "ieframe.dll",
 				"group": 1401,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "url.dll",
+					"group": 102,
+					"evidence": ["source", "binary"],
+					"use": "File Types: Internet Shortcut, .url (url.dll,0), and the http and https protocols"
+				},
+				{
+					"module": "mshta.exe",
+					"group": 1,
+					"evidence": ["source", "binary"],
+					"use": "File Types: HTML Application, .hta (mshta.exe,-1), and the program"
+				}
+			]
 		},
 		{
 			"id": "hwprofile",
@@ -1150,7 +1911,37 @@
 				"module": "user32.dll",
 				"group": 104,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "comctl32.dll",
+					"group": 22,
+					"evidence": ["source", "binary"],
+					"name": "IDI_TT_INFO_SM",
+					"use": "Balloon tips: information"
+				},
+				{
+					"module": "shell32.dll",
+					"group": 1001,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SHELL_IDEA",
+					"use": "Drive properties: the tip"
+				},
+				{
+					"module": "eventvwr.exe",
+					"group": 14,
+					"evidence": ["source", "binary"],
+					"name": "IDI_INFORMATIONICON",
+					"use": "Event Viewer list: information"
+				},
+				{
+					"module": "servman.exe",
+					"group": 52,
+					"evidence": ["source", "binary"],
+					"name": "IDI_NODEPENDS",
+					"use": "Service properties, Dependencies: none"
+				}
+			]
 		},
 		{
 			"id": "inifile",
@@ -1163,6 +1954,20 @@
 				"module": "shell32.dll",
 				"group": 151,
 				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "install",
+			"label": "Install",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Applications Manager toolbar: Install",
+			"kind": "program",
+			"resource": {
+				"module": "rapps.exe",
+				"group": 12,
+				"evidence": ["source", "binary"],
+				"name": "IDI_INSTALL"
 			}
 		},
 		{
@@ -1222,8 +2027,43 @@
 					"group": 150,
 					"evidence": ["source", "binary"],
 					"use": "Keyboard Layout Switcher"
+				},
+				{
+					"module": "setupapi.dll",
+					"group": 3,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_KEYBOARD",
+					"use": "Device Manager: Keyboards (Icon -3)"
+				},
+				{
+					"module": "input.dll",
+					"group": 1503,
+					"evidence": ["source", "binary"],
+					"name": "IDI_KEYBOARD",
+					"use": "Text Services and Input Languages: each installed layout"
+				},
+				{
+					"module": "msutb.dll",
+					"group": 100,
+					"evidence": ["source", "binary"],
+					"name": "IDI_MAINICON",
+					"use": "Language bar"
 				}
 			]
+		},
+		{
+			"id": "key",
+			"label": "Key",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Event Viewer list: audit success",
+			"kind": "picture",
+			"resource": {
+				"module": "eventvwr.exe",
+				"group": 17,
+				"evidence": ["source", "binary"],
+				"name": "IDI_AUDITSUCCESSICON"
+			}
 		},
 		{
 			"id": "keyboard",
@@ -1243,6 +2083,13 @@
 					"group": 109,
 					"evidence": ["source", "binary"],
 					"use": "the Welcome box: press Ctrl+Alt+Delete (IDI_KEYBOARD)"
+				},
+				{
+					"module": "input.dll",
+					"group": 1502,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CPLSYSTEM",
+					"use": "Control Panel: Text Services and Input Languages"
 				}
 			]
 		},
@@ -1257,7 +2104,23 @@
 				"module": "netshell.dll",
 				"group": 105,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 6,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_NODE",
+					"use": "Device Manager and network components: network protocols (Icon -6)"
+				},
+				{
+					"module": "netcfgx.dll",
+					"group": 100,
+					"evidence": ["source", "binary"],
+					"name": "IDI_NETWORK",
+					"use": "TCP/IP properties"
+				}
+			]
 		},
 		{
 			"id": "lanboth",
@@ -1269,6 +2132,19 @@
 			"resource": {
 				"module": "netshell.dll",
 				"group": 109,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "landscape",
+			"label": "Landscape",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Print and Page Setup: landscape",
+			"kind": "picture",
+			"resource": {
+				"module": "comdlg32.dll",
+				"group": "PD32_LANDSCAPE",
 				"evidence": ["source", "binary"]
 			}
 		},
@@ -1322,7 +2198,23 @@
 				"module": "shell32.dll",
 				"group": 154,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 19,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_LEGACY_DRV",
+					"use": "Device Manager: Non-Plug and Play drivers (Icon -19)"
+				},
+				{
+					"module": "rapps.exe",
+					"group": 59,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_LIBS",
+					"use": "Applications Manager category: Libraries"
+				}
+			]
 		},
 		{
 			"id": "logoff",
@@ -1348,6 +2240,13 @@
 					"group": 21,
 					"evidence": ["source", "binary"],
 					"use": "the Log Off confirmation (IDI_LOGOFF)"
+				},
+				{
+					"module": "rapps.exe",
+					"group": 11,
+					"evidence": ["source", "binary"],
+					"name": "IDI_EXIT",
+					"use": "Applications Manager toolbar: Exit"
 				}
 			]
 		},
@@ -1379,6 +2278,155 @@
 			}
 		},
 		{
+			"id": "minus",
+			"label": "Remove",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
+		},
+		{
+			"id": "mk-l",
+			"label": "Mouse Keys, left selected",
+			"group": "Mouse Keys",
+			"status": "named",
+			"replaces": "Mouse Keys tray icon: left button selected",
+			"kind": "picture",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 442,
+				"evidence": ["source", "binary"],
+				"name": "IDI_MOUSE_L_ACTIVE"
+			}
+		},
+		{
+			"id": "mk-l-down",
+			"label": "Mouse Keys, left held",
+			"group": "Mouse Keys",
+			"status": "named",
+			"replaces": "Mouse Keys tray icon: left button held",
+			"kind": "picture",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 443,
+				"evidence": ["source", "binary"],
+				"name": "IDI_MOUSE_L_DOWN"
+			}
+		},
+		{
+			"id": "mk-l-r-down",
+			"label": "Mouse Keys, left selected, right held",
+			"group": "Mouse Keys",
+			"status": "named",
+			"replaces": "Mouse Keys tray icon: left selected, right held",
+			"kind": "picture",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 448,
+				"evidence": ["source", "binary"],
+				"name": "IDI_MOUSE_L_ACTIVE_R_DOWN"
+			}
+		},
+		{
+			"id": "mk-lr",
+			"label": "Mouse Keys, both selected",
+			"group": "Mouse Keys",
+			"status": "named",
+			"replaces": "Mouse Keys tray icon: both buttons selected",
+			"kind": "picture",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 446,
+				"evidence": ["source", "binary"],
+				"name": "IDI_MOUSE_LR_ACTIVE"
+			}
+		},
+		{
+			"id": "mk-lr-down",
+			"label": "Mouse Keys, both held",
+			"group": "Mouse Keys",
+			"status": "named",
+			"replaces": "Mouse Keys tray icon: both buttons held",
+			"kind": "picture",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 447,
+				"evidence": ["source", "binary"],
+				"name": "IDI_MOUSE_LR_DOWN"
+			}
+		},
+		{
+			"id": "mk-none",
+			"label": "Mouse Keys, no button",
+			"group": "Mouse Keys",
+			"status": "named",
+			"replaces": "Mouse Keys tray icon: no button selected",
+			"kind": "picture",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 441,
+				"evidence": ["source", "binary"],
+				"name": "IDI_MOUSE_NOBTN"
+			}
+		},
+		{
+			"id": "mk-off",
+			"label": "Mouse Keys off",
+			"group": "Mouse Keys",
+			"status": "named",
+			"replaces": "Mouse Keys tray icon: Mouse Keys off",
+			"kind": "picture",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 440,
+				"evidence": ["source", "binary"],
+				"name": "IDI_MOUSE_DISABLED"
+			}
+		},
+		{
+			"id": "mk-r",
+			"label": "Mouse Keys, right selected",
+			"group": "Mouse Keys",
+			"status": "named",
+			"replaces": "Mouse Keys tray icon: right button selected",
+			"kind": "picture",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 444,
+				"evidence": ["source", "binary"],
+				"name": "IDI_MOUSE_R_ACTIVE"
+			}
+		},
+		{
+			"id": "mk-r-down",
+			"label": "Mouse Keys, right held",
+			"group": "Mouse Keys",
+			"status": "named",
+			"replaces": "Mouse Keys tray icon: right button held",
+			"kind": "picture",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 445,
+				"evidence": ["source", "binary"],
+				"name": "IDI_MOUSE_R_DOWN"
+			}
+		},
+		{
+			"id": "mk-r-l-down",
+			"label": "Mouse Keys, right selected, left held",
+			"group": "Mouse Keys",
+			"status": "named",
+			"replaces": "Mouse Keys tray icon: right selected, left held",
+			"kind": "picture",
+			"resource": {
+				"module": "stobject.dll",
+				"group": 449,
+				"evidence": ["source", "binary"],
+				"name": "IDI_MOUSE_R_ACTIVE_L_DOWN"
+			}
+		},
+		{
 			"id": "mmc",
 			"label": "Management Console",
 			"group": "Programs",
@@ -1397,10 +2445,24 @@
 			"id": "monitor",
 			"label": "Monitor",
 			"group": "Desktop and shell",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Device Manager: Display adapters and Monitors (Icon -1)",
+			"kind": "device-class",
+			"resource": {
+				"module": "setupapi.dll",
+				"group": 1,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SETUPAPI_DISP_ADAPT"
+			},
+			"also": [
+				{
+					"module": "deskmon.dll",
+					"group": 208,
+					"evidence": ["source", "binary"],
+					"name": "IDC_MONITORICO",
+					"use": "Display Properties, Settings, Advanced: the Monitor tab"
+				}
+			]
 		},
 		{
 			"id": "mouse",
@@ -1596,6 +2658,13 @@
 					"group": 181,
 					"evidence": ["source", "binary"],
 					"use": "the My Computer zone at the right of an Explorer window's status bar (IDI_SHELL_COMPUTER_DESKTOP)"
+				},
+				{
+					"module": "setupapi.dll",
+					"group": 27,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_MYCOMPUTER",
+					"use": "Device Manager: Computer, and the HAL (Icon -27)"
 				}
 			]
 		},
@@ -1610,7 +2679,16 @@
 				"module": "shell32.dll",
 				"group": 235,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "mydocs.dll",
+					"group": 100,
+					"evidence": ["source", "binary"],
+					"name": "IDR_MYDOCS",
+					"use": "My Documents drop target (Send To)"
+				}
+			]
 		},
 		{
 			"id": "mymusic",
@@ -1683,7 +2761,22 @@
 				"module": "shell32.dll",
 				"group": 10,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 52,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_NETDRIVE",
+					"use": "setupapi's network drive picture"
+				},
+				{
+					"module": "comdlg32.dll",
+					"group": "NETWORK",
+					"evidence": ["source", "binary"],
+					"use": "The Windows 3.1 file dialog's drive list: network drive"
+				}
+			]
 		},
 		{
 			"id": "netdriveoff",
@@ -1727,6 +2820,15 @@
 			]
 		},
 		{
+			"id": "newfolder",
+			"label": "New folder",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
+		},
+		{
 			"id": "none",
 			"label": "None",
 			"group": "Dialog pictures",
@@ -1752,7 +2854,37 @@
 				"group": 5,
 				"evidence": ["source", "binary"],
 				"name": "IDI_NTOBJECTDEVICE"
-			}
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 9,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_DRV_CONTROL",
+					"use": "Device Manager: IDE and floppy controllers (Icon -9)"
+				},
+				{
+					"module": "setupapi.dll",
+					"group": 10,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_POWER",
+					"use": "Device Manager: SCSI and RAID controllers (Icon -10)"
+				},
+				{
+					"module": "setupapi.dll",
+					"group": 28,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_PROCESSOR",
+					"use": "Device Manager: Processors"
+				},
+				{
+					"module": "servman.exe",
+					"group": 54,
+					"evidence": ["source", "binary"],
+					"name": "IDI_DRIVER",
+					"use": "Service properties, Dependencies: a driver"
+				}
+			]
 		},
 		{
 			"id": "ntnamespace",
@@ -1794,7 +2926,23 @@
 				"group": 6,
 				"evidence": ["source", "binary"],
 				"name": "IDI_NTOBJECTPORT"
-			}
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 23,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_PORTS",
+					"use": "Device Manager: Ports (COM and LPT) (Icon -23)"
+				},
+				{
+					"module": "setupapi.dll",
+					"group": 26,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_NEEDSNAME2",
+					"use": "setupapi's cable picture"
+				}
+			]
 		},
 		{
 			"id": "openglcfg",
@@ -1824,6 +2972,48 @@
 			}
 		},
 		{
+			"id": "ovl-error",
+			"label": "Overlay, device disabled",
+			"group": "Devices",
+			"status": "named",
+			"replaces": "Device Manager: the overlay on a disabled device (overlay 2)",
+			"kind": "device-class",
+			"resource": {
+				"module": "setupapi.dll",
+				"group": 501,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SETUPAPI_ERR_OVERLAY"
+			}
+		},
+		{
+			"id": "ovl-info",
+			"label": "Overlay, device note",
+			"group": "Devices",
+			"status": "named",
+			"replaces": "Device Manager: the overlay on a device with a note (overlay 3)",
+			"kind": "device-class",
+			"resource": {
+				"module": "setupapi.dll",
+				"group": 502,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SETUPAPI_INFO_OVERLAY"
+			}
+		},
+		{
+			"id": "ovl-warning",
+			"label": "Overlay, device problem",
+			"group": "Devices",
+			"status": "named",
+			"replaces": "Device Manager: the overlay on a device with a problem (overlay 1)",
+			"kind": "device-class",
+			"resource": {
+				"module": "setupapi.dll",
+				"group": 500,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SETUPAPI_WARN_OVERLAY"
+			}
+		},
+		{
 			"id": "paint",
 			"label": "Paint",
 			"group": "Programs",
@@ -1834,7 +3024,16 @@
 				"module": "mspaint.exe",
 				"group": 500,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 57,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_GRAPHICS",
+					"use": "Applications Manager category: Graphics"
+				}
+			]
 		},
 		{
 			"id": "paste",
@@ -1847,6 +3046,60 @@
 				"module": "browseui.dll",
 				"bitmaps": [214, 215, 216, 217],
 				"cell": 7,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "clipbrd.exe",
+					"group": 101,
+					"evidence": ["source", "binary"],
+					"name": "CLPFILE_ICON",
+					"use": "File Types: Clipboard file, .clp (clipbrd.exe,1)"
+				}
+			]
+		},
+		{
+			"id": "pause",
+			"label": "Pause",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
+		},
+		{
+			"id": "play",
+			"label": "Play",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Sounds and Audio, Sounds: the play button",
+			"kind": "picture",
+			"resource": {
+				"module": "mmsys.cpl",
+				"group": 3005,
+				"evidence": ["source", "binary"],
+				"name": "IDI_PLAY_ICON"
+			}
+		},
+		{
+			"id": "plus",
+			"label": "Add",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
+		},
+		{
+			"id": "portrait",
+			"label": "Portrait",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Print and Page Setup: portrait",
+			"kind": "picture",
+			"resource": {
+				"module": "comdlg32.dll",
+				"group": "PD32_PORTRAIT",
 				"evidence": ["source", "binary"]
 			}
 		},
@@ -1862,6 +3115,29 @@
 				"group": 100,
 				"evidence": ["source", "binary"]
 			}
+		},
+		{
+			"id": "printer",
+			"label": "Printer",
+			"group": "Devices",
+			"status": "named",
+			"replaces": "setupapi's printer class picture",
+			"kind": "device-class",
+			"resource": {
+				"module": "setupapi.dll",
+				"group": 4,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SETUPAPI_PRINTER"
+			},
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 17,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SHELL_PRINTER",
+					"use": "Printers folder: a printer (CPrinterFolder)"
+				}
+			]
 		},
 		{
 			"id": "printers",
@@ -1889,6 +3165,15 @@
 					"use": "Printers applet"
 				}
 			]
+		},
+		{
+			"id": "printpreview",
+			"label": "Print preview",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
 		},
 		{
 			"id": "progman",
@@ -1934,6 +3219,27 @@
 					"group": 138,
 					"evidence": ["source", "binary"],
 					"use": "Task Manager, Applications tab: a window with no icon, small (IDI_WINDOWSM)"
+				},
+				{
+					"module": "appwiz.cpl",
+					"group": 1505,
+					"evidence": ["source", "binary"],
+					"name": "IDI_APPINETICO",
+					"use": "Create Shortcut wizard"
+				},
+				{
+					"module": "gdihv.exe",
+					"group": 2000,
+					"evidence": ["source", "binary"],
+					"name": "IDI_MAIN",
+					"use": "GDI Handle Viewer"
+				},
+				{
+					"module": "rundll32.exe",
+					"group": 100,
+					"evidence": ["source", "binary"],
+					"name": "IDI_MAIN",
+					"use": "rundll32"
 				}
 			]
 		},
@@ -1970,6 +3276,13 @@
 					"evidence": ["source", "binary"],
 					"name": "IDI_GROUP_COMMON_ICON",
 					"use": "Program Manager: a common group"
+				},
+				{
+					"module": "rapps.exe",
+					"group": 17,
+					"evidence": ["source", "binary"],
+					"name": "IDI_APPS",
+					"use": "Applications Manager tree: Applications"
 				}
 			]
 		},
@@ -1984,7 +3297,16 @@
 				"module": "shell32.dll",
 				"group": 20,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "shell32.dll",
+					"group": 37,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SHELL_PROGRAMS_FOLDER2",
+					"use": "Folder Options, View: the Folder views picture"
+				}
+			]
 		},
 		{
 			"id": "properties",
@@ -1998,7 +3320,16 @@
 				"bitmaps": [214, 215, 216, 217],
 				"cell": 15,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 15,
+					"evidence": ["source", "binary"],
+					"name": "IDI_MODIFY",
+					"use": "Applications Manager toolbar: Modify"
+				}
+			]
 		},
 		{
 			"id": "question",
@@ -2017,10 +3348,15 @@
 			"id": "ram-module",
 			"label": "RAM module",
 			"group": "Drives and folders",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "setupapi's chip picture",
+			"kind": "device-class",
+			"resource": {
+				"module": "setupapi.dll",
+				"group": 159,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SETUPAPI_CHIP"
+			}
 		},
 		{
 			"id": "ramdisk",
@@ -2098,7 +3434,16 @@
 			"status": "named",
 			"replaces": "The Read Me desktop shortcut, once the shortcut names an icon (it shows the .txt icon today)",
 			"kind": "start-menu",
-			"resource": null
+			"resource": null,
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 53,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_EDU",
+					"use": "Applications Manager category: Education"
+				}
+			]
 		},
 		{
 			"id": "recent",
@@ -2111,7 +3456,16 @@
 				"module": "shell32.dll",
 				"group": 21,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "inetcpl.cpl",
+					"group": 1315,
+					"evidence": ["source", "binary"],
+					"name": "ICO_HISTORY",
+					"use": "Internet Options, General: History"
+				}
+			]
 		},
 		{
 			"id": "recycle",
@@ -2132,6 +3486,13 @@
 					"group": 108,
 					"evidence": ["source", "binary"],
 					"use": "Customize Classic Start Menu: Clear (IDI_RECYCLEBIN)"
+				},
+				{
+					"module": "cleanmgr.exe",
+					"group": 100,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CLEANMGR",
+					"use": "Disk Cleanup"
 				}
 			]
 		},
@@ -2154,6 +3515,38 @@
 					"group": 142,
 					"evidence": ["source", "binary"],
 					"use": "the confirmation before a file goes to the Recycle Bin (ASK_TRASH_*, IDI_SHELL_TRASH_FILE)"
+				}
+			]
+		},
+		{
+			"id": "redo",
+			"label": "Redo",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
+		},
+		{
+			"id": "refresh",
+			"label": "Refresh",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Applications Manager toolbar: Refresh",
+			"kind": "picture",
+			"resource": {
+				"module": "rapps.exe",
+				"group": 16,
+				"evidence": ["source", "binary"],
+				"name": "IDI_REFRESH"
+			},
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 20,
+					"evidence": ["source", "binary"],
+					"name": "IDI_UPDATE_DB",
+					"use": "Applications Manager toolbar: Update database"
 				}
 			]
 		},
@@ -2191,7 +3584,16 @@
 				"module": "regedit.exe",
 				"group": 100,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "regedt32.exe",
+					"group": 101,
+					"evidence": ["source", "binary"],
+					"name": "IDI_REGEDIT",
+					"use": "regedt32 (starts Registry Editor)"
+				}
+			]
 		},
 		{
 			"id": "regfile",
@@ -2258,7 +3660,34 @@
 				"module": "shell32.dll",
 				"group": 8,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 21,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_REM_DRIVE",
+					"use": "setupapi's removable drive picture"
+				}
+			]
+		},
+		{
+			"id": "rotccw",
+			"label": "Rotate anticlockwise",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
+		},
+		{
+			"id": "rotcw",
+			"label": "Rotate clockwise",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
 		},
 		{
 			"id": "rtf",
@@ -2459,6 +3888,13 @@
 					"cell": 17,
 					"evidence": ["source", "binary"],
 					"use": "Search"
+				},
+				{
+					"module": "hdwwiz.cpl",
+					"group": 103,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SEARCHICON",
+					"use": "Add Hardware wizard: searching"
 				}
 			]
 		},
@@ -2486,7 +3922,30 @@
 				"module": "shell32.dll",
 				"group": 330,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 14,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETTINGS",
+					"use": "Applications Manager toolbar: Settings"
+				},
+				{
+					"module": "rapps.exe",
+					"group": 54,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_ENGINEER",
+					"use": "Applications Manager category: Engineering"
+				},
+				{
+					"module": "servman.exe",
+					"group": 53,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SERVICE",
+					"use": "Service properties, Dependencies: a service"
+				}
+			]
 		},
 		{
 			"id": "shield",
@@ -2499,7 +3958,23 @@
 				"module": "msgina.dll",
 				"group": 115,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "winlogon.exe",
+					"group": 4,
+					"evidence": ["source", "binary"],
+					"name": "IDI_WINLOGON",
+					"use": "Winlogon's dialogs"
+				},
+				{
+					"module": "eventvwr.exe",
+					"group": 18,
+					"evidence": ["source", "binary"],
+					"name": "IDI_AUDITFAILUREICON",
+					"use": "Event Viewer list: audit failure"
+				}
+			]
 		},
 		{
 			"id": "showdesk",
@@ -2547,6 +4022,20 @@
 			]
 		},
 		{
+			"id": "sleep",
+			"label": "Hibernate",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Power Options, Hibernate",
+			"kind": "picture",
+			"resource": {
+				"module": "powercfg.cpl",
+				"group": 104,
+				"evidence": ["source", "binary"],
+				"name": "IDI_HIBERNATE"
+			}
+		},
+		{
 			"id": "snapshot",
 			"label": "SnapShot",
 			"group": "Programs",
@@ -2584,7 +4073,25 @@
 				"module": "sol.exe",
 				"group": 100,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 56,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_GAMES",
+					"use": "Applications Manager category: Games and Fun"
+				}
+			]
+		},
+		{
+			"id": "sortname",
+			"label": "Sort by name",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
 		},
 		{
 			"id": "sound",
@@ -2604,6 +4111,13 @@
 					"group": 301,
 					"evidence": ["source", "binary"],
 					"use": "Volume Control"
+				},
+				{
+					"module": "mmsys.cpl",
+					"group": 4366,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SOUND_SECTION",
+					"use": "Sounds and Audio, Sounds: a program's events"
 				}
 			]
 		},
@@ -2632,7 +4146,16 @@
 				"bitmaps": [214, 215, 216, 217],
 				"cell": 2,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 22,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SELECTEDFORINST",
+					"use": "Applications Manager tree: Selected for installation"
+				}
+			]
 		},
 		{
 			"id": "startmenu",
@@ -2654,6 +4177,20 @@
 					"use": "Taskbar and Start Menu Properties, Start Menu tab (IDI_STARTMENU)"
 				}
 			]
+		},
+		{
+			"id": "stopsq",
+			"label": "Stop",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Sounds and Audio, Sounds: the stop button",
+			"kind": "picture",
+			"resource": {
+				"module": "mmsys.cpl",
+				"group": 3006,
+				"evidence": ["source", "binary"],
+				"name": "IDI_STOP_ICON"
+			}
 		},
 		{
 			"id": "system",
@@ -2746,10 +4283,31 @@
 			"id": "trynet",
 			"label": "Network",
 			"group": "System tray",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Network components: clients and services (Icon -7)",
+			"kind": "device-class",
+			"resource": {
+				"module": "setupapi.dll",
+				"group": 7,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SETUPAPI_COMPUTER"
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 8,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_SHCOMPUTER",
+					"use": "setupapi's shared computer picture"
+				},
+				{
+					"module": "netid.dll",
+					"group": 101,
+					"evidence": ["source", "binary"],
+					"name": "IDI_COMPNAME",
+					"use": "System Properties, Computer Name"
+				}
+			]
 		},
 		{
 			"id": "undo",
@@ -2766,6 +4324,20 @@
 			}
 		},
 		{
+			"id": "uninstall",
+			"label": "Uninstall",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "Applications Manager toolbar: Uninstall",
+			"kind": "program",
+			"resource": {
+				"module": "rapps.exe",
+				"group": 13,
+				"evidence": ["source", "binary"],
+				"name": "IDI_UNINSTALL"
+			}
+		},
+		{
 			"id": "up",
 			"label": "Up",
 			"group": "Explorer toolbar",
@@ -2777,16 +4349,37 @@
 				"bitmaps": [214, 215, 216, 217],
 				"cell": 28,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "sysdm.cpl",
+					"group": 2500,
+					"evidence": ["source", "binary"],
+					"name": "IDI_UP",
+					"use": "Hardware Profiles: move up"
+				},
+				{
+					"module": "eventvwr.exe",
+					"group": 20,
+					"evidence": ["source", "binary"],
+					"name": "IDI_PREV",
+					"use": "Event Properties: previous event"
+				}
+			]
 		},
 		{
 			"id": "usb-key",
 			"label": "USB key",
 			"group": "Drives and folders",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "Device Manager: Universal Serial Bus controllers (Icon -20)",
+			"kind": "device-class",
+			"resource": {
+				"module": "setupapi.dll",
+				"group": 20,
+				"evidence": ["source", "binary"],
+				"name": "IDI_SETUPAPI_USB"
+			}
 		},
 		{
 			"id": "user",
@@ -2800,7 +4393,16 @@
 				"group": 41,
 				"evidence": ["source", "binary"],
 				"name": "IDI_USER"
-			}
+			},
+			"also": [
+				{
+					"module": "userenv.dll",
+					"group": 1,
+					"evidence": ["source", "binary"],
+					"name": "IDI_USERENV",
+					"use": "the profile error dialog"
+				}
+			]
 		},
 		{
 			"id": "user-locked",
@@ -2867,7 +4469,43 @@
 				"module": "shell32.dll",
 				"group": 224,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "rapps.exe",
+					"group": 64,
+					"evidence": ["source", "binary"],
+					"name": "IDI_CAT_VIDEO",
+					"use": "Applications Manager category: Video"
+				}
+			]
+		},
+		{
+			"id": "view-large",
+			"label": "Large icons",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
+		},
+		{
+			"id": "view-list",
+			"label": "List",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
+		},
+		{
+			"id": "view-small",
+			"label": "Small icons",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
 		},
 		{
 			"id": "views",
@@ -2894,7 +4532,30 @@
 				"module": "stobject.dll",
 				"group": 230,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "mmsys.cpl",
+					"group": 4367,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SOUND_ASSIGNED",
+					"use": "Sounds and Audio, Sounds: an event with a sound"
+				},
+				{
+					"module": "sndvol32.exe",
+					"group": 302,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SPEAKER_LEFT",
+					"use": "Volume Control: the left speaker of the balance"
+				},
+				{
+					"module": "sndvol32.exe",
+					"group": 303,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SPEAKER_RIGHT",
+					"use": "Volume Control: the right speaker of the balance"
+				}
+			]
 		},
 		{
 			"id": "volumemute",
@@ -2907,7 +4568,23 @@
 				"module": "stobject.dll",
 				"group": 231,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "mmsys.cpl",
+					"group": 4390,
+					"evidence": ["source", "binary"],
+					"name": "IDI_NO_HW",
+					"use": "Sounds and Audio, Volume: no audio device"
+				},
+				{
+					"module": "mmsys.cpl",
+					"group": 4393,
+					"evidence": ["source", "binary"],
+					"name": "IDI_MUTED_ICON",
+					"use": "Sounds and Audio, Volume: muted"
+				}
+			]
 		},
 		{
 			"id": "warning",
@@ -2920,7 +4597,44 @@
 				"module": "user32.dll",
 				"group": 101,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "setupapi.dll",
+					"group": 42,
+					"evidence": ["source", "binary"],
+					"name": "IDI_SETUPAPI_WARNING",
+					"use": "setupapi's warning picture"
+				},
+				{
+					"module": "comctl32.dll",
+					"group": 25,
+					"evidence": ["source", "binary"],
+					"name": "IDI_TT_WARN_SM",
+					"use": "Balloon tips: warning"
+				},
+				{
+					"module": "hdwwiz.cpl",
+					"group": 102,
+					"evidence": ["source", "binary"],
+					"name": "IDI_WARNINGICON",
+					"use": "Add Hardware wizard: a problem"
+				},
+				{
+					"module": "netid.dll",
+					"group": 102,
+					"evidence": ["source", "binary"],
+					"name": "IDI_WARNINGICO",
+					"use": "System Properties, Computer Name: restart needed"
+				},
+				{
+					"module": "eventvwr.exe",
+					"group": 15,
+					"evidence": ["source", "binary"],
+					"name": "IDI_WARNINGICON",
+					"use": "Event Viewer list: warning"
+				}
+			]
 		},
 		{
 			"id": "wined3dcfg",
@@ -2981,7 +4695,77 @@
 				"module": "wusa.exe",
 				"group": 101,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "msiexec.exe",
+					"group": 1,
+					"evidence": ["source", "binary"],
+					"use": "File Types: Windows Installer package and patch, .msi and .msp (msiexec.exe), and the program"
+				},
+				{
+					"module": "rapps.exe",
+					"group": 18,
+					"evidence": ["source", "binary"],
+					"name": "IDI_APPUPD",
+					"use": "Applications Manager tree: Updates"
+				},
+				{
+					"module": "iernonce.dll",
+					"group": 1,
+					"evidence": ["source", "binary"],
+					"name": "IDI_ICON",
+					"use": "RunOnceEx progress dialog"
+				},
+				{
+					"module": "runonce.exe",
+					"group": 10,
+					"evidence": ["source", "binary"],
+					"name": "IDI_ICON",
+					"use": "RunOnce progress dialog"
+				}
+			]
+		},
+		{
+			"id": "xmlfile",
+			"label": "XML document",
+			"group": "Folder Options pictures",
+			"status": "named",
+			"replaces": "File Types: XML Document, .xml (msxml3.dll,0)",
+			"kind": "file-type",
+			"resource": {
+				"module": "msxml3.dll",
+				"group": 128,
+				"evidence": ["source", "binary"],
+				"name": "IDI_XML_FILE"
+			},
+			"also": [
+				{
+					"module": "msxml3.dll",
+					"group": 129,
+					"evidence": ["source", "binary"],
+					"name": "IDI_XSL_FILE",
+					"use": "File Types: XSL Stylesheet, .xsl (msxml3.dll,1)"
+				}
+			]
+		},
+		{
+			"id": "zoomin",
+			"label": "Zoom in",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
+		},
+		{
+			"id": "zoomout",
+			"label": "Zoom out",
+			"group": "Toolbar glyphs",
+			"status": "named",
+			"replaces": "toolbar strip cells (see bitmaps: the strips that list this glyph in strips.py)",
+			"kind": "strip",
+			"resource": null
 		}
 	],
 	"bitmaps": [
@@ -3788,6 +5572,906 @@
 			"bits": 32,
 			"evidence": ["source", "binary"],
 			"use": "the Go button beside the Explorer address bar, under the pointer (Afterglow draws no hot state)"
+		},
+		{
+			"id": "devmgr-root",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/devmgr-root.bmp",
+			"module": "devmgr.dll",
+			"resource": 21,
+			"name": "IDB_ROOT_IMAGE",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Device Manager: the computer at the root of the tree (added with no mask, over the white tree)"
+		},
+		{
+			"id": "devmgr-toolbar",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/devmgr-toolbar.bmp",
+			"module": "devmgr.dll",
+			"resource": 22,
+			"name": "IDB_TOOLBAR",
+			"size": [96, 16],
+			"bits": 32,
+			"evidence": ["source", "binary"],
+			"use": "Device Manager toolbar: Properties, Scan for hardware changes, Enable, Disable, Update driver, Uninstall"
+		},
+		{
+			"id": "tb-autohide",
+			"file": "desktop/icons/panels/tb-autohide.svg",
+			"bitmap": "bmp/tb-autohide.bmp",
+			"module": "explorer.exe",
+			"resource": 145,
+			"name": "IDB_TASKBARPROP_AUTOHIDE",
+			"size": [336, 35],
+			"bits": 4,
+			"evidence": ["source", "binary"],
+			"use": "Taskbar Properties preview: auto-hide"
+		},
+		{
+			"id": "tb-lock-group-ql",
+			"file": "desktop/icons/panels/tb-lock-group-ql.svg",
+			"bitmap": "bmp/tb-lock-group-ql.bmp",
+			"module": "explorer.exe",
+			"resource": 146,
+			"name": "IDB_TASKBARPROP_LOCK_GROUP_QL",
+			"size": [336, 35],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Taskbar Properties preview: locked, grouped, Quick Launch"
+		},
+		{
+			"id": "tb-nolock-group-ql",
+			"file": "desktop/icons/panels/tb-nolock-group-ql.svg",
+			"bitmap": "bmp/tb-nolock-group-ql.bmp",
+			"module": "explorer.exe",
+			"resource": 147,
+			"name": "IDB_TASKBARPROP_NOLOCK_GROUP_QL",
+			"size": [336, 35],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Taskbar Properties preview: unlocked, grouped, Quick Launch"
+		},
+		{
+			"id": "tb-lock-nogroup-ql",
+			"file": "desktop/icons/panels/tb-lock-nogroup-ql.svg",
+			"bitmap": "bmp/tb-lock-nogroup-ql.bmp",
+			"module": "explorer.exe",
+			"resource": 148,
+			"name": "IDB_TASKBARPROP_LOCK_NOGROUP_QL",
+			"size": [336, 35],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Taskbar Properties preview: locked, not grouped, Quick Launch"
+		},
+		{
+			"id": "tb-nolock-nogroup-ql",
+			"file": "desktop/icons/panels/tb-nolock-nogroup-ql.svg",
+			"bitmap": "bmp/tb-nolock-nogroup-ql.bmp",
+			"module": "explorer.exe",
+			"resource": 149,
+			"name": "IDB_TASKBARPROP_NOLOCK_NOGROUP_QL",
+			"size": [336, 35],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Taskbar Properties preview: unlocked, not grouped, Quick Launch"
+		},
+		{
+			"id": "tb-lock-group-noql",
+			"file": "desktop/icons/panels/tb-lock-group-noql.svg",
+			"bitmap": "bmp/tb-lock-group-noql.bmp",
+			"module": "explorer.exe",
+			"resource": 150,
+			"name": "IDB_TASKBARPROP_LOCK_GROUP_NOQL",
+			"size": [336, 35],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Taskbar Properties preview: locked, grouped"
+		},
+		{
+			"id": "tb-nolock-group-noql",
+			"file": "desktop/icons/panels/tb-nolock-group-noql.svg",
+			"bitmap": "bmp/tb-nolock-group-noql.bmp",
+			"module": "explorer.exe",
+			"resource": 151,
+			"name": "IDB_TASKBARPROP_NOLOCK_GROUP_NOQL",
+			"size": [336, 35],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Taskbar Properties preview: unlocked, grouped"
+		},
+		{
+			"id": "tb-lock-nogroup-noql",
+			"file": "desktop/icons/panels/tb-lock-nogroup-noql.svg",
+			"bitmap": "bmp/tb-lock-nogroup-noql.bmp",
+			"module": "explorer.exe",
+			"resource": 152,
+			"name": "IDB_TASKBARPROP_LOCK_NOGROUP_NOQL",
+			"size": [336, 35],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Taskbar Properties preview: locked, not grouped"
+		},
+		{
+			"id": "tb-nolock-nogroup-noql",
+			"file": "desktop/icons/panels/tb-nolock-nogroup-noql.svg",
+			"bitmap": "bmp/tb-nolock-nogroup-noql.bmp",
+			"module": "explorer.exe",
+			"resource": 153,
+			"name": "IDB_TASKBARPROP_NOLOCK_NOGROUP_NOQL",
+			"size": [336, 35],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Taskbar Properties preview: unlocked, not grouped"
+		},
+		{
+			"id": "tray-show-seconds-nodesk",
+			"file": "desktop/icons/panels/tray-show-seconds-nodesk.svg",
+			"bitmap": "bmp/tray-show-seconds-nodesk.bmp",
+			"module": "explorer.exe",
+			"resource": 154,
+			"name": "IDB_SYSTRAYPROP_SHOW_SECONDS_NODESK",
+			"size": [336, 35],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Notification area preview: icons, clock with seconds"
+		},
+		{
+			"id": "tray-hide-seconds-nodesk",
+			"file": "desktop/icons/panels/tray-hide-seconds-nodesk.svg",
+			"bitmap": "bmp/tray-hide-seconds-nodesk.bmp",
+			"module": "explorer.exe",
+			"resource": 155,
+			"name": "IDB_SYSTRAYPROP_HIDE_SECONDS_NODESK",
+			"size": [336, 35],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Notification area preview: icons hidden, clock with seconds"
+		},
+		{
+			"id": "start-preview",
+			"file": "desktop/icons/panels/start-preview.svg",
+			"bitmap": "bmp/start-preview.bmp",
+			"module": "explorer.exe",
+			"resource": 170,
+			"name": "IDB_STARTPREVIEW",
+			"size": [300, 180],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Start Menu tab preview: the Start menu"
+		},
+		{
+			"id": "start-preview-classic",
+			"file": "desktop/icons/panels/start-preview-classic.svg",
+			"bitmap": "bmp/start-preview-classic.bmp",
+			"module": "explorer.exe",
+			"resource": 171,
+			"name": "IDB_STARTPREVIEW_CLASSIC",
+			"size": [300, 180],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Start Menu tab preview: the classic Start menu"
+		},
+		{
+			"id": "tray-hide-clock-nodesk",
+			"file": "desktop/icons/panels/tray-hide-clock-nodesk.svg",
+			"bitmap": "bmp/tray-hide-clock-nodesk.bmp",
+			"module": "explorer.exe",
+			"resource": 180,
+			"name": "IDB_SYSTRAYPROP_HIDE_CLOCK_NODESK",
+			"size": [336, 35],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Notification area preview: icons hidden, clock"
+		},
+		{
+			"id": "tray-hide-noclock-nodesk",
+			"file": "desktop/icons/panels/tray-hide-noclock-nodesk.svg",
+			"bitmap": "bmp/tray-hide-noclock-nodesk.bmp",
+			"module": "explorer.exe",
+			"resource": 181,
+			"name": "IDB_SYSTRAYPROP_HIDE_NOCLOCK_NODESK",
+			"size": [336, 35],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Notification area preview: icons hidden, no clock"
+		},
+		{
+			"id": "tray-show-clock-nodesk",
+			"file": "desktop/icons/panels/tray-show-clock-nodesk.svg",
+			"bitmap": "bmp/tray-show-clock-nodesk.bmp",
+			"module": "explorer.exe",
+			"resource": 182,
+			"name": "IDB_SYSTRAYPROP_SHOW_CLOCK_NODESK",
+			"size": [336, 35],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Notification area preview: icons, clock"
+		},
+		{
+			"id": "tray-show-noclock-nodesk",
+			"file": "desktop/icons/panels/tray-show-noclock-nodesk.svg",
+			"bitmap": "bmp/tray-show-noclock-nodesk.bmp",
+			"module": "explorer.exe",
+			"resource": 183,
+			"name": "IDB_SYSTRAYPROP_SHOW_NOCLOCK_NODESK",
+			"size": [336, 35],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Notification area preview: icons, no clock"
+		},
+		{
+			"id": "tray-show-seconds-desk",
+			"file": "desktop/icons/panels/tray-show-seconds-desk.svg",
+			"bitmap": "bmp/tray-show-seconds-desk.bmp",
+			"module": "explorer.exe",
+			"resource": 184,
+			"name": "IDB_SYSTRAYPROP_SHOW_SECONDS_DESK",
+			"size": [336, 35],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Notification area preview: icons, seconds, Show Desktop"
+		},
+		{
+			"id": "tray-hide-seconds-desk",
+			"file": "desktop/icons/panels/tray-hide-seconds-desk.svg",
+			"bitmap": "bmp/tray-hide-seconds-desk.bmp",
+			"module": "explorer.exe",
+			"resource": 185,
+			"name": "IDB_SYSTRAYPROP_HIDE_SECONDS_DESK",
+			"size": [336, 35],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Notification area preview: hidden, seconds, Show Desktop"
+		},
+		{
+			"id": "tray-hide-clock-desk",
+			"file": "desktop/icons/panels/tray-hide-clock-desk.svg",
+			"bitmap": "bmp/tray-hide-clock-desk.bmp",
+			"module": "explorer.exe",
+			"resource": 186,
+			"name": "IDB_SYSTRAYPROP_HIDE_CLOCK_DESK",
+			"size": [336, 35],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Notification area preview: hidden, clock, Show Desktop"
+		},
+		{
+			"id": "tray-hide-noclock-desk",
+			"file": "desktop/icons/panels/tray-hide-noclock-desk.svg",
+			"bitmap": "bmp/tray-hide-noclock-desk.bmp",
+			"module": "explorer.exe",
+			"resource": 187,
+			"name": "IDB_SYSTRAYPROP_HIDE_NOCLOCK_DESK",
+			"size": [336, 35],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Notification area preview: hidden, no clock, Show Desktop"
+		},
+		{
+			"id": "tray-show-clock-desk",
+			"file": "desktop/icons/panels/tray-show-clock-desk.svg",
+			"bitmap": "bmp/tray-show-clock-desk.bmp",
+			"module": "explorer.exe",
+			"resource": 188,
+			"name": "IDB_SYSTRAYPROP_SHOW_CLOCK_DESK",
+			"size": [336, 35],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Notification area preview: icons, clock, Show Desktop"
+		},
+		{
+			"id": "tray-show-noclock-desk",
+			"file": "desktop/icons/panels/tray-show-noclock-desk.svg",
+			"bitmap": "bmp/tray-show-noclock-desk.bmp",
+			"module": "explorer.exe",
+			"resource": 189,
+			"name": "IDB_SYSTRAYPROP_SHOW_NOCLOCK_DESK",
+			"size": [336, 35],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Notification area preview: icons, no clock, Show Desktop"
+		},
+		{
+			"id": "std-small",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/std-small.bmp",
+			"module": "comctl32.dll",
+			"resource": 120,
+			"name": "IDB_STD_SMALL",
+			"size": [240, 16],
+			"bits": 32,
+			"evidence": ["source", "binary"],
+			"use": "the standard toolbar strip, 16 px (STD_CUT to STD_PRINT): WordPad, the file dialogs, every program that asks comctl32 for it"
+		},
+		{
+			"id": "std-large",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/std-large.bmp",
+			"module": "comctl32.dll",
+			"resource": 121,
+			"name": "IDB_STD_LARGE",
+			"size": [360, 24],
+			"bits": 32,
+			"evidence": ["source", "binary"],
+			"use": "the standard toolbar strip, 24 px"
+		},
+		{
+			"id": "view-small",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/view-small.bmp",
+			"module": "comctl32.dll",
+			"resource": 124,
+			"name": "IDB_VIEW_SMALL",
+			"size": [192, 16],
+			"bits": 32,
+			"evidence": ["source", "binary"],
+			"use": "the view toolbar strip, 16 px (VIEW_LARGEICONS to VIEW_NEWFOLDER): the Open and Save dialogs' toolbar"
+		},
+		{
+			"id": "view-large",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/view-large.bmp",
+			"module": "comctl32.dll",
+			"resource": 125,
+			"name": "IDB_VIEW_LARGE",
+			"size": [288, 24],
+			"bits": 32,
+			"evidence": ["source", "binary"],
+			"use": "the view toolbar strip, 24 px"
+		},
+		{
+			"id": "hist-small",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/hist-small.bmp",
+			"module": "comctl32.dll",
+			"resource": 130,
+			"name": "IDB_HIST_SMALL",
+			"size": [80, 16],
+			"bits": 32,
+			"evidence": ["source", "binary"],
+			"use": "the history toolbar strip, 16 px (HIST_BACK to HIST_VIEWTREE)"
+		},
+		{
+			"id": "hist-large",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/hist-large.bmp",
+			"module": "comctl32.dll",
+			"resource": 131,
+			"name": "IDB_HIST_LARGE",
+			"size": [120, 24],
+			"bits": 32,
+			"evidence": ["source", "binary"],
+			"use": "the history toolbar strip, 24 px: the help viewer's Back and Forward"
+		},
+		{
+			"id": "hh-toolbar",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/hh-toolbar.bmp",
+			"module": "hhctrl.ocx",
+			"resource": 1000,
+			"name": "IDB_HHTOOLBAR",
+			"size": [144, 24],
+			"bits": 32,
+			"evidence": ["source", "binary"],
+			"use": "the help viewer's toolbar: Stop, Refresh, Home, Sync, Show and Hide"
+		},
+		{
+			"id": "hh-tree",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/hh-tree.bmp",
+			"module": "hhctrl.ocx",
+			"resource": 1001,
+			"name": "IDB_HHTREEVIEW",
+			"size": [48, 16],
+			"bits": 32,
+			"evidence": ["source", "binary"],
+			"use": "the help viewer's contents: a topic, a closed and an open book"
+		},
+		{
+			"id": "ie-toolbar",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/ie-toolbar.bmp",
+			"module": "ieframe.dll",
+			"resource": 1400,
+			"name": "IDB_IETOOLBAR",
+			"size": [192, 32],
+			"bits": 32,
+			"evidence": ["source", "binary"],
+			"use": "the Internet Explorer toolbar: Back, Forward, Stop, Refresh, Home, Print"
+		},
+		{
+			"id": "aclui-principals",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/aclui-principals.bmp",
+			"module": "aclui.dll",
+			"resource": 1001,
+			"name": "IDB_USRGRPIMAGES",
+			"size": [48, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the Security tab's list of users and groups"
+		},
+		{
+			"id": "cert",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/cert.bmp",
+			"module": "cryptui.dll",
+			"resource": 201,
+			"name": "IDB_CERT",
+			"size": [32, 32],
+			"bits": 4,
+			"evidence": ["source", "binary"],
+			"use": "the certificate dialog: a valid certificate"
+		},
+		{
+			"id": "cert-error",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/cert-error.bmp",
+			"module": "cryptui.dll",
+			"resource": 202,
+			"name": "IDB_CERT_ERROR",
+			"size": [32, 32],
+			"bits": 4,
+			"evidence": ["source", "binary"],
+			"use": "the certificate dialog: a certificate with an error"
+		},
+		{
+			"id": "cert-warning",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/cert-warning.bmp",
+			"module": "cryptui.dll",
+			"resource": 203,
+			"name": "IDB_CERT_WARNING",
+			"size": [32, 32],
+			"bits": 4,
+			"evidence": ["source", "binary"],
+			"use": "the certificate dialog: a certificate with a warning"
+		},
+		{
+			"id": "wiz-cert",
+			"file": "desktop/icons/panels/wiz-cert.svg",
+			"bitmap": "bmp/wiz-cert.bmp",
+			"module": "cryptui.dll",
+			"resource": 205,
+			"name": "IDB_CERT_WATERMARK",
+			"size": [164, 628],
+			"bits": 4,
+			"evidence": ["source", "binary"],
+			"use": "the certificate import and export wizards: the watermark"
+		},
+		{
+			"id": "wizhead-cert",
+			"file": "desktop/icons/panels/wizhead-cert.svg",
+			"bitmap": "bmp/wizhead-cert.bmp",
+			"module": "cryptui.dll",
+			"resource": 206,
+			"name": "IDB_CERT_HEADER",
+			"size": [49, 49],
+			"bits": 4,
+			"evidence": ["source", "binary"],
+			"use": "the certificate import and export wizards: the header"
+		},
+		{
+			"id": "wizhead-zip",
+			"file": "desktop/icons/panels/wizhead-zip.svg",
+			"bitmap": "bmp/wizhead-zip.bmp",
+			"module": "zipfldr.dll",
+			"resource": 200,
+			"name": "IDB_HEADER",
+			"size": [49, 49],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the Extract Compressed Folder wizard: the header"
+		},
+		{
+			"id": "wiz-zip",
+			"file": "desktop/icons/panels/wiz-zip.svg",
+			"bitmap": "bmp/wiz-zip.bmp",
+			"module": "zipfldr.dll",
+			"resource": 201,
+			"name": "IDB_WATERMARK",
+			"size": [164, 628],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the Extract Compressed Folder wizard: the watermark"
+		},
+		{
+			"id": "wiz-newdev",
+			"file": "desktop/icons/panels/wiz-newdev.svg",
+			"bitmap": "bmp/wiz-newdev.bmp",
+			"module": "newdev.dll",
+			"resource": 100,
+			"name": "IDB_WATERMARK",
+			"size": [164, 400],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "the Found New Hardware wizard: the watermark"
+		},
+		{
+			"id": "wizhead-newdev",
+			"file": "desktop/icons/panels/wizhead-newdev.svg",
+			"bitmap": "bmp/wizhead-newdev.bmp",
+			"module": "newdev.dll",
+			"resource": 101,
+			"name": "IDB_HEADER",
+			"size": [49, 49],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "the Found New Hardware wizard: the header"
+		},
+		{
+			"id": "credui-banner",
+			"file": "desktop/icons/panels/credui-banner.svg",
+			"bitmap": "bmp/credui-banner.bmp",
+			"module": "credui.dll",
+			"resource": 200,
+			"name": "IDB_BANNER",
+			"size": [320, 60],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the credential prompt's banner"
+		},
+		{
+			"id": "wiz-shortcut",
+			"file": "desktop/icons/panels/wiz-shortcut.svg",
+			"bitmap": "bmp/wiz-shortcut.bmp",
+			"module": "appwiz.cpl",
+			"resource": 5002,
+			"name": "IDB_SHORTCUT",
+			"size": [164, 400],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "the Create Shortcut wizard: the watermark"
+		},
+		{
+			"id": "wiz-addhw",
+			"file": "desktop/icons/panels/wiz-addhw.svg",
+			"bitmap": "bmp/wiz-addhw.bmp",
+			"module": "hdwwiz.cpl",
+			"resource": 50,
+			"name": "IDB_WATERMARK",
+			"size": [164, 400],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "the Add Hardware wizard: the watermark"
+		},
+		{
+			"id": "wizhead-addhw",
+			"file": "desktop/icons/panels/wizhead-addhw.svg",
+			"bitmap": "bmp/wizhead-addhw.bmp",
+			"module": "hdwwiz.cpl",
+			"resource": 51,
+			"name": "IDB_HEADER",
+			"size": [49, 49],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "the Add Hardware wizard: the header"
+		},
+		{
+			"id": "desk-monitor",
+			"file": "desktop/icons/panels/desk-monitor.svg",
+			"bitmap": "bmp/desk-monitor.bmp",
+			"module": "desk.cpl",
+			"resource": 1001,
+			"name": "IDC_MONITOR",
+			"size": [160, 120],
+			"bits": 8,
+			"evidence": ["source", "binary"],
+			"use": "Display Properties: the monitor every page previews in (screen at 20, 8 to 140, 92, magenta keyed out)"
+		},
+		{
+			"id": "taskmgr-meter",
+			"file": "desktop/icons/panels/taskmgr-meter.svg",
+			"bitmap": "bmp/taskmgr-meter.bmp",
+			"module": "taskmgr.exe",
+			"resource": 153,
+			"name": "IDB_TRAYICON",
+			"size": [16, 16],
+			"bits": 4,
+			"evidence": ["source", "binary"],
+			"use": "Task Manager's tray meter: the ground the CPU bars are drawn on (IDB_TRAYMASK 150 stays the mask)"
+		},
+		{
+			"id": "servman-prop",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/servman-prop.bmp",
+			"module": "servman.exe",
+			"resource": 10000,
+			"name": "IDB_PROP",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Service Manager toolbar (masked with RGB(255, 0, 128))"
+		},
+		{
+			"id": "servman-refresh",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/servman-refresh.bmp",
+			"module": "servman.exe",
+			"resource": 10001,
+			"name": "IDB_REFRESH",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Service Manager toolbar (masked with RGB(255, 0, 128))"
+		},
+		{
+			"id": "servman-export",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/servman-export.bmp",
+			"module": "servman.exe",
+			"resource": 10002,
+			"name": "IDB_EXPORT",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Service Manager toolbar (masked with RGB(255, 0, 128))"
+		},
+		{
+			"id": "servman-create",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/servman-create.bmp",
+			"module": "servman.exe",
+			"resource": 10003,
+			"name": "IDB_CREATE",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Service Manager toolbar (masked with RGB(255, 0, 128))"
+		},
+		{
+			"id": "servman-delete",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/servman-delete.bmp",
+			"module": "servman.exe",
+			"resource": 10004,
+			"name": "IDB_DELETE",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Service Manager toolbar (masked with RGB(255, 0, 128))"
+		},
+		{
+			"id": "servman-start",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/servman-start.bmp",
+			"module": "servman.exe",
+			"resource": 10005,
+			"name": "IDB_START",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Service Manager toolbar (masked with RGB(255, 0, 128))"
+		},
+		{
+			"id": "servman-stop",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/servman-stop.bmp",
+			"module": "servman.exe",
+			"resource": 10006,
+			"name": "IDB_STOP",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Service Manager toolbar (masked with RGB(255, 0, 128))"
+		},
+		{
+			"id": "servman-pause",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/servman-pause.bmp",
+			"module": "servman.exe",
+			"resource": 10007,
+			"name": "IDB_PAUSE",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Service Manager toolbar (masked with RGB(255, 0, 128))"
+		},
+		{
+			"id": "servman-restart",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/servman-restart.bmp",
+			"module": "servman.exe",
+			"resource": 10008,
+			"name": "IDB_RESTART",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "Service Manager toolbar (masked with RGB(255, 0, 128))"
+		},
+		{
+			"id": "shimgvw-prev",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-prev.bmp",
+			"module": "shimgvw.dll",
+			"resource": 50,
+			"name": "IDB_PREV_PIC",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-next",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-next.bmp",
+			"module": "shimgvw.dll",
+			"resource": 51,
+			"name": "IDB_NEXT_PIC",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-fit",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-fit.bmp",
+			"module": "shimgvw.dll",
+			"resource": 52,
+			"name": "IDB_BEST_FIT",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-realsize",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-realsize.bmp",
+			"module": "shimgvw.dll",
+			"resource": 53,
+			"name": "IDB_REAL_SIZE",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-slideshow",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-slideshow.bmp",
+			"module": "shimgvw.dll",
+			"resource": 54,
+			"name": "IDB_SLIDE_SHOW",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-zoomin",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-zoomin.bmp",
+			"module": "shimgvw.dll",
+			"resource": 55,
+			"name": "IDB_ZOOM_IN",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-zoomout",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-zoomout.bmp",
+			"module": "shimgvw.dll",
+			"resource": 56,
+			"name": "IDB_ZOOM_OUT",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-rotcw",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-rotcw.bmp",
+			"module": "shimgvw.dll",
+			"resource": 57,
+			"name": "IDB_ROT_CLOCKW",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-rotccw",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-rotccw.bmp",
+			"module": "shimgvw.dll",
+			"resource": 58,
+			"name": "IDB_ROT_COUNCW",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-rotcwsave",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-rotcwsave.bmp",
+			"module": "shimgvw.dll",
+			"resource": 59,
+			"name": "IDB_ROT_CWSAVE",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-rotccwsave",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-rotccwsave.bmp",
+			"module": "shimgvw.dll",
+			"resource": 60,
+			"name": "IDB_ROT_CCWSAVE",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-delete",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-delete.bmp",
+			"module": "shimgvw.dll",
+			"resource": 61,
+			"name": "IDB_DELETE",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-print",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-print.bmp",
+			"module": "shimgvw.dll",
+			"resource": 62,
+			"name": "IDB_PRINT",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-saveas",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-saveas.bmp",
+			"module": "shimgvw.dll",
+			"resource": 63,
+			"name": "IDB_SAVEAS",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-modify",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-modify.bmp",
+			"module": "shimgvw.dll",
+			"resource": 64,
+			"name": "IDB_MODIFY",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
+		},
+		{
+			"id": "shimgvw-help",
+			"file": "desktop/icons/strips.py",
+			"bitmap": "bmp/shimgvw-help.bmp",
+			"module": "shimgvw.dll",
+			"resource": 65,
+			"name": "IDB_HELP_TOC",
+			"size": [16, 16],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the image viewer's toolbar (masked with white)"
 		}
 	],
 	"colours": [

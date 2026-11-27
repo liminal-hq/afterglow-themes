@@ -51,15 +51,27 @@ const sums = (file) =>
 			}),
 	);
 
+// The strips and panels the map names: rendered by render.py as bmp/NAME.bmp
+function bitmapsDrawnHere() {
+	const map = JSON.parse(readFileSync(join(icons, 'map.json'), 'utf8'));
+	return [
+		...new Set(
+			map.bitmaps
+				.filter((bitmap) => /^desktop\/icons\/(strips\.py|panels\/)/.test(bitmap.file))
+				.map((bitmap) => bitmap.bitmap),
+		),
+	];
+}
+
 function render() {
 	const out = mkdtempSync(join(tmpdir(), 'afterglow-icons-'));
 	execFileSync('python3', [join(icons, 'render.py'), out], { stdio: 'ignore' });
 	return out;
 }
 
-test('the set has 195 icons, 95 hinted 16 px redraws, a 32 and 16 px profile of every icon and a 24 px one of the 18 toolbar glyphs and Go', () => {
-	assert.equal(ids.length, 195);
-	assert.equal(hinted.length, 95);
+test('the set has 252 icons, 108 hinted 16 px redraws, a 32 and 16 px profile of every icon and a 24 px one of the toolbar glyphs and the Applications Manager icons', () => {
+	assert.equal(ids.length, 252);
+	assert.equal(hinted.length, 108);
 	for (const id of [
 		'mydocs',
 		'mypictures',
@@ -83,29 +95,90 @@ test('the set has 195 icons, 95 hinted 16 px redraws, a 32 and 16 px profile of 
 		'regbinary',
 		'none',
 		'delpermanent',
+		'ovl-warning',
+		'ovl-error',
+		'ovl-info',
+		'mk-off',
+		'mk-lr-down',
 	]) {
 		assert.ok(hinted.includes(id), `${id} has a hinted redraw`);
 	}
 	assert.deepEqual(toolbar, [
+		'admintools',
+		'appmanager',
+		'audio',
 		'back',
+		'browser',
+		'calc',
+		'check',
+		'clock',
+		'console-app',
 		'copy',
 		'copyclip',
 		'cut',
 		'del',
 		'disconnect',
+		'display',
+		'doc',
+		'dot',
+		'down',
+		'fit',
+		'flask',
+		'floppy-disk',
+		'folder',
+		'folderopen',
 		'folderopts',
 		'folders',
 		'forward',
 		'go',
+		'group',
+		'help',
+		'home',
+		'image',
+		'install',
+		'key',
+		'landscape',
+		'library',
+		'logoff',
 		'mapdrive',
+		'minus',
 		'move',
+		'mycomputer',
+		'newfolder',
+		'paint',
 		'paste',
+		'pause',
+		'play',
+		'plus',
+		'portrait',
+		'printer',
+		'printpreview',
+		'programs',
 		'properties',
+		'readme',
+		'redo',
+		'refresh',
+		'rotccw',
+		'rotcw',
 		'search',
+		'settings',
+		'sleep',
+		'sol',
+		'sortname',
 		'star',
+		'stopsq',
 		'undo',
+		'uninstall',
 		'up',
+		'user',
+		'video',
+		'view-large',
+		'view-list',
+		'view-small',
 		'views',
+		'wusa',
+		'zoomin',
+		'zoomout',
 	]);
 	for (const sub of ['32', '16']) {
 		const files = readdirSync(join(svgDir, sub)).map((f) => f.slice(0, -4));
@@ -120,8 +193,8 @@ test('the set has 195 icons, 95 hinted 16 px redraws, a 32 and 16 px profile of 
 
 test('the masters match their recorded hashes and keep their licence header', () => {
 	const recorded = sums('SHA256SUMS.masters');
-	// 195 icons in three profiles, 18 toolbar glyphs and Go at 24 px, 95 hinted redraws, 3 arrow frames, the sheet and 8 generators
-	assert.equal(Object.keys(recorded).length, 195 * 3 + 19 + 95 + 3 + 1 + 8);
+	// 252 icons in three profiles, 75 at 24 px, 108 hinted redraws, 3 arrow frames, the sheet, 11 generators and helpers, 35 panels and their index
+	assert.equal(Object.keys(recorded).length, 252 * 3 + 75 + 108 + 3 + 1 + 11 + 35 + 1);
 	for (const [name, hash] of Object.entries(recorded)) {
 		assert.equal(sha256(readFileSync(join(icons, name))), hash, `${name} changed`);
 		if (name.endsWith('.svg') || name.endsWith('.py')) {
@@ -168,7 +241,7 @@ test('map.json names every icon once and the arrow, and records only verified re
 	const map = JSON.parse(readFileSync(join(icons, 'map.json'), 'utf8'));
 	assert.deepEqual(map.icons.map((i) => i.id).sort(), [...ids, 'arrow'].sort());
 	const checkResource = (resource, id) => {
-		assert.match(resource.module, /^[a-z0-9]+\.(dll|exe|cpl|scr)$/, id);
+		assert.match(resource.module, /^[a-z0-9]+\.(dll|exe|cpl|scr|ocx)$/, id);
 		assert.ok(resource.evidence.length > 0, id);
 		for (const kind of resource.evidence) assert.ok(['source', 'binary'].includes(kind), id);
 		if (resource.module === 'browseui.dll') {
@@ -205,7 +278,7 @@ test('map.json names every icon once and the arrow, and records only verified re
 			assert.equal(icon.resource, null, icon.id);
 		}
 		// a toolbar glyph names one cell of the strips, unless its art is a bitmap of its own (the Go button)
-		if (toolbar.includes(icon.id) && !map.bitmaps.some((bitmap) => bitmap.id === icon.id)) {
+		if (icon.kind === 'toolbar' && !map.bitmaps.some((bitmap) => bitmap.id === icon.id)) {
 			const cells = [icon.resource, ...(icon.also ?? [])].filter(
 				(r) => r?.module === 'browseui.dll',
 			);
@@ -214,7 +287,7 @@ test('map.json names every icon once and the arrow, and records only verified re
 	}
 	assert.deepEqual(
 		map.icons.filter((i) => i.status === 'unmapped').map((i) => i.id),
-		['cd-disc', 'clock', 'floppy-disk', 'monitor', 'ram-module', 'showdesk', 'trynet', 'usb-key'],
+		['cd-disc', 'clock', 'floppy-disk', 'showdesk'],
 	);
 	// The folder ids the folder icon research verified in the 0.4.16 source and binary are unchanged
 	const shell32 = Object.fromEntries(
@@ -276,8 +349,8 @@ test(
 				}
 				assert.deepEqual(seen, SIZES, `${id} frames`);
 			}
-			assert.equal(readdirSync(join(out, 'ico')).length, 196);
-			assert.equal(readdirSync(join(out, 'png')).length, 196 * 3 + toolbar.length);
+			assert.equal(readdirSync(join(out, 'ico')).length, 253);
+			assert.equal(readdirSync(join(out, 'png')).length, 253 * 3 + toolbar.length);
 			// the 24 px toolbar frames: a one-frame .ico each, so the three-frame .ico stays as the shell patchers read it
 			assert.deepEqual(
 				readdirSync(join(out, 'ico24')).sort(),
@@ -388,6 +461,7 @@ test('two renders give the same .ico bytes, and they match the recorded hashes',
 				...[...ids, 'arrow'].map((id) => `ico/${id}.ico`),
 				...toolbar.map((id) => `ico24/${id}.ico`),
 				'bmp/go.bmp',
+				...bitmapsDrawnHere(),
 			].sort(),
 		);
 		for (const id of [...ids, 'arrow']) {
@@ -438,6 +512,35 @@ test(
 			const alpha = [];
 			for (let p = 54 + 3; p < bmp.length; p += 4) alpha.push(bmp[p]);
 			assert.ok(alpha.includes(0) && alpha.includes(255), 'see-through corners and an opaque disc');
+		} finally {
+			rmSync(out, { recursive: true, force: true });
+		}
+	},
+);
+
+test(
+	'the strips and panels have the size of the stock bitmap they replace, 24-bit or 32-bit BI_RGB with an uncompressed 40-byte info header',
+	needTools,
+	() => {
+		const map = JSON.parse(readFileSync(join(icons, 'map.json'), 'utf8'));
+		const out = render();
+		try {
+			for (const entry of map.bitmaps.filter((bitmap) =>
+				/^desktop\/icons\/(strips\.py|panels\/)/.test(bitmap.file),
+			)) {
+				const bmp = readFileSync(join(out, entry.bitmap));
+				assert.equal(bmp.toString('latin1', 0, 2), 'BM', entry.bitmap);
+				assert.equal(bmp.readUInt32LE(14), 40, `${entry.bitmap} info header`);
+				assert.deepEqual([bmp.readInt32LE(18), bmp.readInt32LE(22)], entry.size, entry.bitmap);
+				const bits = bmp.readUInt16LE(28);
+				assert.ok(
+					bits === 24 || (bits === 32 && entry.bits === 32),
+					`${entry.bitmap} is ${bits}-bit`,
+				);
+				assert.equal(bmp.readUInt32LE(30), 0, `${entry.bitmap} is BI_RGB`);
+				const row = Math.ceil((entry.size[0] * bits) / 8 / 4) * 4;
+				assert.equal(bmp.length, 54 + row * entry.size[1], `${entry.bitmap} length`);
+			}
 		} finally {
 			rmSync(out, { recursive: true, force: true });
 		}

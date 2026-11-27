@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): fit, Best fit (48 master profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><filter id="e-fit-48-b1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter><linearGradient id="e-fit-48-gebe9efdcdae6" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ebe9ef"/><stop offset="1" stop-color="#dcdae6"/></linearGradient><clipPath id="e-fit-48-c1"><path d="M5 11 C5 9.35 6.35 8 8 8 L40 8 C41.65 8 43 9.35 43 11 L43 37 C43 38.65 41.65 40 40 40 L8 40 C6.35 40 5 38.65 5 37 Z" clip-rule="evenodd"/></clipPath><linearGradient id="e-fit-48-g1f25547a4562" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f2554"/><stop offset="1" stop-color="#7a4562"/></linearGradient></defs>
+<ellipse cx="25" cy="43.4" rx="16.34" ry="1.5" fill="#0a1230" opacity="0.2" filter="url(#e-fit-48-b1)"/><path d="M5 11 C5 9.35 6.35 8 8 8 L40 8 C41.65 8 43 9.35 43 11 L43 37 C43 38.65 41.65 40 40 40 L8 40 C6.35 40 5 38.65 5 37 Z" fill="#fbfaf6" fill-rule="evenodd"/><g clip-path="url(#e-fit-48-c1)"><path d="M5 11 C5 9.35 6.35 8 8 8 L40 8 C41.65 8 43 9.35 43 11 L43 37 C43 38.65 41.65 40 40 40 L8 40 C6.35 40 5 38.65 5 37 Z" fill="url(#e-fit-48-gebe9efdcdae6)" fill-rule="evenodd" transform="translate(1 1)"/></g><g clip-path="url(#e-fit-48-c1)"><path d="M5 11 C5 9.35 6.35 8 8 8 L40 8 C41.65 8 43 9.35 43 11 L43 37 C43 38.65 41.65 40 40 40 L8 40 C6.35 40 5 38.65 5 37 Z" fill="none" stroke="#66619b" stroke-width="3" stroke-opacity="1"/></g><path d="M9 13.5 C9 12.675 9.675 12 10.5 12 L37.5 12 C38.325 12 39 12.675 39 13.5 L39 34.5 C39 35.325 38.325 36 37.5 36 L10.5 36 C9.675 36 9 35.325 9 34.5 Z" fill="url(#e-fit-48-g1f25547a4562)"/><path d="M14 17 L20 22 M34 17 L28 22 M14 31 L20 26 M34 31 L28 26" fill="none" stroke="#ffaa40" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

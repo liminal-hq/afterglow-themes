@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): landscape, Landscape (32 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><filter id="e-landscape-32-b1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter><linearGradient id="e-landscape-32-gf5f2f5efedf3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f5f2f5"/><stop offset="1" stop-color="#efedf3"/></linearGradient><clipPath id="e-landscape-32-c1"><path d="M4 14 C4 12.35 5.35 11 7 11 L41 11 C42.65 11 44 12.35 44 14 L44 36 C44 37.65 42.65 39 41 39 L7 39 C5.35 39 4 37.65 4 36 Z" clip-rule="evenodd"/></clipPath></defs>
+<ellipse cx="25" cy="43.4" rx="15.48" ry="1.5" fill="#0a1230" opacity="0.3" filter="url(#e-landscape-32-b1)"/><path d="M4 14 C4 12.35 5.35 11 7 11 L41 11 C42.65 11 44 12.35 44 14 L44 36 C44 37.65 42.65 39 41 39 L7 39 C5.35 39 4 37.65 4 36 Z" fill="#fbfaf6" fill-rule="evenodd"/><g clip-path="url(#e-landscape-32-c1)"><path d="M4 14 C4 12.35 5.35 11 7 11 L41 11 C42.65 11 44 12.35 44 14 L44 36 C44 37.65 42.65 39 41 39 L7 39 C5.35 39 4 37.65 4 36 Z" fill="url(#e-landscape-32-gf5f2f5efedf3)" fill-rule="evenodd" transform="translate(1.5 1.5)"/></g><g clip-path="url(#e-landscape-32-c1)"><path d="M4 14 C4 12.35 5.35 11 7 11 L41 11 C42.65 11 44 12.35 44 14 L44 36 C44 37.65 42.65 39 41 39 L7 39 C5.35 39 4 37.65 4 36 Z" fill="none" stroke="#66619b" stroke-width="5.01" stroke-opacity="1"/></g><path d="M15 33 L22 16 L29 33 M17.5 27 H26.5" fill="none" stroke="#4a4580" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

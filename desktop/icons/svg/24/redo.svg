@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): redo, Redo (24 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="e-redo-24-c1"><path d="M41.833 21.943 C42.475 21.424 42.475 20.576 41.833 20.057 L31.167 11.443 C30.525 10.924 30 11.175 30 12 L30 30 C30 30.825 30.525 31.076 31.167 30.557 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M31 21 H19 a9 9 0 0 0 0 18 H32" fill="none" stroke="#8c5e26" stroke-opacity="1" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 21 H19 a9 9 0 0 0 0 18 H32" fill="none" stroke="#ffaa40" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M41.833 21.943 C42.475 21.424 42.475 20.576 41.833 20.057 L31.167 11.443 C30.525 10.924 30 11.175 30 12 L30 30 C30 30.825 30.525 31.076 31.167 30.557 Z" fill="#ffaa40" fill-rule="evenodd"/><g clip-path="url(#e-redo-24-c1)"><path d="M41.833 21.943 C42.475 21.424 42.475 20.576 41.833 20.057 L31.167 11.443 C30.525 10.924 30 11.175 30 12 L30 30 C30 30.825 30.525 31.076 31.167 30.557 Z" fill="none" stroke="#8c5e26" stroke-width="6" stroke-opacity="1"/></g>
+</svg>

@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): devunknown, Unknown device (16 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="e-devunknown-16-c1"><path d="M5 15.5 C5 13.575 6.575 12 8.5 12 L31.5 12 C33.425 12 35 13.575 35 15.5 L35 34.5 C35 36.425 33.425 38 31.5 38 L8.5 38 C6.575 38 5 36.425 5 34.5 Z" clip-rule="evenodd"/></clipPath><clipPath id="e-devunknown-16-c2"><path d="M21.5 15 a10.5 10.5 0 1 0 21 0 a10.5 10.5 0 1 0 -21 0 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M5 15.5 C5 13.575 6.575 12 8.5 12 L31.5 12 C33.425 12 35 13.575 35 15.5 L35 34.5 C35 36.425 33.425 38 31.5 38 L8.5 38 C6.575 38 5 36.425 5 34.5 Z" fill="#b4bfce" fill-rule="evenodd"/><g clip-path="url(#e-devunknown-16-c1)"><path d="M5 15.5 C5 13.575 6.575 12 8.5 12 L31.5 12 C33.425 12 35 13.575 35 15.5 L35 34.5 C35 36.425 33.425 38 31.5 38 L8.5 38 C6.575 38 5 36.425 5 34.5 Z" fill="none" stroke="#5d668f" stroke-width="9" stroke-opacity="1"/></g><path d="M9 32.2 C9 31.54 9.54 31 10.2 31 L19.8 31 C20.46 31 21 31.54 21 32.2 L21 32.2 C21 32.86 20.46 33.4 19.8 33.4 L10.2 33.4 C9.54 33.4 9 32.86 9 32.2 Z" fill="#8d97a8" fill-rule="evenodd"/><path d="M21.5 15 a10.5 10.5 0 1 0 21 0 a10.5 10.5 0 1 0 -21 0 Z" fill="#8a73ce" fill-rule="evenodd"/><g clip-path="url(#e-devunknown-16-c2)"><path d="M21.5 15 a10.5 10.5 0 1 0 21 0 a10.5 10.5 0 1 0 -21 0 Z" fill="none" stroke="#6d5da3" stroke-width="9" stroke-opacity="1"/></g><path d="M29.237 11.684 a2.763 2.763 0 1 1 4.421 2.211 c-1.105 0.829 -1.658 1.382 -1.658 2.763" fill="none" stroke="#fbfaf6" stroke-width="3.99" stroke-linecap="round" stroke-linejoin="round"/><path d="M30.618 19.974 a1.382 1.382 0 1 0 2.763 0 a1.382 1.382 0 1 0 -2.763 0 Z" fill="#fbfaf6" fill-rule="evenodd"/>
+</svg>

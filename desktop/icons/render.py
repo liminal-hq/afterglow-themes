@@ -15,11 +15,15 @@
 # PNGs and the two preview images are written as rsvg-convert and Pillow make them. The Explorer address bar's Go button is not an icon but
 # a 20 x 20 bitmap (browseui.dll 230 and 231), so the glyphs in BITMAPS are also written as bmp/ID.bmp, drawn from their 24 px profile at
 # the bitmap's size: a 32-bit BI_RGB bitmap with straight alpha and bottom-up rows, its info header laid out like the stock one (no image
-# size, no resolution), so the bitmap without its 14-byte file header is the resource. Needs rsvg-convert and Pillow.
+# size, no resolution), so the bitmap without its 14-byte file header is the resource. The toolbar strips and small bitmaps programs load
+# (strips.py) are composed from the rendered frames and written as bmp/NAME.bmp, and the panels (panels/NAME.svg, drawn by gen_panels.py:
+# the taskbar previews, the wizard art, the monitor and the tray meter) are rendered 1:1 and written the same way, as 24-bit bitmaps.
+# Needs rsvg-convert and Pillow.
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 import io
+import json
 import os
 import struct
 import subprocess
@@ -32,6 +36,10 @@ SVG = os.path.join(HERE, "svg")
 ARROW = os.path.join(HERE, "arrow")
 SIZES = (16, 32, 48)
 BITMAPS = {"go": 20}  # glyphs a resource holds as a bitmap of its own, and that bitmap's size
+PANELS = os.path.join(HERE, "panels")
+sys.path.insert(0, HERE)
+sys.dont_write_bytecode = True
+import strips  # noqa: E402  the toolbar strips and small bitmaps composed from the frames
 
 
 def ids():
@@ -133,6 +141,7 @@ def render(out_dir):
 			with open(os.path.join(png_dir, f"{icon}-24.png"), "wb") as f:
 				f.write(data)
 			image = Image.open(io.BytesIO(data)).convert("RGBA")
+			pixels[icon, 24] = image
 			with open(os.path.join(ico24_dir, icon + ".ico"), "wb") as f:
 				f.write(ico([image]))
 	bmp_dir = os.path.join(out_dir, "bmp")
@@ -141,6 +150,14 @@ def render(out_dir):
 		image = Image.open(io.BytesIO(rsvg(master(icon, 24), size, size))).convert("RGBA")
 		with open(os.path.join(bmp_dir, icon + ".bmp"), "wb") as f:
 			f.write(bitmap(image))
+	strips.write(bmp_dir, pixels)
+	with open(os.path.join(PANELS, "panels.json")) as f:
+		panels = json.load(f)  # each panel's size, key colour and ground, written by gen_panels.py
+	for name, panel in sorted(panels.items()):
+		width, height = panel["size"]
+		image = Image.open(io.BytesIO(rsvg(os.path.join(PANELS, name + ".svg"), width, height))).convert("RGBA")
+		with open(os.path.join(bmp_dir, name + ".bmp"), "wb") as f:
+			f.write(strips.bitmap(image, "key", tuple(panel["key"]) if panel["key"] else None, tuple(panel["ground"])))
 	with open(os.path.join(out_dir, "afterglow-icons-sheet.png"), "wb") as f:
 		f.write(subprocess.run(["rsvg-convert", "--format", "png", os.path.join(HERE, "sheet.svg")], check=True, stdout=subprocess.PIPE).stdout)
 	arrow_preview(pixels).save(os.path.join(out_dir, "afterglow-arrow-preview.png"), optimize=False)

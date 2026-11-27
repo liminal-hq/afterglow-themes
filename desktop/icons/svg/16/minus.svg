@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): minus, Remove (16 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="e-minus-16-c1"><path d="M5 21 C5 19.9 5.9 19 7 19 L41 19 C42.1 19 43 19.9 43 21 L43 27 C43 28.1 42.1 29 41 29 L7 29 C5.9 29 5 28.1 5 27 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M5 21 C5 19.9 5.9 19 7 19 L41 19 C42.1 19 43 19.9 43 21 L43 27 C43 28.1 42.1 29 41 29 L7 29 C5.9 29 5 28.1 5 27 Z" fill="#f43f5e" fill-rule="evenodd"/><g clip-path="url(#e-minus-16-c1)"><path d="M5 21 C5 19.9 5.9 19 7 19 L41 19 C42.1 19 43 19.9 43 21 L43 27 C43 28.1 42.1 29 41 29 L7 29 C5.9 29 5 28.1 5 27 Z" fill="none" stroke="#bd344d" stroke-width="9" stroke-opacity="1"/></g>
+</svg>

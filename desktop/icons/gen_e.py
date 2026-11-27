@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # Afterglow icon set, variant E: every icon drawn in the language of the M1 folder, with hinted 16 px redraws and the sheet.
-# The icons added in v2 are drawn in gen_v2.py, the dialog pictures of v3 in gen_v3.py, the full image's art of v4 in gen_v4.py and the
-# namespace, registry and dialog art of v5 in gen_v5.py, with this file's Pen and registered here; hint16_v2.py holds the hand-tuned 16 px
-# frames.
+# The icons added in v2 are drawn in gen_v2.py, the dialog pictures of v3 in gen_v3.py, the full image's art of v4 in gen_v4.py, the
+# namespace, registry and dialog art of v5 in gen_v5.py and the Folder Options, device, Applications Manager, Mouse Keys and toolbar art of
+# v6 in gen_v6.py, with this file's Pen and registered here; hint16_v2.py holds the hand-tuned 16 px frames.
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -1105,8 +1105,10 @@ V4 = load_module("gen_v4")  # the art the full image still showed in stock, with
 V4.register(types.SimpleNamespace(**globals()))
 V5 = load_module("gen_v5")  # the namespace folders, registry values, Go button and dialog pictures the first screens still showed in stock
 V5.register(types.SimpleNamespace(**globals()))
+V6 = load_module("gen_v6")  # Folder Options, the device classes, the Applications Manager, Mouse Keys and the toolbar glyphs v5 left in stock
+V6.register(types.SimpleNamespace(**globals()))
 # the Explorer toolbar glyphs, which also get a 24 px profile for browseui's 24 px strips, and the Go button, whose 20 px bitmap is drawn from it
-TOOLBAR_24 = V2.TOOLBAR_24 + V5.TOOLBAR_24
+TOOLBAR_24 = V2.TOOLBAR_24 + V5.TOOLBAR_24 + [k for k in V6.TOOLBAR_24 if k not in V2.TOOLBAR_24 + V5.TOOLBAR_24]
 LABEL = {k: l for _, items in GROUPS for k, l in items}
 
 HEAD = """<!--

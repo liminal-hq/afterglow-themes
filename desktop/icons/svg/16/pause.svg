@@ -1,0 +1,10 @@
+<!--
+Afterglow icons, variant E (the M1 folder language for every icon): pause, Pause (16 px profile)
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+<defs><clipPath id="e-pause-16-c1"><path d="M10 10 C10 8.35 11.35 7 13 7 L18 7 C19.65 7 21 8.35 21 10 L21 38 C21 39.65 19.65 41 18 41 L13 41 C11.35 41 10 39.65 10 38 Z" clip-rule="evenodd"/></clipPath><clipPath id="e-pause-16-c2"><path d="M27 10 C27 8.35 28.35 7 30 7 L35 7 C36.65 7 38 8.35 38 10 L38 38 C38 39.65 36.65 41 35 41 L30 41 C28.35 41 27 39.65 27 38 Z" clip-rule="evenodd"/></clipPath></defs>
+<path d="M10 10 C10 8.35 11.35 7 13 7 L18 7 C19.65 7 21 8.35 21 10 L21 38 C21 39.65 19.65 41 18 41 L13 41 C11.35 41 10 39.65 10 38 Z" fill="#ffaa40" fill-rule="evenodd"/><g clip-path="url(#e-pause-16-c1)"><path d="M10 10 C10 8.35 11.35 7 13 7 L18 7 C19.65 7 21 8.35 21 10 L21 38 C21 39.65 19.65 41 18 41 L13 41 C11.35 41 10 39.65 10 38 Z" fill="none" stroke="#8c5e26" stroke-width="9" stroke-opacity="1"/></g><path d="M27 10 C27 8.35 28.35 7 30 7 L35 7 C36.65 7 38 8.35 38 10 L38 38 C38 39.65 36.65 41 35 41 L30 41 C28.35 41 27 39.65 27 38 Z" fill="#ffaa40" fill-rule="evenodd"/><g clip-path="url(#e-pause-16-c2)"><path d="M27 10 C27 8.35 28.35 7 30 7 L35 7 C36.65 7 38 8.35 38 10 L38 38 C38 39.65 36.65 41 35 41 L30 41 C28.35 41 27 39.65 27 38 Z" fill="none" stroke="#8c5e26" stroke-width="9" stroke-opacity="1"/></g>
+</svg>
