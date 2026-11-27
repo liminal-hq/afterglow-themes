@@ -1,5 +1,5 @@
 {
-	"note": "Maps each Afterglow icon id to the ReactOS icon it replaces. status is named when a ReactOS object is named and unmapped otherwise. resource is the module and icon group id to replace (for the Explorer toolbar, the browseui.dll bitmap strips and the cell index); also lists more groups or cells that take the same icon, each with what uses it. A resource is null unless the id is verified, and evidence says how: source (ReactOS 0.4.16 source, tag 0.4.16-release) and binary (the stock 0.4.16 i386 file holds that group). Every null is unverified, not guessed.",
+	"note": "Maps each Afterglow icon id to the ReactOS icon it replaces. status is named when a ReactOS object is named and unmapped otherwise. resource is the module and icon group id to replace (for the Explorer toolbar, the browseui.dll bitmap strips and the cell index); also lists more groups or cells that take the same icon, each with what uses it. A resource is null unless the id is verified, and evidence says how: source (ReactOS 0.4.16 source, tag 0.4.16-release) and binary (the stock 0.4.16 i386 file holds that group). Every null is unverified, not guessed. bitmaps lists the dialog bitmaps the art in desktop/dialogs (and the logon bar) replaces, by module and bitmap resource id, with the stock size and depth.",
 	"kinds": {
 		"shell": "shell32 object icon",
 		"drive": "shell32 drive icon",
@@ -10,7 +10,8 @@
 		"overlay": "the shortcut arrow overlay shell32 draws over a shortcut's icon",
 		"program": "the program's own icon group",
 		"toolbar": "a cell of the Explorer toolbar strips in browseui.dll (24 px strips 214 and 215, 16 px strips 216 and 217)",
-		"tray": "a notification area icon in stobject.dll or the keyboard layout indicator"
+		"tray": "a notification area icon in stobject.dll or the keyboard layout indicator",
+		"picture": "a picture a dialog shows: an icon group the dialog template names or its code loads"
 	},
 	"icons": [
 		{
@@ -50,7 +51,15 @@
 				"module": "hdwwiz.cpl",
 				"group": 100,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "sysdm.cpl",
+					"group": 2502,
+					"evidence": ["source", "binary"],
+					"use": "System Properties, Hardware tab: Hardware Wizard (IDI_ADDHW)"
+				}
+			]
 		},
 		{
 			"id": "addremove",
@@ -385,6 +394,19 @@
 			}
 		},
 		{
+			"id": "clicklock",
+			"label": "ClickLock",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Mouse Properties, ClickLock settings",
+			"kind": "picture",
+			"resource": {
+				"module": "main.cpl",
+				"group": 607,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
 			"id": "clipbrd",
 			"label": "Clipboard Viewer",
 			"group": "Programs",
@@ -547,7 +569,21 @@
 				"module": "devmgmt.exe",
 				"group": 1,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "devmgr.dll",
+					"group": 20,
+					"evidence": ["source", "binary"],
+					"use": "the Device Manager window (IDI_MAIN_ICON)"
+				},
+				{
+					"module": "sysdm.cpl",
+					"group": 51,
+					"evidence": ["source", "binary"],
+					"use": "System Properties, Hardware tab: Device Manager (IDI_DEVMGR)"
+				}
+			]
 		},
 		{
 			"id": "disconnect",
@@ -716,7 +752,15 @@
 				"module": "shell32.dll",
 				"group": 4,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "main.cpl",
+					"group": 605,
+					"evidence": ["source", "binary"],
+					"use": "Mouse Properties, Button tab: the double-click test folder, closed (IDI_FOLDER_CLOSED)"
+				}
+			]
 		},
 		{
 			"id": "folderopen",
@@ -730,7 +774,15 @@
 				"group": 5,
 				"evidence": ["source", "binary"]
 			},
-			"note": "Rarely shown in ReactOS 0.4.16: only the file dialog's Look in list and regedit ask for it. Delivered so the pair is complete."
+			"note": "Rarely shown in ReactOS 0.4.16: only the file dialog's Look in list and regedit ask for it. Delivered so the pair is complete.",
+			"also": [
+				{
+					"module": "main.cpl",
+					"group": 606,
+					"evidence": ["source", "binary"],
+					"use": "Mouse Properties, Button tab: the double-click test folder, open (IDI_FOLDER_OPEN)"
+				}
+			]
 		},
 		{
 			"id": "folderopts",
@@ -809,6 +861,19 @@
 					"use": "Fonts applet"
 				}
 			]
+		},
+		{
+			"id": "fontsub",
+			"label": "Font Substitutes Editor",
+			"group": "Programs",
+			"status": "named",
+			"replaces": "Font Substitutes Editor (FontSub in System Tools)",
+			"kind": "program",
+			"resource": {
+				"module": "fontsub.exe",
+				"group": 1,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "forward",
@@ -918,6 +983,19 @@
 			}
 		},
 		{
+			"id": "hwprofile",
+			"label": "Hardware profiles",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "System Properties, Hardware tab and the Hardware Profiles dialog",
+			"kind": "picture",
+			"resource": {
+				"module": "sysdm.cpl",
+				"group": 52,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
 			"id": "image",
 			"label": "Image",
 			"group": "File types",
@@ -998,6 +1076,32 @@
 			}
 		},
 		{
+			"id": "kbd-delay",
+			"label": "Key repeat delay",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Keyboard Properties, Speed tab: repeat delay",
+			"kind": "picture",
+			"resource": {
+				"module": "main.cpl",
+				"group": 105,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "kbd-rate",
+			"label": "Key repeat rate",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Keyboard Properties, Speed tab: repeat rate",
+			"kind": "picture",
+			"resource": {
+				"module": "main.cpl",
+				"group": 106,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
 			"id": "kbdlayout",
 			"label": "Keyboard layout",
 			"group": "System tray",
@@ -1028,6 +1132,79 @@
 			"resource": {
 				"module": "main.cpl",
 				"group": 200,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "msgina.dll",
+					"group": 109,
+					"evidence": ["source", "binary"],
+					"use": "the Welcome box: press Ctrl+Alt+Delete (IDI_KEYBOARD)"
+				}
+			]
+		},
+		{
+			"id": "lan",
+			"label": "Network connection",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "a network connection, idle: the Network Connections item and its tray icon",
+			"kind": "picture",
+			"resource": {
+				"module": "netshell.dll",
+				"group": 105,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "lanboth",
+			"label": "Network connection (sending and receiving)",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "the network tray icon while sending and receiving",
+			"kind": "picture",
+			"resource": {
+				"module": "netshell.dll",
+				"group": 109,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "lanoff",
+			"label": "Network connection (unplugged)",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "a network connection with its cable unplugged",
+			"kind": "picture",
+			"resource": {
+				"module": "netshell.dll",
+				"group": 106,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "lanrec",
+			"label": "Network connection (receiving)",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "the network tray icon while receiving",
+			"kind": "picture",
+			"resource": {
+				"module": "netshell.dll",
+				"group": 107,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "lantrans",
+			"label": "Network connection (sending)",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "the network tray icon while sending",
+			"kind": "picture",
+			"resource": {
+				"module": "netshell.dll",
+				"group": 108,
 				"evidence": ["source", "binary"]
 			}
 		},
@@ -1062,6 +1239,12 @@
 					"group": 45,
 					"evidence": ["source", "binary"],
 					"use": "IDI_SHELL_LOGOFF"
+				},
+				{
+					"module": "msgina.dll",
+					"group": 21,
+					"evidence": ["source", "binary"],
+					"use": "the Log Off confirmation (IDI_LOGOFF)"
 				}
 			]
 		},
@@ -1111,6 +1294,110 @@
 			"resource": {
 				"module": "main.cpl",
 				"group": 100,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "mouse-hide",
+			"label": "Hide the pointer while typing",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Mouse Properties, Pointer Options tab: hide while typing",
+			"kind": "picture",
+			"resource": {
+				"module": "main.cpl",
+				"group": 601,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "mouse-left",
+			"label": "Mouse, primary button left",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Mouse Properties, Button tab: the mouse with the left button primary",
+			"kind": "picture",
+			"resource": {
+				"module": "main.cpl",
+				"group": 109,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "mouse-locate",
+			"label": "Show where the pointer is",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Mouse Properties, Pointer Options tab: show location with Ctrl",
+			"kind": "picture",
+			"resource": {
+				"module": "main.cpl",
+				"group": 602,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "mouse-right",
+			"label": "Mouse, primary button right",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Mouse Properties, Button tab: the mouse with the right button primary",
+			"kind": "picture",
+			"resource": {
+				"module": "main.cpl",
+				"group": 110,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "mouse-snap",
+			"label": "Snap the pointer to the default button",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Mouse Properties, Pointer Options tab: snap to",
+			"kind": "picture",
+			"resource": {
+				"module": "main.cpl",
+				"group": 108,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "mouse-speed",
+			"label": "Pointer speed",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Mouse Properties, Pointer Options tab: motion",
+			"kind": "picture",
+			"resource": {
+				"module": "main.cpl",
+				"group": 104,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "mouse-trails",
+			"label": "Pointer trails",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Mouse Properties, Pointer Options tab: pointer trails",
+			"kind": "picture",
+			"resource": {
+				"module": "main.cpl",
+				"group": 600,
+				"evidence": ["source", "binary"]
+			}
+		},
+		{
+			"id": "mouse-wheel",
+			"label": "Mouse wheel",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Mouse Properties, Wheel tab",
+			"kind": "picture",
+			"resource": {
+				"module": "main.cpl",
+				"group": 603,
 				"evidence": ["source", "binary"]
 			}
 		},
@@ -1185,6 +1472,12 @@
 					"group": 43,
 					"evidence": ["source", "binary"],
 					"use": "the CSIDL_DRIVES folder entry"
+				},
+				{
+					"module": "shell32.dll",
+					"group": 181,
+					"evidence": ["source", "binary"],
+					"use": "the My Computer zone at the right of an Explorer window's status bar (IDI_SHELL_COMPUTER_DESKTOP)"
 				}
 			]
 		},
@@ -1525,7 +1818,15 @@
 				"group": 32,
 				"evidence": ["source", "binary"]
 			},
-			"note": "Registry DefaultIcon values Empty and Full say shell32.dll,31 and shell32.dll,32, the zero-based indexes of groups 32 and 33."
+			"note": "Registry DefaultIcon values Empty and Full say shell32.dll,31 and shell32.dll,32, the zero-based indexes of groups 32 and 33.",
+			"also": [
+				{
+					"module": "explorer.exe",
+					"group": 108,
+					"evidence": ["source", "binary"],
+					"use": "Customize Classic Start Menu: Clear (IDI_RECYCLEBIN)"
+				}
+			]
 		},
 		{
 			"id": "recyclefull",
@@ -1677,10 +1978,14 @@
 			"id": "shield",
 			"label": "Security",
 			"group": "Dialogs",
-			"status": "unmapped",
-			"replaces": null,
-			"kind": null,
-			"resource": null
+			"status": "named",
+			"replaces": "the Locked and Unlock boxes' padlock",
+			"kind": "picture",
+			"resource": {
+				"module": "msgina.dll",
+				"group": 115,
+				"evidence": ["source", "binary"]
+			}
 		},
 		{
 			"id": "showdesk",
@@ -1702,7 +2007,15 @@
 				"module": "shell32.dll",
 				"group": 329,
 				"evidence": ["source", "binary"]
-			}
+			},
+			"also": [
+				{
+					"module": "msgina.dll",
+					"group": 22,
+					"evidence": ["source", "binary"],
+					"use": "the classic Shut Down dialog (IDI_SHUTDOWN)"
+				}
+			]
 		},
 		{
 			"id": "sndrec32",
@@ -1777,6 +2090,27 @@
 				"cell": 2,
 				"evidence": ["source", "binary"]
 			}
+		},
+		{
+			"id": "startmenu",
+			"label": "Start menu",
+			"group": "Dialog pictures",
+			"status": "named",
+			"replaces": "Customize Classic Start Menu: the Start menu picture",
+			"kind": "picture",
+			"resource": {
+				"module": "explorer.exe",
+				"group": 257,
+				"evidence": ["source", "binary"]
+			},
+			"also": [
+				{
+					"module": "explorer.exe",
+					"group": 107,
+					"evidence": ["source", "binary"],
+					"use": "Taskbar and Start Menu Properties, Start Menu tab (IDI_STARTMENU)"
+				}
+			]
 		},
 		{
 			"id": "system",
@@ -1915,6 +2249,12 @@
 					"group": 100,
 					"evidence": ["source", "binary"],
 					"use": "theme-compatibility id"
+				},
+				{
+					"module": "sysdm.cpl",
+					"group": 53,
+					"evidence": ["source", "binary"],
+					"use": "System Properties, User Profiles dialog (IDI_USERPROF)"
 				}
 			]
 		},
@@ -2043,6 +2383,104 @@
 				"group": 101,
 				"evidence": ["source", "binary"]
 			}
+		}
+	],
+	"bitmaps": [
+		{
+			"id": "about-banner",
+			"file": "desktop/dialogs/about-banner.svg",
+			"bitmap": "about-banner.bmp",
+			"module": "shell32.dll",
+			"resource": 131,
+			"name": "IDB_REACTOS",
+			"size": [413, 72],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the banner of the About box (ShellAbout)"
+		},
+		{
+			"id": "about-bar",
+			"file": "desktop/logon/bar.svg",
+			"bitmap": "afterglow-bar.bmp",
+			"module": "shell32.dll",
+			"resource": 138,
+			"name": "IDB_LINEBAR",
+			"size": [413, 5],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the line under the About banner; the logon bar, byte for byte the stock msgina.dll 20001 twin"
+		},
+		{
+			"id": "shutdown-bg",
+			"file": "desktop/dialogs/shutdown-bg.svg",
+			"bitmap": "shutdown-bg.bmp",
+			"module": "msgina.dll",
+			"resource": 20003,
+			"name": "IDI_DLG_BG",
+			"size": [312, 198],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the Shut Down dialog's background (IDD_SHUTDOWN_FANCY and _LONG)"
+		},
+		{
+			"id": "shutdown-bg",
+			"file": "desktop/dialogs/shutdown-bg.svg",
+			"bitmap": "shutdown-bg.bmp",
+			"module": "shell32.dll",
+			"resource": 500,
+			"name": "IDB_DLG_BG",
+			"size": [312, 198],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the Log Off dialog's background (IDD_LOG_OFF_FANCY)"
+		},
+		{
+			"id": "shutdown-mark",
+			"file": "desktop/dialogs/shutdown-mark.svg",
+			"bitmap": "shutdown-mark.bmp",
+			"module": "msgina.dll",
+			"resource": 20002,
+			"name": "IDI_ROSLOGO_FLAG",
+			"size": [48, 40],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the mark at the top right of the Shut Down dialog"
+		},
+		{
+			"id": "shutdown-mark",
+			"file": "desktop/dialogs/shutdown-mark.svg",
+			"bitmap": "shutdown-mark.bmp",
+			"module": "shell32.dll",
+			"resource": 501,
+			"name": "IDB_REACTOS_FLAG",
+			"size": [48, 40],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the mark at the top right of the Log Off dialog"
+		},
+		{
+			"id": "shutdown-strip",
+			"file": "desktop/dialogs/shutdown-strip.svg",
+			"bitmap": "shutdown-strip.bmp",
+			"module": "msgina.dll",
+			"resource": 20004,
+			"name": "IDB_IMAGE_STRIP",
+			"size": [33, 330],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the Shut Down dialog's buttons: ten 33 px cells (shutdown.c)"
+		},
+		{
+			"id": "logoff-strip",
+			"file": "desktop/dialogs/logoff-strip.svg",
+			"bitmap": "logoff-strip.bmp",
+			"module": "shell32.dll",
+			"resource": 502,
+			"name": "IDB_IMAGE_STRIP",
+			"size": [33, 231],
+			"bits": 24,
+			"evidence": ["source", "binary"],
+			"use": "the Log Off dialog's buttons: seven 33 px cells (dialogs.cpp)"
 		}
 	]
 }
