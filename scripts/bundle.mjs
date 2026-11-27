@@ -261,6 +261,23 @@ function buildReactosDesktop() {
 			copyFileSync(join(desktop, 'start', file), join(startArt, file));
 		}
 
+		// The dialog art: the About banner and the Shut Down and Log Off dialogs' background, mark and button strips, as SVG masters,
+		// the BMPs rendered from them and the hash lists. The patches into shell32.dll and msgina.dll happen in the reactos-liminal build.
+		const dialogs = join(stage, 'dialogs');
+		execFileSync('python3', [join(desktop, 'dialogs', 'render.py'), dialogs], { stdio: 'ignore' });
+		rmSync(join(dialogs, 'afterglow-dialogs-preview.png'));
+		for (const file of [
+			'about-banner.svg',
+			'shutdown-bg.svg',
+			'shutdown-mark.svg',
+			'shutdown-strip.svg',
+			'logoff-strip.svg',
+			'SHA256SUMS',
+			'SHA256SUMS.masters',
+		]) {
+			copyFileSync(join(desktop, 'dialogs', file), join(dialogs, file));
+		}
+
 		// The icon set and the shortcut arrow: the .ico and PNG renders drawn here, the SVG masters they come from, and the id map
 		const icons = join(stage, 'icons');
 		execFileSync('python3', [join(desktop, 'icons', 'render.py'), icons], { stdio: 'ignore' });
@@ -300,6 +317,10 @@ function buildReactosDesktop() {
 			join(root, 'docs', 'images', 'afterglow-start.png'),
 			join(stage, 'docs', 'images', 'afterglow-start.png'),
 		);
+		copyFileSync(
+			join(root, 'docs', 'images', 'afterglow-dialogs.png'),
+			join(stage, 'docs', 'images', 'afterglow-dialogs.png'),
+		);
 		for (const image of [
 			'afterglow-icons.png',
 			'afterglow-icons-contact.png',
@@ -324,6 +345,8 @@ function buildReactosDesktop() {
 			'reactos-desktop-boot.md',
 			'reactos-desktop-start.md',
 			'reactos-desktop-icons.md',
+			'reactos-desktop-dialogs.md',
+			'reactos-stock-art-survey.md',
 		]) {
 			const text = readFileSync(join(root, 'docs', doc), 'utf8').replaceAll(
 				'](../desktop/',

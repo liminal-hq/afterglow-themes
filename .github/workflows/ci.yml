@@ -136,6 +136,10 @@ jobs:
       - name: Test the icon renderer
         id: icons
         run: node --test scripts/render-icons.test.mjs
+      # The dialog renderer tests skip in the plain unit test run, which has no rsvg-convert; here they run for real.
+      - name: Test the dialog renderer
+        id: dialogs
+        run: node --test scripts/render-dialogs.test.mjs
 
       - name: Job summary
         if: always()
@@ -148,6 +152,7 @@ jobs:
             echo "- Boot renderer tests: \`${{ steps.boot.outcome }}\`"
             echo "- Start renderer tests: \`${{ steps.start.outcome }}\`"
             echo "- Icon renderer tests: \`${{ steps.icons.outcome }}\`"
+            echo "- Dialog renderer tests: \`${{ steps.dialogs.outcome }}\`"
           } >> "${GITHUB_STEP_SUMMARY}"
 
   bundle:

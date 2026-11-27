@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Afterglow Shut Down and Log Off dialog mark
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+
+Master in the bitmap's pixels (48 x 40), drawn at 4x; replaces msgina.dll bitmap 20002 (IDI_ROSLOGO_FLAG) and
+shell32.dll bitmap 501 (IDB_REACTOS_FLAG). Its ground is the header gradient of shutdown-bg.svg, two pixels down.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="160" viewBox="0 0 48 40">
+<title>Afterglow Shut Down and Log Off dialog mark</title>
+<defs><linearGradient id="head" x1="0" y1="-2" x2="0" y2="40" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1f2554"/><stop offset="1" stop-color="#262c5e"/></linearGradient><linearGradient id="horizon" x1="2" y1="0" x2="46" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffaa40" stop-opacity="0"/><stop offset="0.5" stop-color="#ffd08e"/><stop offset="1" stop-color="#ffaa40" stop-opacity="0"/></linearGradient><clipPath id="sky"><rect x="0" y="0" width="48" height="30"/></clipPath></defs>
+<rect x="0" y="0" width="48" height="40" fill="url(#head)"/><g clip-path="url(#sky)"><circle cx="24" cy="30" r="21" fill="#2e3468"/><circle cx="24" cy="30" r="17" fill="#42396c"/><circle cx="24" cy="30" r="13" fill="#5a3f6c"/><circle cx="24" cy="30" r="9.5" fill="#7a4562"/><circle cx="24" cy="30" r="7" fill="#ffaa40"/><ellipse cx="22" cy="26.6" rx="2.8" ry="1.6" fill="#ffe7c4" fill-opacity="0.8"/></g><rect x="2" y="29.4" width="44" height="1.6" rx="0.8" fill="url(#horizon)"/>
+</svg>
