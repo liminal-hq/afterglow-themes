@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # Review-only alternatives to Afterglow icons: keyline variants that reach 3:1 against both the classic cream window colour and the Dusk
 # desktop colour. Nothing here ships until the owner picks. (The device redraws of the drive icons and My Computer were picked and ship,
-# and the keyline ships on Hard disk, Floppy, Removable drive, RAM disk and My Computer: gen_e.py's KEYLINED, whose variants here are the
-# shipped drawings.)
+# and the keyline ships on the tier in gen_e.py's KEYLINED: the drives and My Computer, the icons drawn on a page, the Explorer toolbar
+# glyphs and the light objects of the file windows, whose variants here are the shipped drawings.)
 #
 # (c) Copyright 2026 Liminal HQ, Scott Morris
 # SPDX-License-Identifier: Apache-2.0 OR MIT
@@ -13,6 +13,10 @@
 #                                            alternative at 1x and 4x, on cream and on dusk, with the measured contrast (needs rsvg-convert)
 #   python3 alternatives.py --rest OUT_PNG   draw the keyline-rest sheet: the 24 icons furthest below 3:1 among those that do not ship
 #                                            the keyline, current against keyline, with the contrast of each size (needs rsvg-convert)
+#   python3 alternatives.py --tier OUT_PNG BEFORE_SVG_DIR
+#                                            draw the keyline tier before and after: the page, toolbar and light-object icons of
+#                                            gen_e.py's KEYLINED, from an svg/ folder of the release before against the shipped masters,
+#                                            on cream, white and Dusk at every size (needs rsvg-convert)
 #
 # The keyline variant of an icon is
 # the icon itself with every material edge (the clipped inner edge set E draws at 30 to 60 %) made opaque and retuned, in its own hue, to
@@ -30,6 +34,7 @@ import os
 import re
 import subprocess
 import sys
+import textwrap
 import types
 
 sys.dont_write_bytecode = True
@@ -76,26 +81,8 @@ PLATE_KEY = retune(gen.HORIZON, PLATE_LUMINANCE)
 PLATE_KEY_16 = retune(gen.HORIZON, 0.15)
 
 
-# Hand-tuned 16 px frames for keyline variants whose scripted 16 px frame is too thin to carry a keyline
+# Hand-tuned 16 px frames for keyline variants whose scripted 16 px frame is too thin to carry a keyline (Views' ships in hint16_v2.py)
 KEYLINE_16 = {
-	"views": [
-		"................",
-		"................",
-		".MMMMMMMMMMMMMM.",
-		".Mm22m1111111mM.",
-		".MMMMMMMMMMMMMM.",
-		"................",
-		".MMMMMMMMMMMMMM.",
-		".Mm22m1111111mM.",
-		".MMMMMMMMMMMMMM.",
-		"................",
-		".MMMMMMMMMMMMMM.",
-		".Mm22m1111111mM.",
-		".MMMMMMMMMMMMMM.",
-		"................",
-		"................",
-		"................",
-	],
 	"kbdlayout": [
 		"................",
 		"................",
@@ -140,25 +127,12 @@ def build_current(icon_id, size, prefix):
 	return gen.build(icon_id, size, prefix)
 
 
-EDGE_STROKE = re.compile(r'stroke="(#[0-9a-f]{6})" stroke-width="([0-9.]+)" stroke-opacity="([0-9.]+)"')
-UNDER_STROKE = re.compile(r'stroke="(#[0-9a-f]{6})" stroke-opacity="([0-9.]+)" stroke-width="([0-9.]+)"')
-
-
 def keyline_body(body, size, plated):
 	"""Every material edge opaque, retuned and widened for the profile; a plated icon also gets the rim on its plate."""
 	factor = KEY_WIDTH[size]
 	unit = 48 / size if size < 48 else 1
 	rim_colour = PLATE_KEY_16 if size == 16 else PLATE_KEY
-
-	def edge(match):
-		return 'stroke="%s" stroke-width="%s" stroke-opacity="1"' % (retune(match.group(1)), _n(float(match.group(2)) * factor))
-
-	def under(match):
-		widened = float(match.group(3)) + 2 * unit * (factor - 1)
-		return 'stroke="%s" stroke-opacity="1" stroke-width="%s"' % (retune(match.group(1)), _n(widened))
-
-	body = EDGE_STROKE.sub(edge, body)
-	body = UNDER_STROKE.sub(under, body)
+	body = gen.keyline_strokes(body, size)
 	# a rim drawn as a horizon stroke (Show desktop's screen) is the plate's rim
 	body = body.replace('fill="none" stroke="%s" stroke-width="%s"/>' % (gen.HORIZON, _n(2 * unit)),
 		'fill="none" stroke="%s" stroke-width="%s"/>' % (rim_colour, _n(2 * unit * factor)))
@@ -381,7 +355,8 @@ def rest_review(out_path, count=24):
 	draw = ImageDraw.Draw(sheet)
 	draw.text((margin, 18), "Keyline for the rest of the set · review only, NOT SHIPPED", font=heading, fill=gold)
 	lines = [
-		"The %d icons furthest below 3:1, of the %d still below it on cream or Dusk once Hard disk, Floppy, Removable drive, RAM disk and My Computer ship the keyline." % (len(shown), len(ranked)),
+		"The %d icons furthest below 3:1, of the %d still below it on cream or Dusk once the %d icons of gen_e.py's KEYLINED (the drives, pages, toolbar glyphs and light objects) ship the keyline." % (
+			len(shown), len(ranked), len(gen.KEYLINED)),
 		"Each pair: current (shipped) and keyline (alternatives/keyline), each on cream (212, 208, 200) and on Dusk (9, 14, 42): 48, 32 and 16 px at 1x, then the 16 px frame at 4x.",
 		"Numbers: WCAG 2 contrast of the main silhouette's edge at 48 · 32 · 16 px; green reaches 3:1. Ranked by the lowest number of the current icon.",
 	]
@@ -416,8 +391,97 @@ def rest_review(out_path, count=24):
 		for lowest, icon_id, current, values in shown], len(ranked)
 
 
+TIER_GROUNDS = (("cream", (212, 208, 200)), ("white", (255, 255, 255)), ("dusk", (9, 14, 42)))
+TIER_GROUPS = (("Drawn on a page", gen.KEYLINED_PAGES), ("Explorer toolbar glyphs (24 px is the large toolbar strip)", gen.KEYLINED_TOOLBAR),
+	("Light objects in the file windows", gen.KEYLINED_LIGHT))
+
+
+def svg_frames(base, icon_id):
+	"""48, 32, 24 (toolbar glyphs only) and 16 px frames of the masters in an svg/ folder, 16 from the hinted redraw where there is one."""
+	hinted = os.path.join(base, icon_id + "-16.svg")
+	sizes = {48: rasterise(os.path.join(base, icon_id + ".svg"), 48), 32: rasterise(os.path.join(base, "32", icon_id + ".svg"), 32)}
+	if os.path.exists(os.path.join(base, "24", icon_id + ".svg")):
+		sizes[24] = rasterise(os.path.join(base, "24", icon_id + ".svg"), 24)
+	sizes[16] = rasterise(hinted if os.path.exists(hinted) else os.path.join(base, "16", icon_id + ".svg"), 16)
+	return sizes
+
+
+def tier_tile(sizes, ground):
+	"""One drawing on one ground: 48, 32, 24 (where drawn) and 16 px at 1x, then the 16 px frame at 4x."""
+	from PIL import Image
+	tile = Image.new("RGBA", (206, 72), ground + (255,))
+	tile.alpha_composite(sizes[48], (4, 12))
+	tile.alpha_composite(sizes[32], (56, 20))
+	if 24 in sizes:
+		tile.alpha_composite(sizes[24], (92, 24))
+	tile.alpha_composite(sizes[16], (120, 28))
+	tile.alpha_composite(sizes[16].resize((64, 64), Image.NEAREST), (140, 4))
+	return tile.convert("RGB")
+
+
+def tier_review(out_path, before_svg):
+	"""The keyline tier before and after: each icon's previous masters (an svg/ folder of the release before) against the shipped ones, on
+	cream, white and Dusk, with every size's contrast. Returns {id: {"before"|"after": {ground: {size: contrast}}}}."""
+	from PIL import Image, ImageDraw, ImageFont
+	font, small, heading = ImageFont.load_default(size=13), ImageFont.load_default(size=11), ImageFont.load_default(size=20)
+	ink, dim, gold, bad, good = (224, 224, 224), (124, 135, 150), (255, 208, 142), (244, 63, 94), (134, 239, 172)
+	tile_width, tile_height, gap, label_width, margin = 206, 72, 6, 150, 24
+	half = len(TIER_GROUNDS) * (tile_width + gap)
+	row_height = tile_height + 34
+	count = sum(len(members) for _, members in TIER_GROUPS)
+	width = margin * 2 + label_width + 2 * half + 24
+	height = 150 + count * row_height + len(TIER_GROUPS) * 34 + 20
+	sheet = Image.new("RGB", (width, height), (12, 12, 16))
+	draw = ImageDraw.Draw(sheet)
+	draw.text((margin, 18), "The keyline tier · before and after", font=heading, fill=gold)
+	lines = [
+		"The %d icons that now ship with the keyline, besides the drives and My Computer: set E's own inner edge, opaque and retuned in each material's hue." % count,
+		"Each side: on cream (212, 208, 200), white (255, 255, 255) and Dusk (9, 14, 42): 48, 32, 24 and 16 px at 1x, then the 16 px frame at 4x.",
+		"Numbers: WCAG 2 contrast of the main silhouette's edge at each size; green reaches 3:1.",
+	]
+	for index, line in enumerate(lines):
+		draw.text((margin, 50 + index * 17), line, font=small, fill=dim)
+	draw.text((margin + label_width, 118), "before", font=font, fill=ink)
+	draw.text((margin + label_width + half + 24, 118), "after (shipped)", font=font, fill=gold)
+	report = {}
+
+	def side(x, y, sizes):
+		values = {}
+		for band, (ground_name, ground) in enumerate(TIER_GROUNDS):
+			left = x + band * (tile_width + gap)
+			sheet.paste(tier_tile(sizes, ground), (left, y))
+			values[ground_name] = {}
+			cursor = left
+			for size in sorted(sizes, reverse=True):
+				value = measure(sizes[size], ground)
+				values[ground_name][size] = value
+				label = "%dpx %.1f" % (size, value)
+				draw.text((cursor, y + tile_height + 4), label, font=small, fill=good if value >= TARGET else bad)
+				cursor += draw.textlength(label, font=small) + 7
+		return values
+
+	y = 140
+	for group_name, members in TIER_GROUPS:
+		draw.text((margin, y + 8), group_name, font=font, fill=gold)
+		y += 34
+		for icon_id in sorted(members, key=lambda member: gen.LABEL[member]):
+			for index, part in enumerate(textwrap.wrap(gen.LABEL[icon_id], 18)):
+				draw.text((margin, y + 14 + index * 16), part, font=font, fill=ink)
+			draw.text((margin, y + 50), icon_id, font=small, fill=dim)
+			report[icon_id] = {"before": side(margin + label_width, y, svg_frames(before_svg, icon_id)),
+				"after": side(margin + label_width + half + 24, y, svg_frames(os.path.join(ICONS, "svg"), icon_id))}
+			y += row_height
+	sheet.save(out_path, optimize=True)
+	return report
+
+
 def main():
-	if len(sys.argv) == 3 and sys.argv[1] == "--rest":
+	if len(sys.argv) == 4 and sys.argv[1] == "--tier":
+		report = tier_review(sys.argv[2], sys.argv[3])
+		for icon_id, sides in report.items():
+			print("%-12s" % icon_id, " | ".join("%s %s -> %s" % (name, " ".join("%.2f" % value for value in sides["before"][name].values()),
+				" ".join("%.2f" % value for value in sides["after"][name].values())) for name, _ in TIER_GROUNDS))
+	elif len(sys.argv) == 3 and sys.argv[1] == "--rest":
 		shown, below = rest_review(sys.argv[2])
 		print("rest sheet", len(shown), "of", below, "icons below 3:1")
 		for icon_id, current, keyline in shown:
@@ -433,7 +497,7 @@ def main():
 	elif len(sys.argv) == 1:
 		print("alternative masters", write_masters())
 	else:
-		sys.exit("usage: alternatives.py [--review OUT_PNG | --rest OUT_PNG]")
+		sys.exit("usage: alternatives.py [--review OUT_PNG | --rest OUT_PNG | --tier OUT_PNG BEFORE_SVG_DIR]")
 
 
 if __name__ == "__main__":

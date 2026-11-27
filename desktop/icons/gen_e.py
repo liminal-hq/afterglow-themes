@@ -15,6 +15,7 @@ import colorsys
 import importlib.util
 import math
 import os
+import re
 import sys
 import types
 
@@ -93,13 +94,19 @@ SHADOW = {"body": 0.30, "tile": 0.30, "lift": 0.20, "flat": 0.0}
 # ---- the keyline: set E's own inner edge, opaque and retuned in its own hue so the silhouette reaches 3:1 on cream and on dusk -------------------
 # The classic cream window colour has a luminance of about 0.62 and the Dusk desktop about 0.006; an edge of about 0.137 reaches 3:1
 # against both. The edge is drawn about 1.5 screen pixels wide, because at 32 px and below one pixel falls between pixels and blurs. Only
-# the icons in KEYLINED ship with it (the hard disk, the device drives and My Computer, which ReactOS shows on light windows); every other
-# icon's keyline variant is a review-only alternative in alternatives/.
+# the icons in KEYLINED ship with it, the ones ReactOS shows on light grounds: the drives and My Computer, the icons drawn on a page, the
+# Explorer toolbar glyphs on the cream toolbar, and the light objects listed in white file windows. Every other icon's keyline variant is a
+# review-only alternative in alternatives/.
 KEY_LUMINANCE = 0.137
 KEY_WIDTH = {48: 1.5, 32: 1.67, 24: 1.5, 16: 1.5}
-KEYLINED = {"hdd", "floppy", "removable", "ramdisk", "mycomputer"}
+KEYLINED_DRIVES = {"hdd", "floppy", "removable", "ramdisk", "mycomputer"}
+KEYLINED_PAGES = {"doc", "text", "image", "library", "archive", "font", "rtf", "audio", "video", "batch", "regfile", "inifile", "html", "documents"}
+KEYLINED_TOOLBAR = {"back", "forward", "up", "search", "folders", "move", "copy", "copyclip", "cut", "paste", "del", "undo", "views", "properties", "star",
+	"mapdrive", "disconnect"}
+KEYLINED_LIGHT = {"recycle", "recyclefull", "cd-disc", "floppy-disk", "usb-key", "monitor", "netdrive", "netdriveoff", "program"}
+KEYLINED = KEYLINED_DRIVES | KEYLINED_PAGES | KEYLINED_TOOLBAR | KEYLINED_LIGHT
 # Their hand-tuned 16 px frames take the keyline tone on their edge pixels only where the frame is below 3:1 on cream without it
-KEYLINED_16 = {"removable"}
+KEYLINED_16 = {"removable", "views"} | KEYLINED_PAGES
 
 
 def luminance_of(colour):
@@ -118,6 +125,35 @@ def retune(colour, target=KEY_LUMINANCE):
 		else:
 			high = middle
 	return "#%02x%02x%02x" % tuple(round(component * 255) for component in colorsys.hls_to_rgb(hue, high, saturation))
+
+
+EDGE_STROKE = re.compile(r'stroke="(#[0-9a-f]{6})" stroke-width="([0-9.]+)" stroke-opacity="([0-9.]+)"')
+UNDER_STROKE = re.compile(r'stroke="(#[0-9a-f]{6})" stroke-opacity="([0-9.]+)" stroke-width="([0-9.]+)"')
+
+
+def keyline_strokes(body, size):
+	"""The keyline laid on a drawing the Pen did not make (the M1 Folders glyph): every soft edge stroke made opaque, retuned and widened
+	for the profile, as Pen.edge_paint draws it."""
+	factor = KEY_WIDTH[size]
+	unit = 48 / size if size < 48 else 1
+
+	def edge(match):
+		return 'stroke="%s" stroke-width="%s" stroke-opacity="1"' % (retune(match.group(1)), _n(float(match.group(2)) * factor))
+
+	def under(match):
+		widened = float(match.group(3)) + 2 * unit * (factor - 1)
+		return 'stroke="%s" stroke-opacity="1" stroke-width="%s"' % (retune(match.group(1)), _n(widened))
+
+	return UNDER_STROKE.sub(under, EDGE_STROKE.sub(edge, body))
+
+
+# The Folders glyph's tree is a light core on a horizon line; too thin to carry an edge at 24 and 16 px, so with the keyline its core
+# takes the keyline tone in its own hue (the horizon line around it already reaches 3:1 on cream, the core then does on Dusk)
+TREE_CORE = 'stroke="%s" stroke-width="1.6" stroke-linecap="round"' % FG.TOK["text2"]
+
+
+def keyline_tree(body):
+	return body.replace(TREE_CORE, 'stroke="%s" stroke-width="1.6" stroke-linecap="round"' % retune(FG.TOK["text2"]))
 
 
 def circ(cx, cy, r):
@@ -891,7 +927,8 @@ def build(k, size, pre=None):
 	pre = pre or "e-%s-%d" % (k, size)
 	kind, tier, f = I[k]
 	if kind == "m1":
-		return FG.icon(M1, M1_NAME[k], size, pre)
+		defs, body = FG.icon(M1, M1_NAME[k], size, pre)
+		return defs, keyline_tree(keyline_strokes(body, size)) if k in KEYLINED else body
 	if kind == "built":
 		return f(size, pre)
 	p = Pen(pre, size, k in KEYLINED)
@@ -908,7 +945,8 @@ PXM = {"g": G["gold"], "f": G["goldl"], "p": G["paper"], "q": G["fold"], "m": G[
 PXD = {"1": INDIGO[400], "2": ORANGE[200], "3": ORANGE[600], "4": PAPER[900], "5": SKY1, "6": SKY4, "7": SKY7, "8": DARK, "9": VOIDN[400], "0": INDIGO[200], "e": G["back"].px_edge()}
 
 
-def px_layers(layers):
+def px_layers(layers, keyline=False):
+	"""The rects of a hinted frame; with the keyline, every edged material pixel takes the keyline tone of its 16 px edge."""
 	px = {}
 	for rows, edged in layers:
 		cells = {(x, y): ch for y, row in enumerate(rows) for x, ch in enumerate(row) if ch != "."}
@@ -916,7 +954,10 @@ def px_layers(layers):
 			if ch in PXM:
 				m = PXM[ch]
 				out = any((x + dx, y + dy) not in cells for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
-				px[(x, y)] = m.px_edge() if edged and out else m.base
+				if edged and out:
+					px[(x, y)] = retune(m.px_edge()) if keyline else m.px_edge()
+				else:
+					px[(x, y)] = m.base
 			else:
 				px[(x, y)] = PXD[ch]
 	return "".join('<rect x="%d" y="%d" width="1" height="1" fill="%s"/>' % (x, y, c) for (x, y), c in sorted(px.items(), key=lambda q: (q[0][1], q[0][0])))
@@ -1017,7 +1058,7 @@ def hinted(k):
 	if k in M1_H16:
 		st, em = M1_H16[k]
 		return FG.hint16(M1, st, em)
-	return px_layers(H16[k])
+	return px_layers(H16[k], k in KEYLINED_16)
 
 
 HINTED = ["folder", "folderopen", "mydocs", "mypictures", "mymusic", "myvideos", "desktop", "network", "doc", "documents", "warning", "error", "search", "hdd", "mycomputer", "monitor", "recycle", "recyclefull"]

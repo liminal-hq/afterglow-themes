@@ -1122,6 +1122,31 @@ def internet_browser():
 	], 3, 4)
 
 
+# ---- Explorer toolbar -------------------------------------------------------------------------------------------------------------------------
+# Views ships with the keyline (gen_e.py's KEYLINED_16). The scripted 16 px frame blurs its three bars into one, so each bar is drawn here
+# whole pixels tall, with a clear row between them for the edge.
+@art("views")
+def views():
+	return [
+		"................",
+		"................",
+		".MMMMMMMMMMMMMM.",
+		".Mm22m1111111mM.",
+		".MMMMMMMMMMMMMM.",
+		"................",
+		".MMMMMMMMMMMMMM.",
+		".Mm22m1111111mM.",
+		".MMMMMMMMMMMMMM.",
+		"................",
+		".MMMMMMMMMMMMMM.",
+		".Mm22m1111111mM.",
+		".MMMMMMMMMMMMMM.",
+		"................",
+		"................",
+		"................",
+	]
+
+
 ORDER = list(ART)
 
 
