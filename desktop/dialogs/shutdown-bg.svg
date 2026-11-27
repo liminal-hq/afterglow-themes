@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Afterglow Shut Down and Log Off dialog background
+
+(c) Copyright 2026 Liminal HQ, Scott Morris
+SPDX-License-Identifier: Apache-2.0 OR MIT
+
+Master in the bitmap's pixels (312 x 198), drawn at 4x; replaces msgina.dll bitmap 20003 (IDI_DLG_BG) and
+shell32.dll bitmap 500 (IDB_DLG_BG). The panel is RGB(244, 244, 244), the colour the dialogs paint their labels with.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1248" height="792" viewBox="0 0 312 198">
+<title>Afterglow Shut Down and Log Off dialog background</title>
+<defs><linearGradient id="head" x1="0" y1="0" x2="0" y2="42" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1f2554"/><stop offset="1" stop-color="#262c5e"/></linearGradient><linearGradient id="foot" x1="0" y1="156" x2="0" y2="198" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#262c5e"/><stop offset="1" stop-color="#161a40"/></linearGradient><linearGradient id="ink" x1="0" y1="0" x2="312" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffaa40" stop-opacity="0"/><stop offset="0.5" stop-color="#ffaa40"/><stop offset="1" stop-color="#ffaa40" stop-opacity="0"/></linearGradient></defs>
+<rect x="0" y="0" width="312" height="42" fill="url(#head)"/><rect x="0" y="42" width="312" height="1" fill="#4a4580"/><rect x="0" y="43" width="312" height="3" fill="#121741"/><rect x="0" y="44" width="312" height="2" fill="url(#ink)"/><rect x="0" y="46" width="312" height="108" fill="#f4f4f4"/><rect x="0" y="154" width="312" height="1" fill="#121741"/><rect x="0" y="155" width="312" height="1" fill="#4a4580"/><rect x="0" y="156" width="312" height="42" fill="url(#foot)"/>
+</svg>
