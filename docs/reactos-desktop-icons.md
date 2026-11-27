@@ -60,14 +60,24 @@ Every icon ships at 16, 32 and 48 px, drawn from the master built for that size:
 | 48 px | `svg/ID.svg`, the master                                                                      |
 | 32 px | `svg/32/ID.svg`, the 32 px profile (still a 48 viewBox, with its own edge)                    |
 | 24 px | `svg/24/ID.svg`, the 24 px profile, for the 18 Explorer toolbar glyphs only                   |
-| 16 px | `svg/ID-16.svg`, the hinted redraw, for the 25 icons that have one; otherwise `svg/16/ID.svg` |
+| 16 px | `svg/ID-16.svg`, the hinted redraw, for the 81 icons that have one; otherwise `svg/16/ID.svg` |
 
-The hinted 16 px redraws are pixel drawings: Folder, Folder (open), My Documents, My Pictures, My Music, My Videos, Desktop, My Network Places, Document, Documents, Warning, Error, Search, Hard disk, CD drive, Floppy, Removable drive, RAM disk, My Computer, Monitor, both Recycle Bins, Favourites, Recent and the Programs folder. `desktop/icons/render.py OUT_DIR` runs `rsvg-convert` on each, which bakes each size's own blur for the shadows, and writes `png/ID-SIZE.png` (441 files), one `ico/ID.ico` per icon (141 files with the arrow) and, for each toolbar glyph, `ico24/ID.ico` with its one 24 px frame (18 files). An `.ico` holds the three frames, smallest first, as uncompressed 32-bit BGRA DIB frames with alpha and an all-zero AND mask: the classic layout that old icon loaders read, with no PNG-compressed frames. The output has no dates, so the same masters and the same `rsvg-convert` give the same bytes. The `.ico` bytes were identical with `rsvg-convert` 2.58 and 2.63; the PNG files are written as `rsvg-convert` makes them and are not hashed. The files are named by the icon ids, so a build recipe can pick `ico/folder.ico` by id. The `.ico` hashes are in `desktop/icons/SHA256SUMS`, and `bun run check:desktop` renders them again and compares.
+The hinted 16 px redraws are pixel drawings: Folder, Folder (open), My Documents, My Pictures, My Music, My Videos, Desktop, My Network Places, Document, Documents, Warning, Error, Search, Hard disk, My Computer, Monitor, both Recycle Bins, Favourites, Recent and the Programs folder, and the 61 hand-tuned frames below. `desktop/icons/render.py OUT_DIR` runs `rsvg-convert` on each, which bakes each size's own blur for the shadows, and writes `png/ID-SIZE.png` (441 files), one `ico/ID.ico` per icon (141 files with the arrow) and, for each toolbar glyph, `ico24/ID.ico` with its one 24 px frame (18 files). An `.ico` holds the three frames, smallest first, as uncompressed 32-bit BGRA DIB frames with alpha and an all-zero AND mask: the classic layout that old icon loaders read, with no PNG-compressed frames. The output has no dates, so the same masters and the same `rsvg-convert` give the same bytes. The `.ico` bytes were identical with `rsvg-convert` 2.58 and 2.63; the PNG files are written as `rsvg-convert` makes them and are not hashed. The files are named by the icon ids, so a build recipe can pick `ico/folder.ico` by id. The `.ico` hashes are in `desktop/icons/SHA256SUMS`, and `bun run check:desktop` renders them again and compares.
 
 ```sh
 python3 desktop/icons/render.py desktop/build/icons    # ico/, ico24/, png/, afterglow-icons-sheet.png and afterglow-arrow-preview.png
 python3 desktop/icons/contact.py desktop/build/icons docs/images/afterglow-icons-contact.png
 ```
+
+## Hand-tuned 16 px frames
+
+ReactOS shows most icons at 16 px: the Explorer tree, the List and Details views, Start menu submenus, the tray and the Control Panel list. A scripted downscale of a 48 px drawing blurs there, so 56 icons have a 16 px frame drawn on the pixel grid in `desktop/icons/hint16_v2.py`: the drives (CD, floppy, network, removable, RAM disk, not connected), the file types (text, image, program, library, archive, font, rich text, audio, video, batch, registry, settings, web page), the Start menu (Programs, Settings, Help, Run, Shut Down, Log Off), the Control Panel list (the 19 applets of set E with Folder Options, the Control Panel itself and the three added in v2), the tray (volume, muted, clock, keyboard layout), the Information and Question dialogs, Command Prompt and Internet Browser.
+
+Each frame is one 16 x 16 grid of characters written out pixel by pixel, with the same silhouette and palette as the master: a material's base tone, its baked 16 px edge, the plate's sky ramp and horizon rim, and the set's flat detail colours. It is written as one whole-pixel rect per pixel with crisp edges, so there is no anti-aliasing, blur, ramp or shadow. `gen_e.py` writes it as `svg/ID-16.svg`, and `render.py` uses it for the 16 px frame like the other hinted redraws.
+
+![The 61 hand-tuned 16 px frames at eight times: in each cell, the scripted downscale and the hand-tuned frame on the Dusk desktop, then the same pair on cream.](images/afterglow-icons-16px-before-after.png)
+
+_Before and after at 8x, drawn by `desktop/icons/compare16.py docs/images/afterglow-icons-16px-before-after.png`._
 
 ## The map
 
@@ -97,14 +107,14 @@ _The system contact sheet, drawn by `desktop/icons/contact.py` from the render._
 
 ## Vector masters
 
-All the art is vector. `desktop/icons/gen_e.py` is the canonical source for the icons: it draws every icon and the sheet, and writes `icons/` (the 48 px masters, the `32/`, `24/` and `16/` profiles and the hinted `ID-16.svg` redraws, 463 files) and `sheet.svg`. It imports `folders_g.py` and `gen_v2.py` beside it for the folder family. `desktop/icons/arrows.py` is the canonical source for the arrow (`arrows.py --variant A1 --out DIR` writes the three masters in `desktop/icons/arrow/`); the copy keeps its other variants and its own sheet code, which this repository does not use. The committed [`desktop/icons/svg/`](../desktop/icons/svg/), `desktop/icons/sheet.svg` and `desktop/icons/arrow/` are their output, kept so the masters can be opened and diffed without running anything. Edit the generators, not the SVGs: `bun run check:desktop` regenerates them and fails when they differ from the committed files, and `desktop/icons/SHA256SUMS.masters` records their hashes. Rasters are always rendered from the masters and never edited by hand.
+All the art is vector. `desktop/icons/gen_e.py` is the canonical source for the icons: it draws every icon and the sheet, and writes `icons/` (the 48 px masters, the `32/`, `24/` and `16/` profiles and the hinted `ID-16.svg` redraws, 519 files) and `sheet.svg`. It imports `folders_g.py` and `gen_v2.py` beside it for the folder family. `desktop/icons/arrows.py` is the canonical source for the arrow (`arrows.py --variant A1 --out DIR` writes the three masters in `desktop/icons/arrow/`); the copy keeps its other variants and its own sheet code, which this repository does not use. The committed [`desktop/icons/svg/`](../desktop/icons/svg/), `desktop/icons/sheet.svg` and `desktop/icons/arrow/` are their output, kept so the masters can be opened and diffed without running anything. Edit the generators, not the SVGs: `bun run check:desktop` regenerates them and fails when they differ from the committed files, and `desktop/icons/SHA256SUMS.masters` records their hashes. Rasters are always rendered from the masters and never edited by hand.
 
 ```sh
 python3 desktop/icons/gen_e.py OUT_DIR    # writes OUT_DIR/icons/ and OUT_DIR/sheet.svg
 python3 -B desktop/icons/arrows.py --variant A1 --out OUT_DIR/arrow
 cp -r OUT_DIR/icons/. desktop/icons/svg/ && cp OUT_DIR/sheet.svg desktop/icons/sheet.svg
 cp OUT_DIR/arrow/arrow-48.svg OUT_DIR/arrow/arrow-32.svg OUT_DIR/arrow/arrow-16-hinted.svg desktop/icons/arrow/
-(cd desktop/icons && find svg arrow -type f | LC_ALL=C sort | xargs sha256sum > SHA256SUMS.masters && sha256sum sheet.svg gen_e.py gen_v2.py folders_g.py arrows.py >> SHA256SUMS.masters)
+(cd desktop/icons && find svg arrow -type f | LC_ALL=C sort | xargs sha256sum > SHA256SUMS.masters && sha256sum sheet.svg gen_e.py gen_v2.py hint16_v2.py folders_g.py arrows.py >> SHA256SUMS.masters)
 ```
 
 The sheet's text uses whatever sans-serif the renderer finds, so the contact sheet PNG in `docs/images/` is a picture for the docs and is not compared byte for byte.

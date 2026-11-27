@@ -202,7 +202,7 @@ else
 	status=1
 fi
 
-# The icon set: gen_e.py (with gen_v2.py) redraws every SVG master and the contact sheet, and arrows.py the three shortcut arrow masters
+# The icon set: gen_e.py (with gen_v2.py and hint16_v2.py) redraws every SVG master and the contact sheet, and arrows.py the three shortcut arrow masters
 # (all compared byte for byte, and with SHA256SUMS.masters), then render.py draws the 141 .ico files and the 18 one-frame 24 px toolbar
 # .ico files, which are compared with SHA256SUMS. The .ico bytes were identical with rsvg-convert 2.58 and 2.63.
 mkdir -p "$out/icons-gen"
