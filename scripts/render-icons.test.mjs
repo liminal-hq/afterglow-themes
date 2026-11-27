@@ -57,9 +57,9 @@ function render() {
 	return out;
 }
 
-test('the set has 140 icons, 81 hinted 16 px redraws, a 32 and 16 px profile of every icon and a 24 px one of the 18 toolbar glyphs', () => {
+test('the set has 140 icons, 82 hinted 16 px redraws, a 32 and 16 px profile of every icon and a 24 px one of the 18 toolbar glyphs', () => {
 	assert.equal(ids.length, 140);
-	assert.equal(hinted.length, 81);
+	assert.equal(hinted.length, 82);
 	for (const id of [
 		'mydocs',
 		'mypictures',
@@ -106,8 +106,8 @@ test('the set has 140 icons, 81 hinted 16 px redraws, a 32 and 16 px profile of 
 
 test('the masters match their recorded hashes and keep their licence header', () => {
 	const recorded = sums('SHA256SUMS.masters');
-	// 140 icons in three profiles, 18 toolbar glyphs at 24 px, 81 hinted redraws, 3 arrow frames, the sheet and 5 generators
-	assert.equal(Object.keys(recorded).length, 140 * 3 + 18 + 81 + 3 + 1 + 5);
+	// 140 icons in three profiles, 18 toolbar glyphs at 24 px, 82 hinted redraws, 3 arrow frames, the sheet and 5 generators
+	assert.equal(Object.keys(recorded).length, 140 * 3 + 18 + 82 + 3 + 1 + 5);
 	for (const [name, hash] of Object.entries(recorded)) {
 		assert.equal(sha256(readFileSync(join(icons, name))), hash, `${name} changed`);
 		if (name.endsWith('.svg') || name.endsWith('.py')) {
